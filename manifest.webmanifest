@@ -1,0 +1,16 @@
+{
+  "name": "Nhà Trên Biển – Nhân viên",
+  "short_name": "Nhà Trên Biển",
+  "description": "Sơ đồ bàn, đặt chỗ và sổ tay nhân viên",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF6EC",
+  "theme_color": "#7A1F2B",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

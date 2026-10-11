@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nhà Trên Biển | Nhân viên</title>
+<meta name="theme-color" content="#7A1F2B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nhà Trên Biển">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF6EC; --surface:#FFFDF8; --ink:#2A2724; --muted:#6B645C; --line:#E7DDCB;
+  --maroon:#7A1F2B; --gold:#C2902A; --teal:#1E7272; --goldTint:#F6E7C3; --tealTint:#E2F0EE; --onGold:#2A2724;
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1C1A18; --surface:#25221F; --ink:#F2EBDD; --muted:#B5AC9E; --line:#3A352F;
+    --maroon:#B9505D; --gold:#D9A945; --teal:#3A9C99; --goldTint:#3A3020; --tealTint:#1E302E; --onGold:#1C1A18;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1C1A18; --surface:#25221F; --ink:#F2EBDD; --muted:#B5AC9E; --line:#3A352F;
+  --maroon:#B9505D; --gold:#D9A945; --teal:#3A9C99; --goldTint:#3A3020; --tealTint:#1E302E; --onGold:#1C1A18;
+}
+html,body{height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:"Baloo 2","Be Vietnam Pro",system-ui,sans-serif;line-height:1.15;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+header.app{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:980px;margin:0 auto}
+.brand h1{font-size:1.35rem;color:var(--maroon);font-weight:800}
+.brand small{display:block;color:var(--muted);font-size:.78rem}
+.lang{display:flex;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;flex:none}
+.lang button{background:none;border:0;padding:5px 10px;font-weight:600;font-size:.82rem}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.banner{max-width:980px;margin:8px auto 0;font-size:.82rem;padding:6px 10px;border-radius:8px;background:var(--goldTint)}
+.banner:empty{display:none}
+
+main{max-width:980px;margin:0 auto;padding:14px 16px calc(96px + env(safe-area-inset-bottom,0px))}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav.tabs .in{display:flex;width:100%;max-width:560px}
+nav.tabs button{flex:1;background:none;border:0;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted);border-radius:10px}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button[aria-current="page"]{color:var(--maroon);background:var(--goldTint)}
+
+/* floor */
+.now-card{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px}
+.now-card .big{font:800 2.6rem/1 "Baloo 2",sans-serif;color:var(--teal)}
+.now-card .big small{font:600 .95rem "Be Vietnam Pro",sans-serif;color:var(--muted);margin-left:4px}
+.secsum{display:flex;gap:8px;flex-wrap:wrap}
+.secsum span{font-size:.85rem;padding:4px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.secsum b{font-weight:600}
+.next{margin-top:10px;font-size:.9rem;color:var(--muted)}
+.next b{color:var(--ink)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin:14px 0 4px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.sec{margin-top:18px}
+.sec h2{font-size:1.3rem;display:flex;align-items:baseline;gap:8px}
+.sec h2 small{font:500 .82rem "Be Vietnam Pro",sans-serif;color:var(--muted)}
+.half{margin-top:8px}
+.half h3{font:600 .85rem "Be Vietnam Pro",sans-serif;color:var(--muted);margin-bottom:6px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.tile{border-radius:12px;border:2px solid var(--teal);background:var(--tealTint);padding:8px 8px 7px;text-align:left;min-height:74px;display:flex;flex-direction:column;justify-content:space-between}
+.tile .n{font:700 1.15rem/1 "Baloo 2",sans-serif}
+.tile .s{font-size:.75rem;color:var(--muted)}
+.tile .x{font-size:.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile.soon{border-color:var(--gold);background:var(--goldTint)}
+.tile.busy{border-color:var(--maroon);background:var(--maroon);color:#fff}
+.tile.busy .s{color:rgba(255,255,255,.8)}
+.tile.sel{outline:3px solid var(--ink);outline-offset:1px}
+.tile.warn{border-style:dashed}
+
+/* bookings */
+.datebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.datebar input{padding:7px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface)}
+.btn{border:1.5px solid var(--ink);background:var(--surface);border-radius:10px;padding:8px 13px;font-weight:600;font-size:.9rem}
+.btn.pri{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.ghost{border-color:var(--line)}
+.btn.sm{padding:5px 10px;font-size:.82rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.sumline{color:var(--muted);font-size:.9rem;margin:10px 0 4px}
+.tgroup{margin-top:16px}
+.tgroup h3{font-size:1.25rem;color:var(--maroon);margin-bottom:6px}
+.bk{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.bk.st-seated{border-left:6px solid var(--maroon)}
+.bk.st-booked{border-left:6px solid var(--gold)}
+.bk.st-left,.bk.st-noshow,.bk.st-cancelled{opacity:.6}
+.bk .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.bk .nm{font-weight:600;font-size:1.02rem}
+.bk .meta{font-size:.84rem;color:var(--muted);margin-top:2px}
+.bk .note{font-size:.86rem;margin-top:6px;padding:5px 8px;border-radius:7px;background:var(--goldTint)}
+.bk .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{display:inline-block;font-size:.74rem;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.chip.combo{background:var(--tealTint);border-color:var(--teal)}
+.chip.lobster{background:var(--goldTint);border-color:var(--gold)}
+.chip.s-seated{background:var(--maroon);color:#fff;border-color:var(--maroon)}
+.chip.s-booked{background:var(--gold);color:var(--onGold);border-color:var(--gold)}
+.fab{position:fixed;right:max(16px,calc(50% - 474px));bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:7;border-radius:999px;padding:13px 18px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.empty{color:var(--muted);padding:26px 0;text-align:center}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);margin-top:8px}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(20,16,12,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:18px}}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
+.sheet h2{font-size:1.45rem;margin-bottom:4px}
+.sheet .sub{color:var(--muted);font-size:.88rem;margin-bottom:12px}
+.field{margin-top:12px}
+.field label,.flabel{display:block;font-weight:600;font-size:.86rem;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:9px 11px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg button{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 6px;font-size:.85rem;font-weight:600;text-align:center}
+.seg button[aria-pressed="true"]{border-color:var(--maroon);background:var(--maroon);color:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 10px;font-size:.82rem}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stepper{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden}
+.stepper button{border:0;background:none;width:38px;height:40px;font-size:1.2rem;font-weight:700}
+.stepper output{flex:1;text-align:center;font-weight:600}
+.est{margin-top:12px;font-weight:600}
+.err{color:var(--maroon);font-size:.86rem;margin-top:8px;font-weight:600}
+.err:empty{display:none}
+.hint{color:var(--muted);font-size:.8rem;margin-top:4px}
+.sheet .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.sheet .acts .btn{flex:1;min-width:120px}
+.list-pick button{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 11px;margin-top:6px}
+
+/* handbook */
+.search{width:100%;padding:11px 13px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface)}
+.hbsec{margin-top:20px}
+.hbsec h2{font-size:1.3rem;margin-bottom:6px}
+.hbsec h2 small{font:500 .8rem "Be Vietnam Pro",sans-serif;color:var(--muted)}
+.hb details{border-top:1px solid var(--line)}
+.hb details:last-child{border-bottom:1px solid var(--line)}
+.hb summary{cursor:pointer;padding:11px 28px 11px 0;font-weight:600;list-style:none;position:relative}
+.hb summary::-webkit-details-marker{display:none}
+.hb summary::after{content:"+";position:absolute;right:4px;top:6px;font:700 1.3rem "Baloo 2",sans-serif;color:var(--maroon)}
+.hb details[open] summary::after{content:"–"}
+.hb summary .tp{display:block;font-size:.74rem;color:var(--muted);font-weight:600}
+.hb .body{padding:0 0 12px;font-size:.93rem}
+.hb dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 10px}
+.hb dt{font-weight:600}
+.hb dd{margin:0}
+.hb dd.say{font-style:italic;border-left:3px solid var(--teal);padding-left:8px}
+.hb dd.avoid{color:var(--maroon)}
+.hb .who{color:var(--muted);font-size:.8rem;margin-top:6px;display:block}
+
+/* settings */
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:14px}
+.card h2{font-size:1.2rem;margin-bottom:6px}
+.trow{display:grid;grid-template-columns:1.2fr 1fr .8fr auto;gap:6px;align-items:center;margin-top:6px}
+.trow input,.trow select{padding:7px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);width:100%;min-width:0}
+.trow button{border:0;background:none;color:var(--maroon);font-weight:700;font-size:1.1rem;padding:4px 8px}
+.lrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line)}
+.lrow:first-of-type{border-top:0}
+.lacts{display:flex;gap:6px;flex-wrap:wrap}
+#main .tile{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.tile.dragsrc{opacity:.35}
+.tile.droptgt{outline:3px solid var(--ink);outline-offset:2px}
+.tile:disabled{opacity:.35;cursor:not-allowed}
+body.dragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
+.dragghost{position:fixed;z-index:50;pointer-events:none;opacity:.92;box-shadow:0 8px 22px rgba(0,0,0,.28);transform:scale(1.06)}
+.movebar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 12px;margin:10px 0;font-weight:600;font-size:.9rem;position:sticky;top:76px;z-index:4}
+.movebar .btn{border-color:var(--bg);background:transparent;color:var(--bg)}
+.scrim.ask{z-index:40}
+.linkdel{background:none;border:0;padding:4px 8px;color:var(--muted);font-size:.8rem;text-decoration:underline;text-underline-offset:3px}
+.linkdel:hover{color:var(--maroon)}
+.legend .lg{display:inline-flex;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:5px 11px;font-size:.82rem;font-weight:600;color:var(--ink)}
+.legend .lg[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.legend{align-items:center}
+.lgsel{padding:5px 10px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:.82rem;font-weight:600}
+.field .stepper input{flex:1;min-width:0;width:100%;text-align:center;font-weight:600;border:0;background:transparent;padding:8px 0;border-radius:0;-moz-appearance:textfield;appearance:textfield}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.est:empty{display:none}
+.list-pick button:disabled{opacity:.55;cursor:not-allowed}
+.tile.joined{border-width:3px;border-style:double}
+.tile .lk{width:14px;height:14px;margin-left:5px;vertical-align:-1px}
+.notice{max-width:980px;margin:8px auto 0;padding:9px 12px;border-radius:10px;font-size:.92rem;line-height:1.4}
+.notice.info{background:var(--tealTint);border:1.5px solid var(--teal)}
+.notice.warn{background:var(--maroon);color:#fff}
+.notice small{opacity:.8}
+.br{display:inline-block;font-weight:700;background:var(--ink);color:var(--bg);border-radius:6px;padding:0 6px;font-size:.85em}
+.chip.beach{background:var(--tealTint);border-color:var(--teal)}
+.beach{margin-top:14px;background:var(--surface);border:1.5px dashed var(--teal);border-radius:14px;padding:12px 14px}
+.beach .bhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.beach h2{font-size:1.15rem}
+.beach h2 small{font:500 .82rem "Be Vietnam Pro",sans-serif;color:var(--muted)}
+.brow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line);font-size:.92rem}
+.brow:first-of-type{border-top:0}
+.depwrap{display:flex;align-items:center;gap:8px}
+.depwrap .ck{display:flex;align-items:center;gap:6px;font-size:.88rem;white-space:nowrap;margin:0;font-weight:500}
+.depwrap .ck input{width:auto}
+.field .depwrap input[type=number]{width:100%;min-width:0}
+.tile{position:relative}
+.tile .brc{position:absolute;top:5px;right:5px;font-size:.72rem;font-weight:700;line-height:1;padding:3px 5px;border-radius:6px;background:var(--ink);color:var(--bg);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile.busy .brc{background:#fff;color:var(--maroon)}
+.tile .n{padding-right:36px}
+.pi{width:12px;height:12px;vertical-align:-1px;margin-right:2px}
+.qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;display:flex;gap:12px;align-items:center;font-size:.9rem;max-width:92vw}
+.toast button{background:none;border:0;color:var(--gold);font-weight:700}
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="hrow">
+    <div class="brand"><h1>Nhà Trên Biển</h1><small id="who"></small></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button>
+    </div>
+  </div>
+  <div class="banner" id="banner" role="status"></div>
+  <div id="noticeBox"></div>
+</header>
+<main id="main"></main>
+<button class="btn pri fab" id="fab" type="button" hidden></button>
+<nav class="tabs" aria-label="App"><div class="in" id="tabs"></div></nav>
+<div id="sheetRoot"></div>
+<div id="askRoot"></div>
+<div id="toastRoot" aria-live="polite"></div>
+
+<script>
+const HB={
+vi:{
+ kicker:"Sổ tay nhân viên, mùa combo 2026",
+ hToc:"Nội dung", hHard:"Xử lý khách khó tính",
+ hardIntro:"23 tình huống, chia theo nhóm. Mỗi tình huống bắt đầu bằng câu khách nói. Bên dưới là điều khách thật sự cần, câu em nên nói, việc em nên làm và điều tuyệt đối tránh.",
+ method:[["Nghe hết","Không cắt lời, kể cả khi khách sai."],["Nhận cảm xúc","“Dạ em hiểu…” Hiểu cảm xúc không có nghĩa là nhận lỗi."],["Đưa 1 giải pháp cụ thể","Có việc làm và có thời gian: “2 phút nữa em báo lại.”"],["Vượt quyền thì báo ngay","Gọi quản lý, đừng để khách chờ trong lúc em đi hỏi."]],
+ selfH:"Em được tự làm", selfP:"Đổi món bị lỗi, mời nước lọc hoặc trà đá, đổi chỗ trong cùng khu, gọi tàu ra đón khách.",
+ mgrH:"Phải hỏi quản lý", mgrP:"Giảm giá, tặng món, hoàn tiền, đổi khu, mở khu combo cho khách lẻ, tính thêm tiền.",
+ lNeed:"Khách cần", lSay:"Nói", lDo:"Làm", lAvoid:"Tránh",
+ groups:[
+ ["Giá & combo",[
+  ["Giá cả","750 nghìn một người mà chỉ có vậy thôi hả? Ra chợ ăn còn rẻ hơn!","","Khách cần thấy mình không bị chặt chém. Họ chưa thấy hết giá trị của combo.","Dạ em hiểu ạ. Combo gồm tàu đưa đón ra Bãi Sao Biển, câu cá, lặn ngắm san hô và 6 món hải sản bắt từ bè lên. Anh/chị muốn em dẫn qua xem hải sản sống không ạ?","Kể rõ những gì có trong combo. Dẫn khách xem hải sản sống. Nếu khách vẫn không muốn combo, mời khách gọi món lẻ ở khu C.","Không tự giảm giá. Không chê quán khác."],
+  ["Tôm hùm","Tôi trả 900 nghìn mà con tôm hùm bé thế này? Đổi con to hơn cho tôi!","","Khách sợ nhận hàng kém hơn lời hứa.","Dạ mỗi suất là một con khoảng 250 gram, em cân trước mặt anh/chị cho yên tâm nhé. Nếu anh/chị muốn con to hơn, em hỏi quản lý giá thêm theo cân ạ.","Cân ngay trước mặt khách. Nếu nhẹ hơn nhiều so với 250g thì đổi con khác. Muốn con to hơn thì quản lý báo giá thêm trước khi chế biến.","Không cãi. Không tự đổi con to hơn miễn phí."],
+  ["Trẻ em","Con tôi cũng phải có tôm hùm chứ! Cả nhà chọn combo tôm hùm rồi mà.","","Bố mẹ muốn con được ăn giống mọi người.","Dạ suất trẻ em là nửa giá nên không có tôm hùm ạ. Nếu anh/chị muốn bé có một con riêng, em tính bé như suất người lớn tôm hùm, hoặc em hỏi quản lý gọi thêm một con theo giá menu nhé.","Đưa 2 lựa chọn có giá rõ ràng, để khách chọn.","Không cho thêm tôm hùm miễn phí. Không nói “quy định là vậy” rồi bỏ đi."],
+  ["Hoá đơn","Ăn combo rồi sao còn tính thêm tiền? Quán gài khách à?","","Khách cần thấy minh bạch. Họ nghĩ combo là trọn gói.","Dạ em xin lỗi vì chưa nói rõ từ đầu. Combo gồm tàu ra bãi, câu cá, lặn và 6 món. Phần này là [món hoặc nước] anh/chị gọi thêm ạ. Em đọc lại từng dòng với anh/chị nhé.","Đọc hoá đơn từng dòng cùng khách. Tính sai thì sửa ngay và cảm ơn khách. Khi dẫn khách vào bàn, luôn nói rõ cái gì có trong combo và cái gì tính riêng.","Không nói “tại khách tự gọi mà”. Không tranh cãi trước cả bàn."]
+ ]],
+ ["Chỗ ngồi & đặt chỗ",[
+  ["Khách lẻ chờ bàn","Sao bắt tôi chờ? Bên kia còn cả dãy bàn trống kìa!","","Khách thấy không công bằng. Họ cần lý do và thời gian chờ cụ thể.","Dạ khu đó đã có khách đặt lúc [giờ] ạ. Khoảng [số] phút nữa sẽ có bàn cho anh/chị. Trong lúc chờ em mời anh/chị ly trà đá nhé.","Nói thời gian chờ thật. Báo quản lý: nếu khu đó trống ít nhất 2 tiếng tới, quản lý có thể mở cho khách.","Không tự xếp khách vào khu combo. Không nói “chờ chút” mà không có thời gian."],
+  ["Khách nước ngoài","My booking says 9:00. Why do I have to wait? I want to go now!","Đặt chỗ của tôi ghi 9:00. Sao phải chờ? Tôi muốn đi ngay!","Khách sợ bị lừa hoặc bị nhầm. Họ cần thấy đặt chỗ được tôn trọng.","Sorry for the confusion. Let me check your booking right now, we will take care of you. (Xin lỗi vì nhầm lẫn, em kiểm tra đặt chỗ ngay.)","Kiểm tra đặt chỗ. Nếu trang đặt chỗ ghi giờ khác, phục vụ khách theo giờ đó nếu được và báo quản lý để sửa trang đặt chỗ.","Không nói “không phải lỗi của quán”."]
+ ]],
+ ["Món ăn",[
+  ["Ra món chậm","Ngồi nửa tiếng rồi mà chưa có món nào! Làm ăn kiểu gì vậy?","","Khách đói và thấy bị bỏ quên. Họ cần thấy có người lo cho mình ngay.","Dạ em xin lỗi anh/chị. Em vào bếp kiểm tra ngay và báo lại trong 2 phút ạ.","Hỏi bếp thời gian chính xác, quay lại báo khách đúng hẹn. Chờ quá 30 phút thì báo quản lý, quản lý quyết định mời trái cây hoặc nước.","Không đổ lỗi cho bếp trước mặt khách. Không nói “sắp có rồi” khi chưa biết."],
+  ["Món không tươi","Con ghẹ này tanh, không tươi gì cả. Quán hải sản mà vậy à?","","Khách cần được tin. Món ăn là lý do họ đến.","Dạ em xin lỗi, em đổi món khác cho anh/chị ngay ạ.","Dọn món ngay, không tranh cãi. Báo bếp và quản lý. Bếp kiểm tra lại lô hải sản đó.","Không nói “hải sản mới bắt sáng nay mà”. Tranh cãi về độ tươi luôn thua, và khách có thể đăng lên mạng."],
+  ["Dị ứng","Tôi dị ứng tôm cua, vậy tôi ăn gì? Sao lúc đặt không ai hỏi?","","Khách cần được an toàn và được nói thật.","Dạ cảm ơn anh/chị đã báo. Combo là set hải sản cố định nên bếp không đổi món theo dị ứng được ạ. Em mời quản lý xem trong thực đơn có món nào phù hợp cho anh/chị nhé.","Báo quản lý ngay. Không chắc món có gì thì hỏi bếp. Lễ tân hỏi về dị ứng khi nhận đặt chỗ và khi đón khách.","Không đoán thành phần. Không hứa đổi món trong combo. Không nói “ăn ít chắc không sao”."]
+ ]],
+ ["Bãi Sao Biển & tàu",[
+  ["Không thấy sao biển","Bãi Sao Biển mà chẳng thấy con sao biển nào! Quảng cáo lừa à?","","Khách thất vọng vì thực tế khác kỳ vọng.","Dạ số sao biển thay đổi theo mùa và theo con nước, hôm nay ít hơn mọi khi. Em dẫn anh/chị ra chỗ hay có sao biển nhé.","Dẫn khách tới chỗ thường có sao biển. Chụp ảnh đẹp ở bãi cho khách. Nhiều nhóm phàn nàn trong ngày thì báo quản lý để nói trước với khách sau.","Không hứa chắc chắn có sao biển. Không bắt hay di chuyển sao biển cho khách chụp."],
+  ["Khách cầm sao biển","Cho con tôi cầm con sao biển lên chụp hình chút thôi mà, có sao đâu!","","Khách muốn có tấm ảnh đẹp và không biết là làm hại sao biển.","Dạ sao biển bị nhấc lên khỏi nước là bị hại, có thể chết ạ. Để em chụp bé ngồi sát bên sao biển dưới nước, ảnh còn đẹp hơn nhé.","Nhắc nhẹ nhàng ngay lúc đó. Chỉ cách chụp ảnh với sao biển trong nước. Nhắc cả nhóm từ khi vừa tới bãi.","Không la khách trước mặt người khác. Không tự cầm sao biển lên cho khách, kể cả khi khách nhờ."],
+  ["Người khác làm hại bãi","Người ta cầm sao biển lên chụp đầy ra, rác thì khắp nơi. Sao quán không làm gì?","","Khách quan tâm thật. Họ muốn thấy mình đi với một nơi có trách nhiệm.","Dạ anh/chị nói đúng, tụi em cũng buồn về chuyện này. Bãi là bãi chung nên tụi em không cấm được người khác, nhưng khách của quán luôn được nhắc giữ sao biển dưới nước. Em đưa anh/chị qua chỗ vắng hơn nhé.","Đưa khách tới đoạn bãi vắng hơn. Nhặt rác quanh chỗ khách. Thấy người khác làm hại sao biển thì có thể nhắc lịch sự một lần.","Không cãi nhau với khách của nơi khác. Không chê các quán khác."],
+  ["Không muốn ra bãi","Tôi không đi biển đâu, nắng lắm. Cho ăn luôn bây giờ đi.","","Khách muốn được làm theo ý mình, không bị ép theo lịch.","Dạ được ạ. Bếp cần khoảng 30 phút để chuẩn bị. Trong lúc đó anh/chị thử câu cá quanh nhà bè nhé?","Nhắn Zalo cho bếp ngay. Mời khách câu cá hoặc nghỉ ở bàn. Báo tàu không chờ nhóm này.","Không nói “lịch là phải đi biển trước”. Không hứa trả lại tiền phần không dùng."],
+  ["Ở bãi lâu hơn","Ở đây đẹp quá, cho tụi tôi ở thêm 2 tiếng nữa, lát gọi tàu ra đón.","","Khách đang vui. Chỉ cần sắp xếp cho êm.","Dạ thoải mái ạ! Khi nào anh/chị muốn về thì báo em, em gọi tàu ra đón liền.","Nhân viên ở bãi báo quản lý và bếp. Nếu nhân viên phải về trước, đưa khách số Zalo để gọi tàu. Quản lý chuyển khung sau sang khu khác nếu cần.","Không giục khách. Không để khách ở bãi mà không có cách liên lạc."],
+  ["Tàu đón trễ","Gọi tàu nửa tiếng rồi chưa thấy đâu, tụi tôi đứng phơi nắng ở đây à?","","Khách cần biết chính xác khi nào tàu tới.","Dạ em xin lỗi, em gọi tàu ngay và báo anh/chị giờ tàu tới ạ.","Gọi tàu, báo khách thời gian thật. Đưa khách vào chỗ có bóng mát, mời nước. Trễ quá 15 phút thì báo quản lý.","Không nói “chắc sắp tới” khi chưa gọi."]
+ ]],
+ ["Câu cá, lặn & ảnh",[
+  ["Nước quanh nhà bè đục","Nước đục ngầu thế này ai dám xuống lặn? Quảng cáo lặn ngắm san hô mà!","","Khách cần lời giải thích thật và một lựa chọn khác vui không kém.","Dạ hôm nay nước đục hơn mọi khi [nêu lý do nếu biết]. Lặn hôm nay sẽ không thấy được nhiều, em không muốn anh/chị thất vọng. Em có một hoạt động bất ngờ cho anh/chị nhé.","Nói lý do thật nếu biết, không đoán. Đưa ra hoạt động làm trang sức vỏ sò. Hỏi quản lý xem nước ở bãi có trong hơn để lặn ở đó không. Mời câu cá quanh nhà bè.","Không nói nước sạch khi không chắc. Không ép khách xuống nước."],
+  ["Câu không được cá","Câu cả tiếng chẳng được con nào. Ở đây có cá thật không vậy?","","Khách muốn có trải nghiệm vui, không chỉ là con cá.","Dạ hôm nay cá hơi khó ăn mồi. Để em chỉ anh/chị chỗ khác và cách thả mồi nhé.","Đổi chỗ câu, thay mồi, chỉ kỹ thuật. Dẫn khách xem cá trong lồng bè. Khen khi khách câu được, kể cả cá nhỏ.","Không hứa chắc chắn câu được. Không để khách ngồi một mình quá lâu."],
+  ["Cá câu được","Con cá tôi câu được, làm cho tôi ăn luôn đi, miễn phí chứ?","","Khách tự hào về con cá. Đó là phần thưởng của họ.","Dạ con cá đẹp quá! Để em hỏi quản lý cách chế biến cho anh/chị ngay nhé.","Chụp ảnh khách với con cá. Hỏi quản lý về chế biến và chi phí, báo khách trước khi làm.","Không tự hứa miễn phí. Không nói “không được” khi chưa hỏi."],
+  ["Ảnh","Ảnh chụp ở bãi đâu rồi? Hứa gửi mà giờ chưa thấy.","","Ảnh là kỷ niệm khách mang về.","Dạ em xin lỗi, em gửi ngay cho anh/chị trước khi anh/chị về ạ.","Hỏi khách nhận ảnh qua Zalo hay WhatsApp ngay khi bắt đầu chụp. Gửi ảnh trước khi khách rời quán.","Không để khách về mà chưa nhận được ảnh."]
+ ]],
+ ["An toàn",[
+  ["Say xỉn muốn lặn","Mang thêm thùng bia nữa! Uống xong tụi anh đi lặn.","","Nhóm đang vui, nhưng uống bia rồi lặn là nguy hiểm.","Dạ anh em uống vui nha. Riêng lặn thì để lúc khác cho an toàn, mình chuyển qua câu cá được không ạ?","Không cho người đã uống nhiều xuống nước. Đề nghị câu cá thay. Nếu nhóm ồn ảnh hưởng bàn khác, báo quản lý.","Không nhượng bộ về an toàn, kể cả khi khách ép."],
+  ["Bị thương ở bãi","Tôi giẫm phải cái gì sắc, chảy máu rồi! Sao không ai nói trước?","","Khách cần được sơ cứu ngay và thấy có người lo cho mình.","Dạ anh/chị ngồi xuống đây, em sơ cứu ngay ạ.","Sơ cứu bằng túi thuốc mang theo, gọi quản lý. Vết thương nặng, bị sứa đốt nặng hoặc khó thở thì đưa khách vào bờ đi bệnh viện ngay. Nhắc khách mang dép đi nước khi xuống bãi.","Không nói “tại anh/chị không cẩn thận”. Không tự cho khách uống thuốc."]
+ ]],
+ ["Khách nóng giận",[
+  ["Doạ đánh giá xấu","Không giảm giá thì tôi đánh giá 1 sao trên Google với đăng Facebook cho mọi người biết!","","Thường có một vấn đề thật phía sau. Lời doạ là cách gây áp lực.","Dạ em rất tiếc anh/chị chưa hài lòng. Anh/chị cho em biết điều gì làm anh/chị không vui để em mời quản lý giải quyết ngay ạ.","Bình tĩnh, gọi quản lý. Quản lý giải quyết vấn đề thật. Giảm giá hay quà chỉ do quản lý quyết định, dựa trên vấn đề chứ không dựa trên lời doạ.","Không tranh luận về đánh giá. Không xin khách đừng đăng. Không tự giảm giá để khách im."],
+  ["La mắng nhân viên","Làm ăn kiểu gì vậy? Gọi quản lý ra đây!","","Khách đang rất bực và cần gặp người có quyền xử lý.","Dạ em mời quản lý ra ngay ạ.","Giữ bình tĩnh, nói nhỏ, lùi lại một bước. Gọi quản lý ngay. Nếu khách xúc phạm hoặc đe doạ, em được phép rời đi và để quản lý xử lý.","Không cãi lại. Không chịu đựng một mình."]
+ ]]
+ ],
+ title:"Sổ tay nhân viên",
+ lead:"Mọi điều em cần biết để chạy một ngày combo: hai loại combo, lịch cả ngày, việc của từng bộ phận, nguyên tắc, cách xử lý sự cố và khách khó tính. 5 khung giờ combo mỗi ngày. Khu A và B dành cho khách combo, khu C dành cho khách lẻ và khách đặt bàn thường.",
+ hBoard:"Lịch một ngày combo", hRoles:"Việc của từng bộ phận", hRules:"6 nguyên tắc", hCombos:"Hai loại combo", hQA:"Hỏi đáp: khi có sự cố",
+ morningNote:"3 khung buổi sáng chạy giống hệt nhau, chỉ cách nhau 1 tiếng: đón khách, ra bãi, về chơi hoạt động 30 phút, rồi ăn trưa. Bếp lên món lúc 11:00, 12:00 và 13:00.",
+ slot:"Khung", arrive:"đến",
+ welcome:"Đón khách & xem bè cá", beach:"Đi tàu ra Bãi Sao Biển", activity:"Câu cá / lặn",
+ lunch:"Ăn trưa (6 món)", dinner:"Ăn tối hoàng hôn", leave:"Khách về (linh hoạt)",
+ peak:"Cao điểm khách lẻ ăn trưa",
+ rHost:"Lễ tân", rHostD:"Đón khách, dẫn vào bàn, giới thiệu bè cá, báo khách tàu sắp chạy.",
+ rBoat:"Tàu", rBoatD:"Chở mỗi khung ra bãi và đón về. Mỗi chuyến gắn với một khung giờ.",
+ rBeach:"Nhân viên ở bãi", rBeachD:"Ở lại bãi suốt buổi, chụp ảnh cho khách. Nhắn Zalo cho bếp ngay khi khách lên tàu về.",
+ rAct:"Nhân viên hoạt động", rActD:"Câu cá và lặn ngắm san hô. 2–3 người thay phiên. Buổi sáng không bị trùng, buổi chiều có lúc 2 khung chơi cùng lúc.",
+ rKitchen:"Bếp", rKitchenD:"Lên món theo khung, 6 món cố định. Chỉ lên món khi có tin nhắn khách đã về.",
+ rFloor:"Phục vụ", rFloorD:"Set bàn trước khi khách đến 30 phút, dọn khu khi khách về. Khu C phục vụ khách lẻ cả ngày.",
+ tHost:"Đón Khung {n} ({s})", tOut:"Chở Khung {n} ra bãi", tBack:"Đón Khung {n} về",
+ tBeach:"Ở bãi, chụp ảnh", tAct:"Hoạt động Khung {n}", tFire:"Lên món Khung {n}",
+ tSet:"Set bàn {s} cho Khung {n}", tReset:"Dọn {s} sau Khung {n}",
+ rules:[
+  ["Lịch là để nhân viên làm việc, không phải để ép khách.","Khách muốn ở bãi lâu hơn thì cứ để khách ở. Đây không phải tour."],
+  ["Nhân viên ở bãi là người báo cho bếp.","Khi khách lên tàu về, nhắn ngay vào nhóm Zalo. Bếp chỉ lên món khi nhận tin này."],
+  ["Khu A và B chỉ cho khách combo.","Khách lẻ và khách đặt bàn thường ngồi khu C."],
+  ["Mỗi khung giờ có khu riêng.","Không xếp khách khung khác vào khu đó khi khách cũ chưa về."],
+  ["Không nhận combo mới lúc 11:30 và 12:30.","Đây là giờ khách từ bãi về và khách lẻ vào ăn trưa nhiều nhất."],
+  ["Khách ở lâu hơn dự kiến thì báo quản lý.","Quản lý quyết định chuyển khung sau sang khu khác. Không hối khách."]
+ ],
+ perAdult:"/ người lớn",
+ c1Tag:"Giới thiệu trước", c1Name:"Combo tiêu chuẩn", c1Desc:"Món chính có cua và tôm.",
+ c2Tag:"Nâng cấp", c2Name:"Combo tôm hùm", c2Desc:"Thay cua và tôm bằng 1 con tôm hùm khoảng 250g mỗi người lớn, hấp hoặc chiên bơ tỏi. Tối thiểu 2 người lớn.",
+ kidsNote:"Trẻ em 7–12 tuổi: nửa giá (375k), không có tôm hùm, kể cả khi bố mẹ chọn combo tôm hùm. Trẻ em 6 tuổi trở xuống: miễn phí.",
+ sameNote:"Mọi thứ khác giống nhau: tàu ra Bãi Sao Biển, 6 món, câu cá và lặn ngắm san hô.",
+ secNote:"Khu A1, A2, B1, B2 trên lịch là cách chia đề xuất. Quản lý có thể đổi, miễn là mỗi khu cách nhóm trước ít nhất 1 tiếng.",
+ openAll:"Mở tất cả", closeAll:"Đóng tất cả", whoLabel:"Ai xử lý",
+ qa:[
+  ["Khách ở bãi lâu hơn, về trễ thì sao?","Cứ để khách chơi. Nhân viên ở bãi chỉ nhắn bếp khi khách thật sự lên tàu về. Bếp chờ tin nhắn, không lên món theo giờ trên lịch. Vì mỗi khung có khu riêng nên khung sau không bị ảnh hưởng.","Nhân viên ở bãi, bếp"],
+  ["Khách ăn xong vẫn ngồi lâu, khung sau sắp đến dùng chung khu?","Báo quản lý ít nhất 30 phút trước khi khung sau đến. Quản lý chuyển khung sau sang khu đang trống (buổi chiều A2 và B1 thường trống). Không hối khách đang ngồi.","Phục vụ, quản lý"],
+  ["Trời mưa hoặc biển động, không đi tàu ra bãi được?","Quản lý quyết định trước giờ tàu chạy. Đổi thứ tự: cho khách ăn và câu cá quanh nhà bè trước, ra bãi sau nếu trời tốt lên. Báo khách rõ ràng ngay khi đến, không để khách chờ mà không biết lý do.","Quản lý, lễ tân"],
+  ["Nước đục hoặc sóng lớn, không lặn được?","Chỉ khi đó mới đưa ra hoạt động làm trang sức vỏ sò như một bất ngờ cho khách. Không nhắc trước hoạt động này khi lặn vẫn được.","Nhân viên hoạt động"],
+  ["Khách bị say sóng, bị thương hoặc gặp khó khi lặn?","Người lặn luôn mặc áo phao. Nhân viên hoạt động luôn quan sát khách dưới nước, không để khách lặn một mình. Có sự cố thì đưa khách lên tàu, gọi quản lý ngay. Tủ sơ cứu phải ở trên tàu và trên bè.","Nhân viên hoạt động, tàu"],
+  ["Hết tôm hùm trong ngày?","Mỗi sáng bếp đếm và báo số suất tôm hùm còn bán được. Lễ tân và người nhận đặt chỗ không hứa tôm hùm khi chưa có xác nhận. Nếu thiếu, quản lý báo khách trước và xử lý theo quy định của chủ.","Bếp, lễ tân, quản lý"],
+  ["Khách đặt combo nhưng không đến?","Giữ khu 30 phút sau giờ hẹn và gọi khách. Sau đó báo quản lý để mở khu cho khách lẻ.","Lễ tân, quản lý"],
+  ["Một khung giờ không có ai đặt?","Quản lý kiểm tra đặt chỗ mỗi sáng. Khu của khung trống được mở cho khách lẻ, để không có bàn trống trong giờ cao điểm.","Quản lý"],
+  ["Khách lẻ đến lúc 11:00–13:00 mà khu C đã đầy?","Báo khách thời gian chờ thật, mời nước trong lúc chờ. Chỉ dùng khu combo nếu quản lý xác nhận khu đó trống ít nhất 2 tiếng tới.","Lễ tân, quản lý"],
+  ["Khách hỏi nên chọn combo nào?","Luôn giới thiệu combo 750k trước. Combo tôm hùm là lựa chọn nâng cấp cho khách muốn món đặc biệt hơn. Nhắc rằng trẻ em không có tôm hùm.","Lễ tân, phục vụ"]
+ ]
+},
+en:{
+ kicker:"Staff handbook, combo season 2026",
+ hToc:"Contents", hHard:"Handling difficult guests",
+ hardIntro:"23 situations, grouped by topic. Each one starts with what the guest says. Below is what they really need, what to say, what to do, and what to never do.",
+ method:[["Listen fully","Don't interrupt, even when the guest is wrong."],["Acknowledge the feeling","“I understand…” Understanding isn't admitting fault."],["Offer one concrete fix","An action and a time: “I'll be back in 2 minutes.”"],["Escalate right away","Call the manager. Don't leave the guest waiting while you go ask."]],
+ selfH:"You can do this yourself", selfP:"Replace a faulty dish, offer water or iced tea, move guests within their section, call the boat to pick guests up.",
+ mgrH:"Ask the manager first", mgrP:"Discounts, free dishes, refunds, changing section, opening a combo section to walk-ins, extra charges.",
+ lNeed:"They need", lSay:"Say", lDo:"Do", lAvoid:"Never",
+ groups:[
+ ["Price & combos",[
+  ["Price","750k per person for just this? The market is cheaper!","","To feel they're not being ripped off. They haven't seen the full value yet.","I understand. The combo includes the boat to Starfish Beach, fishing, snorkeling and 6 seafood dishes caught from our farm. Would you like me to show you the live seafood?","Spell out what's included. Show the live seafood. If they still don't want a combo, offer à la carte in section C.","Never discount on your own. Never criticize other restaurants."],
+  ["Lobster","I paid 900k and the lobster is this small? Give me a bigger one!","","Reassurance they're getting what was promised.","Each portion is one lobster of about 250 grams. I'll weigh it in front of you. If you'd like a bigger one, I'll ask the manager for the extra price by weight.","Weigh it in front of them. If it's well under 250g, replace it. For a bigger one, the manager quotes the extra price before cooking.","Never argue. Never swap for a bigger one for free."],
+  ["Children","My child must get lobster too! The whole family chose the lobster combo.","","For their child to eat the same as everyone else.","The child portion is half price, so it doesn't include lobster. If you'd like one for your child, I can charge them as an adult lobster combo, or ask the manager to add one lobster at menu price.","Give two clear options with prices and let them choose.","Never add lobster for free. Never say “that's the rule” and walk away."],
+  ["The bill","We paid for a combo, why are there extra charges? Are you tricking us?","","Transparency. They thought the combo covered everything.","I'm sorry I didn't make it clear at the start. The combo covers the boat, fishing, snorkeling and 6 dishes. This part is the [dishes or drinks] you ordered extra. Let me go through it line by line with you.","Go through the bill line by line with them. If it's wrong, fix it immediately and thank them. When seating guests, always say what the combo includes and what's charged separately.","Never say “well, you ordered it”. Never argue in front of the whole table."]
+ ]],
+ ["Seating & bookings",[
+  ["Walk-in waiting","Why do I have to wait? There's a whole row of empty tables over there!","","A reason and a real waiting time. It feels unfair to them.","That section is booked for guests arriving at [time]. A table here will be ready in about [number] minutes. Can I bring you an iced tea while you wait?","Give the real waiting time. Tell the manager: if that section is free for at least the next 2 hours, the manager may open it.","Never seat walk-ins in a combo section yourself. Never say “just a moment” without a time."],
+  ["Foreign guest","My booking says 9:00. Why do I have to wait? I want to go now!","","Reassurance they weren't tricked or forgotten.","Sorry for the confusion. Let me check your booking right now, we will take care of you.","Check the booking. If the booking site shows a different time, serve them at that time if possible and tell the manager so the listing gets fixed.","Never say “it's not our fault”."]
+ ]],
+ ["Food",[
+  ["Slow food","We've been sitting half an hour and nothing has come! What kind of service is this?","","To feel someone is taking care of them right now.","I'm sorry. I'll check with the kitchen now and come back in 2 minutes.","Get the exact time from the kitchen and come back when promised. Past 30 minutes, tell the manager, who decides on offering fruit or drinks.","Never blame the kitchen in front of guests. Never say “almost ready” when you don't know."],
+  ["Not fresh","This crab smells fishy, it's not fresh. Is this really a seafood restaurant?","","To trust the food. It's why they came.","I'm sorry, I'll replace it for you right away.","Take the dish away immediately, no arguing. Tell the kitchen and the manager. The kitchen checks that batch.","Never say “it was caught this morning”. You always lose a freshness argument, and guests may post online."],
+  ["Allergy","I'm allergic to shellfish, so what do I eat? Why didn't anyone ask when we booked?","","To be safe and told the truth.","Thank you for telling me. The combo is a fixed seafood set, so the kitchen can't adapt it for allergies. Let me ask the manager what on our menu would suit you.","Tell the manager immediately. If unsure what's in a dish, ask the kitchen. Ask about allergies when taking the booking and again at welcome.","Never guess ingredients. Never promise to change the combo. Never say “a little should be fine”."]
+ ]],
+ ["Starfish Beach & boat",[
+  ["No starfish","Starfish Beach and not a single starfish! Was the advertising a lie?","","Their expectations didn't match reality.","The number of starfish changes with the season and the tide, and today there are fewer than usual. Let me take you to where we usually find them.","Take them to where starfish are usually found. Take great photos of them at the beach. If several groups complain the same day, tell the manager so later guests are told in advance.","Never promise there will be starfish. Never pick up or move starfish for guests' photos."],
+  ["Guest picks up starfish","Let my kid hold the starfish for a photo, just for a second, what's the harm!","","A nice photo. They don't know it hurts the starfish.","Starfish get hurt when they're lifted out of the water, they can die. Let me take a photo of your child right next to the starfish in the water, it looks even better.","Remind them gently, right away. Show how to take photos with starfish in the water. Remind the whole group as soon as you arrive at the beach.","Never scold guests in front of others. Never pick up a starfish for guests, even if they ask."],
+  ["Others harming the beach","People everywhere are picking up starfish for photos, and there's trash all over. Why don't you do anything?","","They genuinely care, and want to know they're with a responsible place.","You're right, it upsets us too. It's a public beach so we can't stop others, but our guests are always asked to keep starfish in the water. Let me take you to a quieter spot.","Take them to a quieter part of the beach. Pick up trash around where they sit. You may politely remind others harming starfish once.","Never argue with other people's guests. Never criticize other restaurants."],
+  ["Skipping the beach","I'm not going to the beach, it's too hot. Just feed us now.","","To do it their way, not be forced into a schedule.","Of course. The kitchen needs about 30 minutes. Would you like to fish around our floating restaurant meanwhile?","Message the kitchen on Zalo right away. Offer fishing or rest at the table. Tell the boat not to wait for this group.","Never say “the schedule says beach first”. Never promise a refund for the unused part."],
+  ["Staying longer","It's so beautiful here. Let us stay 2 more hours and call the boat later.","","They're happy. It just needs smooth arranging.","No problem at all! Just tell me when you want to go back and I'll call the boat right away.","Beach staff tells the manager and kitchen. If staff must leave first, give the guests a Zalo number to call the boat. The manager moves the next slot if needed.","Never rush them. Never leave guests at the beach with no way to reach you."],
+  ["Late boat","We called the boat half an hour ago and it's still not here. Are we supposed to stand in the sun?","","To know exactly when the boat will arrive.","I'm sorry, I'll call the boat now and tell you exactly when it's coming.","Call the boat and give them the real time. Move them into shade and offer water. More than 15 minutes late, tell the manager.","Never say “it's probably coming” without calling."]
+ ]],
+ ["Fishing, snorkeling & photos",[
+  ["Murky water","The water is so murky, who would snorkel in that? You advertise snorkeling!","","An honest explanation and an alternative that's just as fun.","The water is cloudier than usual today [give the reason if you know it]. You wouldn't see much snorkeling today and I don't want you to be disappointed. I have a surprise activity for you.","Give the real reason if you know it, don't guess. Bring out the shell jewellery activity. Ask the manager whether the water at the beach is clearer for snorkeling there. Offer fishing around the floating restaurant.","Never say the water is clean if you're not sure. Never push guests into the water."],
+  ["No fish","An hour of fishing and not a single bite. Are there even fish here?","","A fun experience, not just a fish.","The fish aren't biting much today. Let me show you another spot and how to drop the bait.","Change spot, change bait, show technique. Show them the fish in the farm cages. Cheer when they catch anything, even small.","Never promise they'll catch something. Never leave them sitting alone too long."],
+  ["Their catch","I caught this fish, cook it for me now. It's free, right?","","They're proud of it. It's their trophy.","What a beautiful fish! Let me ask the manager how we can cook it for you.","Take a photo of them with the fish. Ask the manager about cooking and cost, and tell the guest before cooking.","Never promise it's free. Never say no before asking."],
+  ["Photos","Where are the beach photos? You promised to send them.","","The photos are the memory they take home.","I'm sorry, I'll send them to you right now, before you leave.","Ask whether they want photos on Zalo or WhatsApp when you start taking them. Send them before guests leave the restaurant.","Never let guests leave without their photos."]
+ ]],
+ ["Safety",[
+  ["Drunk and snorkeling","Bring another case of beer! After that we're going snorkeling.","","They're having fun, but drinking and snorkeling is dangerous.","Enjoy your drinks! Snorkeling we'll save for another time for safety. How about fishing instead?","Never let anyone who has drunk a lot into the water. Offer fishing instead. If the group disturbs other tables, tell the manager.","Never give in on safety, even under pressure."],
+  ["Injured at the beach","I stepped on something sharp and I'm bleeding! Why didn't anyone warn us?","","First aid right away, and to feel looked after.","Please sit down here, I'll give you first aid right now.","Use the first-aid bag and call the manager. For a serious wound, a bad jellyfish sting or trouble breathing, bring them back and go to hospital immediately. Remind guests to wear water shoes at the beach.","Never say “you should have been more careful”. Never give guests medicine to take yourself."]
+ ]],
+ ["Angry guests",[
+  ["Review threat","Give me a discount or I'll leave a 1-star Google review and post on Facebook!","","There's usually a real problem behind it. The threat is pressure.","I'm sorry you're not happy. Can you tell me what went wrong so I can get the manager to fix it right away?","Stay calm and call the manager. The manager fixes the real problem. Any discount or gift is the manager's call, based on the problem, not the threat.","Never argue about reviews. Never beg them not to post. Never discount just to quiet them."],
+  ["Shouting at staff","What kind of service is this? Get me the manager!","","They're very upset and need someone with authority.","I'll get the manager for you right away.","Stay calm, speak softly, take a step back. Call the manager immediately. If the guest insults or threatens you, you may walk away and let the manager handle it.","Never argue back. Never handle it alone."]
+ ]]
+ ],
+ title:"Staff handbook",
+ lead:"Everything you need to run a combo day: the two combos, the full schedule, each team's job, the rules, what to do when things go wrong, and how to handle difficult guests. Five combo time slots a day. Sections A and B are for combo guests, section C is for walk-ins and normal bookings.",
+ hBoard:"A combo day", hRoles:"What each team does", hRules:"Six rules", hCombos:"The two combos", hQA:"Q&A: when things go wrong",
+ morningNote:"The three morning slots run exactly the same, one hour apart: welcome, beach, 30 minutes of activities, then lunch. The kitchen fires at 11:00, 12:00 and 13:00.",
+ slot:"Slot", arrive:"arrives",
+ welcome:"Welcome & fish farm tour", beach:"Boat to Starfish Beach", activity:"Fishing / snorkeling",
+ lunch:"Lunch (6 dishes)", dinner:"Sunset dinner", leave:"Guests leave (flexible)",
+ peak:"Walk-in lunch peak",
+ rHost:"Host", rHostD:"Greets guests, seats them, shows the fish farm, tells them the boat leaves soon.",
+ rBoat:"Boat", rBoatD:"Takes each slot to the beach and brings it back. Every trip belongs to one slot.",
+ rBeach:"Beach staff", rBeachD:"Stays at the beach the whole session and takes photos. Messages the kitchen on Zalo the moment guests board the boat back.",
+ rAct:"Activity staff", rActD:"Fishing and snorkeling. 2–3 people take turns. No overlap in the morning; in the afternoon two slots overlap.",
+ rKitchen:"Kitchen", rKitchenD:"Fires each slot's fixed 6-dish menu. Only fires when the beach staff says guests are on the way.",
+ rFloor:"Floor", rFloorD:"Sets tables 30 minutes before arrival and resets the section after guests leave. Section C serves walk-ins all day.",
+ tHost:"Welcome slot {n} ({s})", tOut:"Take slot {n} to beach", tBack:"Bring slot {n} back",
+ tBeach:"At the beach, photos", tAct:"Activities slot {n}", tFire:"Fire slot {n}",
+ tSet:"Set {s} for slot {n}", tReset:"Reset {s} after slot {n}",
+ rules:[
+  ["The schedule is for staff, not a rule for guests.","If guests want more beach time, let them. This is not a tour."],
+  ["The beach staff tells the kitchen.","When guests board the boat back, message the Zalo group right away. The kitchen fires only on that message."],
+  ["Sections A and B are for combo guests only.","Walk-ins and normal bookings sit in section C."],
+  ["Every slot has its own section.","Never seat another slot there while the previous guests are still at the table."],
+  ["No new combo arrivals at 11:30 or 12:30.","That's when beach groups return and walk-ins come for lunch."],
+  ["Guests staying longer? Tell the manager.","The manager moves the next slot to another section. Never rush guests."]
+ ],
+ perAdult:"/ adult",
+ c1Tag:"Present first", c1Name:"Standard combo", c1Desc:"Main seafood is crab and prawns.",
+ c2Tag:"Upgrade", c2Name:"Lobster combo", c2Desc:"One lobster of about 250g per adult replaces the crab and prawns, steamed or fried in garlic butter. Minimum 2 adults.",
+ kidsNote:"Children 7–12: half price (375k), no lobster, even when the parents choose the lobster combo. Children 6 and under: free.",
+ sameNote:"Everything else is the same: boat to Starfish Beach, 6 dishes, fishing and snorkeling.",
+ secNote:"Sections A1, A2, B1, B2 are a proposed split. The manager can change them as long as each section has at least an hour between groups.",
+ openAll:"Open all", closeAll:"Close all", whoLabel:"Who handles it",
+ qa:[
+  ["Guests stay longer at the beach and come back late?","Let them. The beach staff only messages the kitchen when guests actually board the boat back. The kitchen waits for that message, not for the time on the schedule. Each slot has its own section, so the next slot isn't affected.","Beach staff, kitchen"],
+  ["Guests finish eating but stay seated, and the next slot shares their section?","Tell the manager at least 30 minutes before the next slot arrives. The manager moves the next slot to a free section (A2 and B1 are usually free in the afternoon). Never rush seated guests.","Floor, manager"],
+  ["Rain or rough sea, the boat can't go to the beach?","The manager decides before boat time. Swap the order: lunch and fishing around the floating restaurant first, beach later if the weather clears. Tell guests clearly when they arrive, never leave them waiting without a reason.","Manager, host"],
+  ["Water too murky or waves too big to snorkel?","Only then, bring out shell jewellery making as a surprise. Don't mention it in advance when snorkeling is still possible.","Activity staff"],
+  ["A guest gets seasick, hurt, or struggles while snorkeling?","Snorkelers always wear life jackets. Activity staff always watch guests in the water and never let anyone snorkel alone. If something happens, get the guest onto the boat and call the manager right away. First-aid kits must be on the boat and on the farm.","Activity staff, boat"],
+  ["We run out of lobster for the day?","Every morning the kitchen counts and reports how many lobster portions can be sold. Host and booking staff never promise lobster without that confirmation. If short, the manager tells the guests in advance and handles it per the owners' policy.","Kitchen, host, manager"],
+  ["A combo booking doesn't show up?","Hold the section 30 minutes after the booked time and call the guest. Then tell the manager so the section can open for walk-ins.","Host, manager"],
+  ["A time slot has no bookings?","The manager checks bookings every morning. An empty slot's section opens to walk-ins so no tables sit empty during the peak.","Manager"],
+  ["Walk-ins arrive at 11:00–13:00 and section C is full?","Give them an honest waiting time and offer drinks while they wait. Only use a combo section if the manager confirms it's free for at least the next 2 hours.","Host, manager"],
+  ["Guests ask which combo to choose?","Always present the 750k combo first. The lobster combo is the upgrade for guests who want something extra special. Remind them children don't get lobster.","Host, floor"]
+ ]
+}};
+const U={
+vi:{sub:"Ứng dụng nhân viên",tFloor:"Sơ đồ bàn",tBook:"Đặt chỗ",tHb:"Sổ tay",tSet:"Cài đặt",
+ connecting:"Đang kết nối…",preview:"Chế độ xem thử: chưa kết nối Firebase (firebase-config.js), dữ liệu không được lưu.",readOnly:"Bạn chỉ có quyền xem, không sửa được dữ liệu.",offline:"Mất mạng. Thay đổi sẽ tự lưu khi có mạng lại.",
+ freeNow:"Đang trống",tablesU:"bàn",seatsU:"chỗ",free:"Trống",soon:"Sắp có khách",busy:"Có khách",bookedAt:"Đặt {t}",
+ secA:"Khu A",secB:"Khu B",secC:"Khu C",comboSec:"combo",walkinSec:"khách lẻ & đặt bàn thường",
+ nextSlot:"Tiếp theo {t}: {g} nhóm, {p} khách",noNext:"Không còn khách đặt nào sắp đến hôm nay.",
+ seatWalkin:"Xếp khách lẻ vào bàn này",assign:"Gán đặt chỗ vào bàn này",arrived:"Khách đã đến",left:"Khách về, trả bàn",noshow:"Không đến",edit:"Sửa",cancelB:"Huỷ đặt chỗ",close:"Đóng",save:"Lưu",del:"Xoá",back:"Quay lại",
+ upcoming:"Đặt chỗ ở bàn này hôm nay",noneToAssign:"Không có đặt chỗ nào đang chờ ngày này.",since:"từ {t}",
+ name:"Tên khách (hoặc tên Zalo, Facebook)",timeRange:"Giờ đặt phải từ 07:00 đến 17:00.",phone:"Số điện thoại",date:"Ngày",time:"Giờ",type:"Loại",source:"Nguồn khách",
+ combo:"Combo 750k",lobster:"Combo tôm hùm",normal:"Đặt bàn thường",walkin:"Khách lẻ",
+ adults:"Người lớn",kids:"Trẻ 7–12",small:"Trẻ ≤6",note:"Ghi chú (dị ứng, sinh nhật…)",tables:"Bàn",
+ suggest:"Gợi ý khu {s} cho khung {t}",estimate:"Tạm tính",lobsterMin:"Combo tôm hùm cần tối thiểu 2 người lớn.",needName:"Nhập tên khách.",
+ newB:"Đặt chỗ mới",editB:"Sửa đặt chỗ",walkinT:"Khách lẻ vào bàn {n}",noTables:"Chưa gán bàn",conflict:"Bàn mờ đã có khách hoặc đặt chỗ trùng giờ nên không chọn được.",clash:"Bàn {t} đã có đặt chỗ trùng giờ: {h} {n}.",clashWalk:"Bàn {t} có đặt chỗ lúc {h} ({n}). Vẫn xếp khách lẻ vào?",fltAll:"Bấm lại để hiện tất cả",fltNone:"Không có bàn nào ở trạng thái này.",allTypes:"Tất cả loại khách",
+ s_booked:"Đã đặt",s_seated:"Đang ngồi",s_left:"Đã về",s_noshow:"Không đến",s_cancelled:"Đã huỷ",
+ today:"Hôm nay",emptyDay:"Chưa có đặt chỗ ngày này.",sumDay:"{g} nhóm, {p} khách, {c} combo",showDone:"Hiện cả khách đã về, không đến, đã huỷ",by:"cập nhật: {n}",
+ setupT:"Thiết lập sơ đồ bàn",setupP:"Nhập số bàn trong mỗi nửa khu. Sau đó có thể đổi tên và số chỗ từng bàn.",perTable:"Số chỗ mỗi bàn",createLayout:"Tạo sơ đồ",
+ setupNeeded:"Chưa có sơ đồ bàn. Vào Cài đặt để tạo.",goSet:"Mở Cài đặt",
+ me:"Tên của bạn",meHint:"Hiện trên đặt chỗ bạn tạo hoặc sửa. Chỉ lưu trên máy này.",layout:"Sơ đồ bàn",tName:"Tên bàn",half:"Khu",joinT:"Ghép / tách bàn",joinHint:"Chọn tất cả các bàn nhóm này dùng. Bỏ chọn một bàn để tách bàn đó ra.",joinedT:"Đã cập nhật bàn: {t}",addTables:"Ghép thêm bàn",seatsTotal:"Tổng {s} chỗ",seats:"Số chỗ",addT:"Thêm bàn",saveLayout:"Lưu sơ đồ",redo:"Tạo lại sơ đồ từ đầu",redoWarn:"Tạo lại sẽ thay toàn bộ sơ đồ hiện tại. Tiếp tục?",
+ clean:"Dọn dữ liệu",cleanP:"Xoá đặt chỗ cũ hơn 1 năm để app chạy nhanh. Muốn giữ lại thì tải CSV ở tab Lịch sử trước.",cleanB:"Xoá đặt chỗ cũ",cleaned:"Đã xoá {n} đặt chỗ cũ.",
+ saved:"Đã lưu.",freed:"Đã trả bàn {t}.",undo:"Hoàn tác",seatedT:"Đã xếp {n} vào bàn.",errSave:"Không lưu được. Thử lại.",
+ search:"Tìm: tôm hùm, sao biển, dị ứng, mưa…",hQA:"Khi có sự cố",hHard:"Khách khó tính",hRules:"Nguyên tắc",hCombo:"Hai loại combo",hSched:"Lịch khung giờ",hRoles:"Việc từng bộ phận",noHits:"Không tìm thấy. Thử từ khác.",
+ slotLine:"Khu {s}",tHist:"Lịch sử",login:"Đăng nhập",email:"Email",password:"Mật khẩu",loginErr:"Sai email hoặc mật khẩu.",loginHint:"Dùng tài khoản do quản lý tạo.",signOut:"Đăng xuất",signedAs:"Đang đăng nhập: {e}",account:"Tài khoản",noPerm:"Không có quyền lưu. Hãy đăng nhập lại.",beach:"Khách đi biển",beachSec:"Đang ở bãi biển",beachAdd:"+ Khách đi biển",beachNone:"Chưa có khách đi biển.",leftBeach:"Khách về",beachT:"Khách đi biển",toTable:"Cho ngồi bàn",convTableT:"Cho {n} ngồi bàn",convTableHint:"Chọn loại khách và bàn cho nhóm.",bracelet:"Số vòng tay",braceletHint:"Ví dụ 12 hoặc 12–15",deposit:"Đã đặt cọc",depAmt:"Tiền cọc (nghìn đồng)",depShort:"Cọc {a}",remain:"còn {a}",noticeH:"Thông báo cho nhân viên",noticeP:"Hiện ở đầu ứng dụng cho mọi nhân viên, ví dụ món cần bán hôm nay.",info:"Thông tin",warn:"Cảnh báo",noticeSave:"Đăng thông báo",noticeClear:"Gỡ thông báo",noticePosted:"Đã đăng thông báo.",noticeRemoved:"Đã gỡ thông báo.",delBk:"Xoá đặt chỗ này",delBkWarn:"Xoá hẳn đặt chỗ của {n}? Chỉ dùng khi tạo nhầm. Nếu khách đã về, hãy bấm “Khách về” để giữ lịch sử.",deleted:"Đã xoá đặt chỗ.",moveT:"Chuyển bàn",moveHint:"Mẹo: giữ và kéo một bàn lên bàn khác để ghép bàn. Kéo bàn có khách sang bàn trống để chuyển hoặc ghép thêm.",dropAsk:"Kéo {n} lên {t}:",dropMove:"Chuyển nhóm sang {t}",dropJoin:"Ghép {t} vào nhóm",joinedFree:"Đã ghép {t}.",splitT:"Tách bàn",splitDone:"Đã tách {t}.",diffSec:"Chỉ ghép được bàn trong cùng một khu.",lossL:"Số chỗ mất mỗi chỗ nối khi ghép bàn",lossHint:"Mặc định 2: hai bàn 4 chỗ ghép lại còn 6 chỗ, bốn bàn 4 chỗ còn 10 chỗ.",movePick:"Chọn bàn mới cho {n} (đang ở {t})",cancel:"Huỷ",moved:"Đã chuyển {n} sang {t}.",targetBusy:"Bàn {t} đang có khách.",targetSoon:"Bàn {t} có đặt chỗ lúc {h}. Vẫn chuyển?",overCap:"{p} khách nhưng {t} chỉ có {s} chỗ. Vẫn tiếp tục? (ví dụ đã kê thêm ghế)",proceed:"Vẫn tiếp tục",convert:"Chuyển thành combo",convT:"Chuyển {n} thành combo",convHint:"Bấm bàn mới ở khu A hoặc B để chuyển khách sang đó (bàn cũ sẽ được trả). Bấm thêm bàn nếu nhóm cần nhiều bàn.",converted:"Đã chuyển thành {c}.",walkNote:"Ghi chú",needTable:"Chọn ít nhất 1 bàn.",howMany:"Số khách",seatNow:"Xếp bàn",notBooked:"chưa có đặt",guestsU:"khách",groupsU:"nhóm",bookedTables:"{n} bàn đã có đặt chỗ",layouts:"Sơ đồ bàn",active:"Đang dùng",useThis:"Dùng sơ đồ này",dupL:"Nhân bản",delLWarn:"Xoá sơ đồ “{n}”? Không hoàn tác được.",newL:"Sơ đồ mới",lName:"Tên sơ đồ",defaultLName:"Sơ đồ chính",copyOf:"{n} (bản sao)",switched:"Đang dùng: {n}",editing:"Đang sửa: {n}",histSearch:"Tìm tên, SĐT, số vòng tay, ghi chú",r7:"7 ngày",r30:"30 ngày",rAll:"Tất cả",histSum:"{g} nhóm, {p} khách, {c}% combo",histEmpty:"Chưa có khách nào trong khoảng này.",csv:"Tải CSV",pickDateHint:"Đặt chỗ ở ngày khác? Đổi ngày ở trên sơ đồ.",seatedLeft:"{a} đến {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Khách lẻ",other:"Khác"}},
+en:{sub:"Staff app",tFloor:"Tables",tBook:"Bookings",tHb:"Handbook",tSet:"Settings",
+ connecting:"Connecting…",preview:"Preview mode: Firebase isn't set up yet (firebase-config.js), so nothing is saved.",readOnly:"You can view but not change data.",offline:"Offline. Changes will save automatically when the connection is back.",
+ freeNow:"Free now",tablesU:"tables",seatsU:"seats",free:"Free",soon:"Reserved soon",busy:"Seated",bookedAt:"Booked {t}",
+ secA:"Section A",secB:"Section B",secC:"Section C",comboSec:"combos",walkinSec:"walk-ins & table bookings",
+ nextSlot:"Next at {t}: {g} groups, {p} guests",noNext:"No more booked guests arriving today.",
+ seatWalkin:"Seat walk-ins at this table",assign:"Assign a booking to this table",arrived:"Guests arrived",left:"Guests left, free table",noshow:"No-show",edit:"Edit",cancelB:"Cancel booking",close:"Close",save:"Save",del:"Delete",back:"Back",
+ upcoming:"Bookings at this table today",noneToAssign:"No waiting bookings on this day.",since:"since {t}",
+ name:"Guest name (or screen name)",timeRange:"Booking time must be between 07:00 and 17:00.",phone:"Phone",date:"Date",time:"Time",type:"Type",source:"Guest source",
+ combo:"Combo 750k",lobster:"Lobster combo",normal:"Table booking",walkin:"Walk-in",
+ adults:"Adults",kids:"Kids 7–12",small:"Kids ≤6",note:"Notes (allergies, birthday…)",tables:"Tables",
+ suggest:"Suggested section {s} for the {t} slot",estimate:"Estimate",lobsterMin:"The lobster combo needs at least 2 adults.",needName:"Enter a guest name.",
+ newB:"New booking",editB:"Edit booking",walkinT:"Walk-ins at table {n}",noTables:"No table yet",conflict:"Faded tables are seated or have an overlapping booking, so they can't be picked.",clash:"Table {t} already has an overlapping booking: {h} {n}.",clashWalk:"Table {t} has a booking at {h} ({n}). Seat walk-ins here anyway?",fltAll:"Tap again to show all",fltNone:"No tables with this status.",allTypes:"All guest types",
+ s_booked:"Booked",s_seated:"Seated",s_left:"Left",s_noshow:"No-show",s_cancelled:"Cancelled",
+ today:"Today",emptyDay:"No bookings for this day.",sumDay:"{g} groups, {p} guests, {c} combos",showDone:"Show left, no-show and cancelled",by:"updated by {n}",
+ setupT:"Set up your tables",setupP:"Enter how many tables each half-section has. You can rename tables and change seats afterwards.",perTable:"Seats per table",createLayout:"Create layout",
+ setupNeeded:"No table layout yet. Create one in Settings.",goSet:"Open Settings",
+ me:"Your name",meHint:"Shown on bookings you create or change. Saved on this device only.",layout:"Table layout",tName:"Table",half:"Section",joinT:"Join / split tables",joinHint:"Select every table this group uses. Untick a table to split it off.",joinedT:"Tables updated: {t}",addTables:"Join more tables",seatsTotal:"{s} seats in total",seats:"Seats",addT:"Add table",saveLayout:"Save layout",redo:"Rebuild layout from scratch",redoWarn:"This replaces the whole current layout. Continue?",
+ clean:"Clean up",cleanP:"Delete bookings older than 1 year to keep the app fast. Download the CSV in History first if you want to keep them.",cleanB:"Delete old bookings",cleaned:"Deleted {n} old bookings.",
+ saved:"Saved.",freed:"Freed table {t}.",undo:"Undo",seatedT:"Seated {n}.",errSave:"Couldn't save. Try again.",
+ search:"Search: lobster, starfish, allergy, rain…",hQA:"When things go wrong",hHard:"Difficult guests",hRules:"Rules",hCombo:"The two combos",hSched:"Slot schedule",hRoles:"What each team does",noHits:"Nothing found. Try another word.",
+ slotLine:"Section {s}",tHist:"History",login:"Sign in",email:"Email",password:"Password",loginErr:"Wrong email or password.",loginHint:"Use the account your manager created.",signOut:"Sign out",signedAs:"Signed in as {e}",account:"Account",noPerm:"Not allowed to save. Please sign in again.",beach:"Beach",beachSec:"At the beach",beachAdd:"+ Beach guests",beachNone:"No beach guests right now.",leftBeach:"Left",beachT:"Beach guests",toTable:"Give a table",convTableT:"Give {n} a table",convTableHint:"Pick the guest type and the table(s).",bracelet:"Bracelet no.",braceletHint:"E.g. 12 or 12–15",deposit:"Deposit paid",depAmt:"Deposit (k VND)",depShort:"Deposit {a}",remain:"{a} left to pay",noticeH:"Staff notice",noticeP:"Shown at the top of the app for all staff, e.g. something to sell today.",info:"Info",warn:"Warning",noticeSave:"Post notice",noticeClear:"Remove notice",noticePosted:"Notice posted.",noticeRemoved:"Notice removed.",delBk:"Delete this booking",delBkWarn:"Permanently delete {n}'s booking? Only for bookings made by mistake. If the guests have left, use “Guests left” instead to keep the history.",deleted:"Booking deleted.",moveT:"Move table",moveHint:"Tip: press and hold a table and drag it onto another table to join them. Drag a seated table onto a free one to move or extend the group.",dropAsk:"Drop {n} onto {t}:",dropMove:"Move the group to {t}",dropJoin:"Join {t} to the group",joinedFree:"Joined {t}.",splitT:"Split tables",splitDone:"Split {t}.",diffSec:"You can only join tables in the same section.",lossL:"Seats lost at each join",lossHint:"Default 2: two 4-seat tables joined seat 6, four 4-seat tables seat 10.",movePick:"Pick the new table for {n} (now at {t})",cancel:"Cancel",moved:"Moved {n} to {t}.",targetBusy:"Table {t} already has guests.",targetSoon:"Table {t} has a booking at {h}. Move anyway?",overCap:"{p} guests but {t} only seats {s}. Continue anyway? (e.g. an extra chair was added)",proceed:"Continue",convert:"Convert to combo",convT:"Convert {n} to a combo",convHint:"Tap a new table in section A or B to move the group there (the old table is freed). Tap more tables if the group needs several.",converted:"Converted to {c}.",walkNote:"Notes",needTable:"Pick at least one table.",howMany:"Guests",seatNow:"Seat now",notBooked:"not booked",guestsU:"guests",groupsU:"groups",bookedTables:"{n} tables booked",layouts:"Table layouts",active:"In use",useThis:"Use this layout",dupL:"Duplicate",delLWarn:"Delete layout “{n}”? This can't be undone.",newL:"New layout",lName:"Layout name",defaultLName:"Main layout",copyOf:"{n} (copy)",switched:"Now using: {n}",editing:"Editing: {n}",histSearch:"Search name, phone, bracelet, notes",r7:"7 days",r30:"30 days",rAll:"All",histSum:"{g} groups, {p} guests, {c}% combos",histEmpty:"No guests in this period.",csv:"Download CSV",pickDateHint:"Booking on another day? Change the date above the tables.",seatedLeft:"{a} to {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Walk-in",other:"Other"}}
+};
+const SLOTS=[["08:30","A"],["09:30","A"],["10:30","B"],["13:30","B"],["14:30","A"]];
+const SLOTPLAN=[[["welcome","08:30"],["beach","09:00"],["activity","10:30"],["lunch","11:00"]],[["welcome","09:30"],["beach","10:00"],["activity","11:30"],["lunch","12:00"]],[["welcome","10:30"],["beach","11:00"],["activity","12:30"],["lunch","13:00"]],[["welcome","13:30"],["lunch","13:45"],["beach","14:30"],["activity","16:00"]],[["welcome","14:30"],["beach","15:00"],["activity","16:30"],["dinner","17:30"]]];
+const HALVES=["A","B","C"];
+const DUR={combo:240,lobster:240,normal:120,walkin:120};
+
+/* ---------- utils ---------- */
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let lang=ls.get("lang")||"vi";
+const t=(k,v)=>{let s=U[lang][k]??k;if(v)for(const x in v)s=s.split("{"+x+"}").join(v[x]);return s};
+const h=(k,v)=>{let s=HB[lang][k]??k;if(v)for(const x in v)s=s.split("{"+x+"}").join(v[x]);return s};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const dstr=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const todayStr=()=>dstr(new Date());
+const nowHM=()=>{const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes())};
+const toMin=hm=>{const [a,b]=(hm||"00:00").split(":").map(Number);return a*60+b};
+const fold=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d");
+const pax=b=>(+b.adults||0)+(+b.kids||0)+(+b.small||0);
+const isActive=b=>b.status==="booked"||b.status==="seated";
+
+/* ---------- stores ---------- */
+function memStore(){
+ let config=null;const bookings={};const docs={},dl=new Set();const cl=new Set(),bl=new Set(),hl=new Set();const joins={},jl=new Set();
+ const hist=()=>Object.values(bookings).filter(b=>b.status==="left").sort((a,b)=>a.date<b.date?1:-1).map(b=>({...b}));
+ const emitC=()=>cl.forEach(f=>f(config));
+ const emitB=()=>{bl.forEach(o=>o.cb(Object.values(bookings).filter(b=>b.date===o.date).map(b=>({...b}))));hl.forEach(f=>f(hist()))};
+ return{
+  watchConfig(cb){cl.add(cb);setTimeout(()=>cb(config));return()=>cl.delete(cb)},
+  async saveConfig(c){config=JSON.parse(JSON.stringify(c));emitC()},
+  watchBookings(date,cb){const o={date,cb};bl.add(o);setTimeout(()=>cb(Object.values(bookings).filter(b=>b.date===date).map(b=>({...b}))));return()=>bl.delete(o)},
+  watchDoc(path,cb){const o={path,cb};dl.add(o);setTimeout(()=>cb(docs[path]||null));return()=>dl.delete(o)},
+  async setDoc(path,d){docs[path]={...d};dl.forEach(o=>{if(o.path===path)o.cb({...docs[path]})})},
+  watchJoins(lid,cb){const o={lid,cb};jl.add(o);setTimeout(()=>cb((joins[lid]||[]).map(g=>[...g])));return()=>jl.delete(o)},
+  async saveJoins(lid,g){joins[lid]=g.map(x=>[...x]);jl.forEach(o=>{if(o.lid===lid)o.cb(joins[lid].map(x=>[...x]))})},
+  watchHistory(from,cb){const f=()=>cb(hist().filter(b=>!from||b.date>=from));hl.add(f);setTimeout(f);return()=>hl.delete(f)},
+  async putBooking(id,b){const {id:_,...r}=b;bookings[id]={...r,id};emitB()},
+  async patchBooking(id,p){bookings[id]={...bookings[id],...p};emitB()},
+  async deleteBooking(id){delete bookings[id];emitB()},
+  async cleanup(before){let n=0;for(const k in bookings)if(bookings[k].date<before){delete bookings[k];n++}emitB();return n},
+  newId(){return "b"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+ };
+}
+function dbStore(db){
+ const onErr=e=>{if(e&&e.code==="permission-denied")toast(t("noPerm"));else if(e&&e.code==="unavailable")state.mode="offline";renderBanner()};
+ return{
+  watchConfig(cb){return db.doc("config/main").onSnapshot(s=>cb(s.exists?s.data():null),onErr)},
+  saveConfig(c){return db.doc("config/main").set(c)},
+  watchBookings(date,cb){return db.collection("bookings").where("date","==",date).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
+  watchDoc(path,cb){return db.doc(path).onSnapshot(s=>cb(s.exists?{...s.data()}:null),onErr)},
+  setDoc(path,d){return db.doc(path).set(d)},
+  watchJoins(lid,cb){return db.doc("joins/"+lid).onSnapshot(s=>{const d=s.exists?s.data():null;cb(d&&Array.isArray(d.groups)?d.groups.map(x=>String(x).split(",").filter(Boolean)):[])},onErr)},
+  saveJoins(lid,g){return db.doc("joins/"+lid).set({groups:g.map(x=>x.join(",")),updatedAt:Date.now()})},
+  watchHistory(from,cb){let q=db.collection("bookings");if(from)q=q.where("date",">=",from);return q.orderBy("date","desc").limit(2000).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id})).filter(b=>b.status==="left")),onErr)},
+  putBooking(id,b){const {id:_,...r}=b;return db.doc("bookings/"+id).set(r)},
+  patchBooking(id,p){return db.doc("bookings/"+id).update(p)},
+  deleteBooking(id){return db.doc("bookings/"+id).delete()},
+  async cleanup(before){const s=await db.collection("bookings").where("date","<",before).limit(300).get();for(const d of s.docs){await db.doc("bookings/"+d.id).delete()}return s.size},
+  newId(){return db.collection("bookings").doc().id}
+ };
+}
+
+/* ---------- state ---------- */
+const state={mode:"connecting",canWrite:true,config:undefined,today:[],day:[],date:todayStr(),tab:ls.get("tab")||"floor",staff:ls.get("staff")||"",showDone:false,q:"",draft:null,editId:null,creating:false,walkPax:2,hist:[],histQ:"",histRange:"30"};
+let unsubJoins=null,joinsLid=null,unsubHist=null,downloads=null,hbLang=null,drag=null,justDragged=false;
+let store=null,unsubToday=null,unsubDay=null,todayKey=todayStr();
+
+async function write(fn){
+ if(!store)return false;
+ try{await fn();return true}
+ catch(e){toast(e&&e.code==="permission-denied"?t("noPerm"):t("errSave"));return false}
+}
+function subscribe(){
+ store.watchConfig(c=>{state.config=norm(c);const lid=(activeLayout()||{}).id||null;if(lid!==joinsLid){if(unsubJoins)unsubJoins();unsubJoins=null;joinsLid=lid;state.joins=[];if(lid)unsubJoins=store.watchJoins(lid,g=>{state.joins=g;render()})}render()});
+ store.watchDoc("notice/main",d=>{state.notice=d;renderNotice();if(state.tab==="set")render()});
+ resubToday();resubDay();
+}
+function resubToday(){if(unsubToday)unsubToday();todayKey=todayStr();unsubToday=store.watchBookings(todayKey,list=>{state.today=list;if(state.date===todayKey)state.day=list;render()})}
+function histFrom(){if(state.histRange==="all")return null;const d=new Date();d.setDate(d.getDate()-(+state.histRange));return dstr(d)}
+function resubHist(force){if(!store)return;if(state.tab==="hist"){if(force&&unsubHist){unsubHist();unsubHist=null}if(!unsubHist)unsubHist=store.watchHistory(histFrom(),list=>{state.hist=list;if(state.tab==="hist")renderHist()})}else if(unsubHist){unsubHist();unsubHist=null}}
+function resubDay(){if(unsubDay){unsubDay();unsubDay=null}if(state.date===todayKey){state.day=state.today;return}unsubDay=store.watchBookings(state.date,list=>{state.day=list;render()})}
+
+/* ---------- table logic ---------- */
+function normL(L){return{...L,tables:(L.tables||[]).map(x=>({...x,half:String(x.half||"C").charAt(0).toUpperCase()}))}}
+function norm(c){if(!c)return null;let o=null;if(Array.isArray(c.layouts))o={...c};else if(Array.isArray(c.tables))o={layouts:[{id:"main",name:t("defaultLName"),tables:c.tables}],activeId:"main"};if(!o)return null;o.layouts=o.layouts.map(normL);return o}
+function joinName(names){if(names.length<2)return String(names[0]||"");const m=names.map(n=>String(n).match(/^([A-Za-z]+)-?(\d+)$/));if(m.every(x=>x&&x[1]===m[0][1])){const L=m[0][1];const nums=m.map(x=>+x[2]).sort((a,b)=>a-b);const cons=nums.every((v,i)=>!i||v===nums[i-1]+1);return cons?`${L}${nums[0]}-${nums[nums.length-1]}`:L+nums.join("+")}return names.join("+")}
+function tablesLabel(ids){ids=ids||[];if(!ids.length)return "";const by={};ids.forEach(id=>{const x=tById(id);const k=x?x.half:"?";(by[k]=by[k]||[]).push(x?x.name:"?")});return Object.keys(by).sort().map(k=>joinName(by[k])).join(", ")}
+const layouts=()=>(state.config&&state.config.layouts)||[];
+const activeLayout=()=>layouts().find(l=>l.id===state.config.activeId)||layouts()[0]||null;
+const tables=()=>(activeLayout()||{}).tables||[];
+const tById=id=>tables().find(x=>x.id===id)||layouts().flatMap(l=>l.tables).find(x=>x.id===id);
+const isToday=()=>state.date===todayKey;
+const dayList=()=>isToday()?state.today:state.day;
+const tName=id=>(tById(id)||{}).name||"?";
+const loss=()=>{const v=state.config&&state.config.joinLoss;return v==null?2:Math.max(0,+v||0)};
+function effSeats(ids){const by={};(ids||[]).forEach(id=>{const x=tById(id);if(x)(by[x.half]=by[x.half]||[]).push(+x.seats||0)});return Object.values(by).reduce((a,arr)=>a+Math.max(0,arr.reduce((p,c)=>p+c,0)-loss()*(arr.length-1)),0)}
+function cleanGroups(gs){const valid=new Set(tables().map(x=>x.id));const out=[];gs.forEach(g=>{const u=[...new Set(g)].filter(x=>valid.has(x));if(u.length>1)out.push(u)});return out}
+function physGroup(id){const g=cleanGroups(state.joins||[]).find(g=>g.includes(id));return g?g:[id]}
+function mergeG(gs,ids){const set=new Set(ids);let merged=[...set];const rest=[];for(const g of gs){if(g.some(x=>set.has(x)))merged=merged.concat(g);else rest.push(g)}return [...rest,[...new Set(merged)]]}
+function bySection(ids){const by={};ids.forEach(id=>{const x=tById(id);if(x)(by[x.half]=by[x.half]||[]).push(id)});return Object.values(by)}
+async function setJoins(fn){const lid=(activeLayout()||{}).id;const prev=cleanGroups(state.joins||[]);if(!lid)return prev;const next=cleanGroups(fn(prev.map(g=>[...g])));if(JSON.stringify(next)!==JSON.stringify(prev))await write(()=>store.saveJoins(lid,next));return prev}
+const joinIds=ids=>setJoins(gs=>bySection(ids).filter(a=>a.length>1).reduce((acc,a)=>mergeG(acc,a),gs));
+const restoreJoins=prev=>setJoins(()=>prev);
+function sameSec(a,b){const x=tById(a[0]),y=tById(b[0]);return x&&y&&x.half===y.half}
+function choose(msg,opts){return new Promise(res=>{const r=document.getElementById("askRoot");r.innerHTML=`<div class="scrim ask"><div class="sheet" role="alertdialog" aria-modal="true"><p style="font-weight:600;margin:0">${esc(msg)}</p><div class="acts" style="flex-direction:column">${opts.map(([k,l],i)=>`<button class="btn ${i?"teal":"pri"}" type="button" data-ck="${k}">${esc(l)}</button>`).join("")}<button class="btn ghost" type="button" data-ck="">${t("cancel")}</button></div></div></div>`;
+ const done=v=>{r.innerHTML="";res(v)};const sc=r.querySelector(".scrim");sc.addEventListener("click",e=>{e.stopPropagation();const b=e.target.closest("[data-ck]");if(b)done(b.dataset.ck||null);else if(e.target===sc)done(null)})})}
+function tableStatus(tb){
+ const now=toMin(nowHM());
+ const mine=dayList().filter(b=>isActive(b)&&(b.tables||[]).includes(tb.id));
+ if(!isToday()){const up=mine.sort((a,c)=>toMin(a.time)-toMin(c.time));return up.length?{kind:"soon",b:up[0],up}:{kind:"free",b:null,up}}
+ const seated=mine.find(b=>b.status==="seated");
+ if(seated)return{kind:"busy",b:seated};
+ const up=mine.filter(b=>b.status==="booked").sort((a,c)=>toMin(a.time)-toMin(c.time));
+ if(up.length&&toMin(up[0].time)-now<=60)return{kind:"soon",b:up[0],up};
+ return{kind:"free",b:up[0]||null,up};
+}
+function conflictSet(date,time,type,exceptId){
+ const s=toMin(time),e=s+(DUR[type]||120);const list=date===todayKey?state.today:state.day;const set=new Map();
+ const now=toMin(nowHM());
+ for(const b of list){if(b.id===exceptId||!isActive(b))continue;
+  const bs=toMin(b.time);let be=bs+(DUR[b.type]||120);if(b.status==="seated"&&date===todayKey)be=Math.max(be,now+30);
+  if(s<be&&bs<e)(b.tables||[]).forEach(x=>{if(!set.has(x))set.set(x,b)});}
+ return set;
+}
+function estNum(b){if(b.type!=="combo"&&b.type!=="lobster")return 0;return (+b.adults||0)*(b.type==="lobster"?900:750)+(+b.kids||0)*375}
+const fmtK=n=>(+n||0).toLocaleString("vi-VN")+"k";
+function depLine(b){if(!b.deposit)return "";return t("depShort",{a:fmtK(+b.depAmt||0)})}
+function estimate(b){
+ if(b.type!=="combo"&&b.type!=="lobster")return "";
+ const a=(+b.adults||0)*(b.type==="lobster"?900:750)+(+b.kids||0)*375;
+ return a.toLocaleString("vi-VN")+"k";
+}
+
+/* ---------- rendering ---------- */
+const LINK='<svg class="lk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
+const PERSON='<svg class="pi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-7.5 8-7.5s8 3.1 8 7.5z"/></svg>';
+const ICON={
+ floor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="7" height="7" rx="2"/><rect x="14" y="4" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>',
+ book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+ hb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 8h6M9 12h6"/></svg>',
+ hist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg>',
+ set:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>'};
+function renderTabs(){
+ const tabs=[["floor","tFloor"],["book","tBook"],["hist","tHist"],["hb","tHb"],["set","tSet"]];
+ document.getElementById("tabs").innerHTML=tabs.map(([id,k])=>`<button type="button" data-tab="${id}" ${state.tab===id?'aria-current="page"':""}>${ICON[id]}<span>${t(k)}</span></button>`).join("");
+}
+function renderNotice(){const el=document.getElementById("noticeBox");if(!el)return;const n=state.notice;
+ el.innerHTML=n&&n.text?`<div class="notice ${n.kind==="warn"?"warn":"info"}" role="${n.kind==="warn"?"alert":"status"}"><b>${n.kind==="warn"?"⚠ "+t("warn"):"ℹ "+t("info")}:</b> ${esc(n.text).replace(/\n/g,"<br>")}${n.by?`<small> — ${esc(n.by)}</small>`:""}</div>`:""}
+function loginHTML(){return `<form class="card" id="loginForm" style="max-width:420px;margin:30px auto" autocomplete="on"><h2>${t("login")}</h2><p class="hint">${t("loginHint")}</p><div class="field"><label for="lg_email">${t("email")}</label><input id="lg_email" type="email" autocomplete="username" required></div><div class="field"><label for="lg_pw">${t("password")}</label><input id="lg_pw" type="password" autocomplete="current-password" required></div><p class="err" id="lg_err"></p><div style="margin-top:14px"><button class="btn pri" type="submit" style="width:100%">${t("login")}</button></div></form>`}
+function renderBanner(){
+ const m={connecting:t("connecting"),preview:t("preview"),offline:t("offline")}[state.mode]||"";
+ document.getElementById("banner").textContent=m||(!state.canWrite?t("readOnly"):"");
+ document.getElementById("who").textContent=state.staff?`${t("sub")}: ${state.staff}`:t("sub");
+ document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
+}
+function render(){
+ if(todayStr()!==todayKey&&store){resubToday();if(state.date<todayStr())state.date=todayStr();resubDay()}
+ document.documentElement.lang=lang;renderBanner();renderNotice();renderTabs();
+ const navEl=document.querySelector("nav.tabs");navEl.hidden=state.mode==="login";
+ if(state.mode==="login"){document.getElementById("fab").hidden=true;const m=document.getElementById("main");if(!m.querySelector("#loginForm"))m.innerHTML=loginHTML();return}
+ const fab=document.getElementById("fab");
+ fab.hidden=!(state.tab==="book"&&state.canWrite&&state.config&&state.mode!=="connecting");fab.textContent="+ "+t("newB");
+ const main=document.getElementById("main");
+ if(state.tab==="hb"){if(!main.querySelector("#hbSearch")){main.innerHTML=hbShell();hbLang=null}if(hbLang!==lang){hbLang=lang;renderHB()}return}
+ if(state.tab==="set"){if(!main.querySelector("#setRoot"))main.innerHTML='<div id="setRoot"></div>';const a=document.activeElement;if(!(a&&a.closest&&a.closest("#setRoot")&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)))renderSettings();return}
+ if(state.tab==="hist"){if(!main.querySelector("#histSearch"))main.innerHTML=histShell();renderHist();return}
+ if(state.config===undefined){main.innerHTML=`<p class="empty">${t("connecting")}</p>`;return}
+ if(!state.config||!tables().length){main.innerHTML=`<div class="card"><p>${t("setupNeeded")}</p><div class="acts" style="margin-top:10px"><button class="btn pri" data-tab="set">${t("goSet")}</button></div></div>`;return}
+ main.innerHTML=state.tab==="floor"?floorHTML():bookingsHTML();
+}
+function buildCells(st){
+ const parent={};const f=x=>parent[x]===x?x:(parent[x]=f(parent[x]));st.forEach(x=>{parent[x.tb.id]=x.tb.id});
+ const uni=(a,b)=>{if(!(a in parent)||!(b in parent))return;const ra=f(a),rb=f(b);if(ra!==rb)parent[ra]=rb};
+ if(isToday())cleanGroups(state.joins||[]).forEach(g=>g.forEach(x=>uni(g[0],x)));
+ st.forEach(x=>{const s=x.s;if((s.kind==="busy"||s.kind==="soon")&&s.b&&(s.b.tables||[]).length>1)s.b.tables.forEach(y=>uni(s.b.tables[0],y))});
+ const cells=[];const seen=new Set();
+ for(const it of st){if(seen.has(it.tb.id))continue;const r=f(it.tb.id);const mem=st.filter(o=>o.tb.half===it.tb.half&&f(o.tb.id)===r);mem.forEach(o=>seen.add(o.tb.id));
+  const pick=mem.find(m=>m.s.kind==="busy")||mem.find(m=>m.s.kind==="soon")||mem[0];const ids=mem.map(m=>m.tb.id);
+  cells.push({sec:it.tb.half,mem,ids,s:pick.s,seats:effSeats(ids),name:joinName(mem.map(m=>m.tb.name))})}
+ return cells;
+}
+function floorHTML(){
+ const st=tables().map(tb=>({tb,s:tableStatus(tb)}));
+ const cells=buildCells(st);
+ const freeC=cells.filter(c=>c.s.kind==="free");
+ const seatsFree=freeC.reduce((a,c)=>a+c.seats,0);
+ const bySec=sec=>{const f=freeC.filter(c=>c.sec===sec);return `<span>${t("sec"+sec)}: <b>${f.length}</b> ${t("tablesU")}, ${f.reduce((a,c)=>a+c.seats,0)} ${t("seatsU")}</span>`};
+ const secs=[...new Set(tables().map(x=>x.half))].sort();
+ const now=toMin(nowHM());
+ let next="";
+ if(isToday()){const upcoming=state.today.filter(b=>b.status==="booked"&&toMin(b.time)>=now-30).sort((a,b)=>toMin(a.time)-toMin(b.time));
+  next=`<p class="next">${t("noNext")}</p>`;
+  if(upcoming.length){const tm=upcoming[0].time;const g=upcoming.filter(b=>b.time===tm);next=`<p class="next"><b>${t("nextSlot",{t:tm,g:g.length,p:g.reduce((a,b)=>a+pax(b),0)})}</b></p>`}}
+ else next=`<p class="next"><b>${t("bookedTables",{n:cells.length-freeC.length})}</b></p>`;
+ const mv=state.moveFrom&&findB(state.moveFrom.id);
+ if(state.floorFilter&&!isToday()&&state.floorFilter==="busy")state.floorFilter=null;
+ const F=state.floorFilter,TF=state.typeFilter;const vis=c=>(!F||c.s.kind===F)&&(!TF||(c.s.b&&c.s.b.type===TF));
+ let out=`${dateBar()}${mv&&isToday()?`<div class="movebar"><span>${t("movePick",{n:esc(mv.name),t:esc(tablesLabel(state.moveFrom.from))})}</span><button class="btn sm" data-act="moveCancel">${t("cancel")}</button></div>`:""}<p class="hint" style="margin:6px 0 10px">${esc((activeLayout()||{}).name||"")}</p><div class="now-card"><div class="big">${seatsFree}<small>${t("seatsU")} ${isToday()?t("freeNow").toLowerCase():t("notBooked")}</small></div><div class="secsum">${secs.map(bySec).join("")}</div></div>${next}
+ <div class="legend">${[["free","background:var(--tealTint);border:2px solid var(--teal)",t("free")],["soon","background:var(--goldTint);border:2px solid var(--gold)",isToday()?t("soon"):t("s_booked")]].concat(isToday()?[["busy","background:var(--maroon)",t("busy")]]:[]).map(([k,sty,lab])=>`<button type="button" class="lg" data-act="flt" data-f="${k}" aria-pressed="${F===k}"><i style="${sty}"></i>${lab} (${cells.filter(c=>c.s.kind===k).length})</button>`).join("")}<select id="typeFlt" class="lgsel" aria-label="${t("type")}"><option value="">${t("allTypes")}</option>${["walkin","combo","lobster","normal"].map(k=>`<option value="${k}" ${TF===k?"selected":""}>${t(k)} (${cells.filter(c=>c.s.b&&c.s.b.type===k).length})</option>`).join("")}</select>${F?`<span class="hint">${t("fltAll")}</span>`:""}</div>${isToday()&&state.canWrite?`<p class="hint">${t("moveHint")}</p>`:""}`;
+ if(isToday()){const bg=state.today.filter(b=>b.type==="beach"&&b.status==="seated");out+=`<section class="beach"><div class="bhead"><h2>${t("beachSec")} <small>${bg.length} ${t("groupsU")}, ${bg.reduce((a,b)=>a+pax(b),0)} ${t("guestsU")}</small></h2>${state.canWrite?`<button class="btn teal sm" data-act="beachNew">${t("beachAdd")}</button>`:""}</div>${bg.length?bg.map(b=>`<div class="brow"><span>${b.bracelet?`<span class="br">#${esc(b.bracelet)}</span> `:""}${PERSON}${pax(b)}${b.note?`, ${esc(b.note)}`:""}</span>${state.canWrite?`<span class="lacts"><button class="btn pri sm" data-act="convOpen" data-id="${b.id}">${t("toTable")}</button><button class="btn ghost sm" data-act="leave" data-id="${b.id}">${t("leftBeach")}</button><button class="btn ghost sm" data-act="edit" data-id="${b.id}">${t("edit")}</button></span>`:""}</div>`).join(""):`<p class="hint">${t("beachNone")}</p>`}</section>`}
+ if((F||TF)&&!cells.some(vis))out+=`<p class="empty">${t("fltNone")}</p>`;
+ for(const sec of secs){
+  const cs=cells.filter(c=>c.sec===sec&&vis(c));if(!cs.length)continue;
+  out+=`<section class="sec"><h2>${t("sec"+sec)} <small>${sec==="C"?t("walkinSec"):t("comboSec")}</small></h2><div class="half"><div class="tiles">${cs.map(c=>{
+   const s=c.s;const j=c.ids.length>1;
+   let x="";if(s.kind==="busy")x=`${s.b.type==="walkin"?"":esc(s.b.name)+" "}${PERSON}${pax(s.b)}`;else if(s.kind==="soon")x=isToday()?`${s.b.time} ${esc(s.b.name)}`:s.up.map(b=>b.time).join(", ");else if(s.b)x=t("bookedAt",{t:s.b.time});
+   const src=state.moveFrom&&c.ids.some(i=>state.moveFrom.from.includes(i));
+   return `<button type="button" class="tile ${s.kind}${j?" joined":""}${src?" dragsrc":""}" ${j?`style="grid-column:span ${Math.min(c.ids.length,3)}"`:""} data-table="${c.ids[0]}" data-group="${c.ids.join(",")}" aria-label="${esc(c.name)}: ${t(s.kind)}">${(s.kind==="busy"||s.kind==="soon")&&s.b&&s.b.bracelet?`<span class="brc">#${esc(s.b.bracelet)}</span>`:""}<span class="n">${esc(c.name)}${j?LINK:""}</span><span class="s">${c.seats} ${t("seatsU")}</span><span class="x">${x}</span></button>`}).join("")}</div></div></section>`;
+ }
+ return out;
+}
+function typeChip(b){return `<span class="chip ${b.type}">${t(b.type)}</span>`}
+function bookingCard(b){
+ const tb=b.type==="beach"&&!(b.tables||[]).length?t("beachSec"):(tablesLabel(b.tables)||t("noTables"));const dl=depLine(b);
+ const meta=[`${b.adults||0} ${t("adults").toLowerCase()}`];if(+b.kids)meta.push(`${b.kids} ${t("kids").toLowerCase()}`);if(+b.small)meta.push(`${b.small} ${t("small").toLowerCase()}`);
+ const est=estimate(b);
+ let acts="";
+ if(state.canWrite){
+  if(b.status==="booked")acts=`${b.date===todayKey?`<button class="btn teal sm" data-act="seat" data-id="${b.id}">${t("arrived")}</button>`:""}<button class="btn ghost sm" data-act="noshow" data-id="${b.id}">${t("noshow")}</button>`;
+  if(b.status==="seated")acts=`<button class="btn pri sm" data-act="leave" data-id="${b.id}">${t(b.type==="beach"&&!(b.tables||[]).length?"leftBeach":"left")}</button>`;
+  acts+=`<button class="btn ghost sm" data-act="edit" data-id="${b.id}">${t("edit")}</button>`;
+ }
+ return `<article class="bk st-${b.status}"><div class="top"><div><div class="nm">${b.bracelet?`<span class="br">#${esc(b.bracelet)}</span> `:""}${esc(b.name)}</div><div class="meta">${meta.join(", ")}${est?`, ${est}`:""}${b.phone?`, ${esc(b.phone)}`:""}</div></div><div style="text-align:right">${typeChip(b)}<br><span class="chip s-${b.status}" style="margin-top:4px">${t("s_"+b.status)}</span></div></div>
+ ${dl?`<div class="meta"><b>${esc(dl)}</b></div>`:""}<div class="meta">${t("tables")}: <b>${esc(tb)}</b>${b.source?`, ${esc(U[lang].src[b.source]||b.source)}`:""}${b.by?`, ${t("by",{n:esc(b.by)})}`:""}</div>
+ ${b.note?`<div class="note">${esc(b.note)}</div>`:""}${acts?`<div class="acts">${acts}</div>`:""}</article>`;
+}
+function dateBar(){return `<div class="datebar"><button class="btn ghost sm" data-act="day" data-d="-1" aria-label="-1">‹</button><input type="date" id="dateIn" value="${state.date}"><button class="btn ghost sm" data-act="day" data-d="1" aria-label="+1">›</button>${state.date!==todayKey?`<button class="btn sm" data-act="today">${t("today")}</button>`:""}</div>`}
+function bookingsHTML(){
+ const list=state.day.filter(b=>state.showDone||isActive(b)).sort((a,b)=>toMin(a.time)-toMin(b.time)||String(a.name).localeCompare(b.name));
+ const act=state.day.filter(isActive);
+ let out=`${dateBar()}
+ <p class="sumline">${t("sumDay",{g:act.length,p:act.reduce((a,b)=>a+pax(b),0),c:act.filter(b=>b.type==="combo"||b.type==="lobster").length})}</p>
+ <label class="toggle"><input type="checkbox" id="showDone" ${state.showDone?"checked":""}> ${t("showDone")}</label>`;
+ if(!list.length)return out+`<p class="empty">${t("emptyDay")}</p>`;
+ const times=[...new Set(list.map(b=>b.time))];
+ for(const tm of times){out+=`<div class="tgroup"><h3>${tm}</h3>${list.filter(b=>b.time===tm).map(bookingCard).join("")}</div>`}
+ return out;
+}
+
+/* ---------- handbook ---------- */
+function hbShell(){return `<input class="search" id="hbSearch" type="search" placeholder="${esc(t("search"))}" value="${esc(state.q)}"><div class="hb" id="hbBody"></div>`}
+function hbItems(){
+ const H=HB[lang];const items=[];
+ H.qa.forEach(([q,a,w])=>items.push({sec:"hQA",title:q,body:`<p>${a}</p><span class="who">${h("whoLabel")}: ${w}</span>`,text:q+" "+a}));
+ H.groups.forEach(([g,cs])=>cs.forEach(([topic,q,tr,need,say,doo,avoid])=>items.push({sec:"hHard",tp:g+" · "+topic,title:"“"+q+"”",body:`${tr?`<p class="hint">${tr}</p>`:""}<dl><dt>${h("lNeed")}</dt><dd>${need}</dd><dt>${h("lSay")}</dt><dd class="say">“${say}”</dd><dt>${h("lDo")}</dt><dd>${doo}</dd><dt>${h("lAvoid")}</dt><dd class="avoid">${avoid}</dd></dl>`,text:[g,topic,q,tr,need,say,doo,avoid].join(" ")})));
+ H.rules.forEach(([a,b])=>items.push({sec:"hRules",title:a,body:`<p>${b}</p>`,text:a+" "+b}));
+ items.push({sec:"hCombo",title:h("c1Name")+": 750k "+h("perAdult"),body:`<p>${h("c1Desc")}</p><p class="hint">${h("sameNote")}</p>`,text:h("c1Name")+h("c1Desc")+h("sameNote")+" 750"});
+ items.push({sec:"hCombo",title:h("c2Name")+": 900k "+h("perAdult"),body:`<p>${h("c2Desc")}</p><p class="hint">${h("kidsNote")}</p>`,text:h("c2Name")+h("c2Desc")+h("kidsNote")+" 900"});
+ SLOTS.forEach(([tm,sec],i)=>{const plan=SLOTPLAN[i].map(([k,x])=>`${x} ${h(k)}`).join("<br>");items.push({sec:"hSched",title:`${h("slot")} ${i+1}: ${tm}, ${t("slotLine",{s:sec})}`,body:`<p>${plan}</p>`,text:tm+" "+sec+" "+SLOTPLAN[i].map(([k])=>h(k)).join(" ")})});
+ [["rHost"],["rBoat"],["rBeach"],["rAct"],["rKitchen"],["rFloor"]].forEach(([k])=>items.push({sec:"hRoles",title:h(k),body:`<p>${h(k+"D")}</p>`,text:h(k)+" "+h(k+"D")}));
+ return items;
+}
+function renderHB(){
+ const q=fold(state.q).trim();const items=hbItems().filter(it=>!q||q.split(/\s+/).every(w=>fold(it.text+" "+it.title+" "+(it.tp||"")).includes(w)));
+ const order=["hHard","hQA","hRules","hCombo","hSched","hRoles"];let out="";
+ for(const s of order){const its=items.filter(i=>i.sec===s);if(!its.length)continue;
+  out+=`<section class="hbsec"><h2>${t(s)} <small>${its.length}</small></h2>${its.map(i=>`<details ${q&&its.length<=3?"open":""}><summary>${i.tp?`<span class="tp">${esc(i.tp)}</span>`:""}${i.title}</summary><div class="body">${i.body}</div></details>`).join("")}</section>`}
+ document.getElementById("hbBody").innerHTML=out||`<p class="empty">${t("noHits")}</p>`;
+}
+
+/* ---------- settings ---------- */
+function renderSettings(){
+ const root=document.getElementById("setRoot");if(!root)return;
+ const nk=state.noticeKind||(state.notice&&state.notice.kind)||"info";if(!state.noticeKind)state.noticeKind=nk;
+ let out=`${state.canWrite&&state.mode!=="connecting"?`<div class="card"><h2>${t("noticeH")}</h2><p class="hint">${t("noticeP")}</p><div class="seg" style="margin-top:10px;max-width:320px">${["info","warn"].map(k=>`<button type="button" data-act="nkind" data-k="${k}" aria-pressed="${nk===k}">${t(k)}</button>`).join("")}</div><div class="field"><textarea id="noticeIn" rows="3">${esc((state.notice&&state.notice.text)||"")}</textarea></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" data-act="noticeSave">${t("noticeSave")}</button>${state.notice&&state.notice.text?`<button class="btn ghost" data-act="noticeClear">${t("noticeClear")}</button>`:""}</div></div>`:""}${state.user?`<div class="card"><h2>${t("account")}</h2><p class="hint">${t("signedAs",{e:esc(state.user)})}</p><p style="margin-top:8px"><button class="btn ghost sm" data-act="signOut">${t("signOut")}</button></p></div>`:""}<div class="card"><h2>${t("me")}</h2><div class="field" style="margin-top:0"><input id="staffIn" value="${esc(state.staff)}" autocomplete="name"></div><p class="hint">${t("meHint")}</p></div>`;
+ const can=state.canWrite&&state.mode!=="connecting";
+ const Ls=layouts();const act=activeLayout();
+ out+=`<div class="card"><h2>${t("layouts")}</h2>${Ls.length?Ls.map(l=>`<div class="lrow"><div><b>${esc(l.name)}</b>${act&&act.id===l.id?` <span class="chip s-booked">${t("active")}</span>`:""}<div class="hint">${l.tables.length} ${t("tablesU")}, ${l.tables.reduce((a,x)=>a+(+x.seats||0),0)} ${t("seatsU")}</div></div>${can?`<div class="lacts">${act&&act.id===l.id?"":`<button class="btn teal sm" data-act="useL" data-id="${l.id}">${t("useThis")}</button>`}<button class="btn ghost sm" data-act="editL" data-id="${l.id}">${t("edit")}</button><button class="btn ghost sm" data-act="dupL" data-id="${l.id}">${t("dupL")}</button><button class="btn ghost sm" data-act="delL" data-id="${l.id}">${t("del")}</button></div>`:""}</div>`).join(""):`<p class="hint">${t("setupNeeded")}</p>`}
+ ${can&&!state.creating?`<p style="margin-top:12px"><button class="btn pri sm" data-act="newL">+ ${t("newL")}</button></p>`:""}
+ ${can&&Ls.length?`<div class="field" style="margin-top:16px"><label for="lossIn">${t("lossL")}</label><input id="lossIn" type="number" inputmode="numeric" min="0" max="10" value="${loss()}" style="max-width:120px"></div><p class="hint">${t("lossHint")}</p>`:""}</div>`;
+ if(can&&(state.creating||!Ls.length)){
+  out+=`<div class="card"><h2>${t("setupT")}</h2><p class="hint">${t("setupP")}</p><div class="field"><label for="qs_name">${t("lName")}</label><input id="qs_name" value="${Ls.length?"":esc(t("defaultLName"))}"></div><div class="qs" style="margin-top:10px">${HALVES.map(x=>`<div class="field"><label for="qs_${x}">${t("sec"+x)}</label><input id="qs_${x}" type="number" min="0" max="40" inputmode="numeric" value="8"></div>`).join("")}<div class="field"><label for="qs_seats">${t("perTable")}</label><input id="qs_seats" type="number" min="1" max="30" inputmode="numeric" value="6"></div></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn pri" data-act="quick">${t("createLayout")}</button>${Ls.length?`<button class="btn ghost" data-act="cancelNew">${t("close")}</button>`:""}</div></div>`;
+ }
+ if(can&&state.draft&&Ls.some(l=>l.id===state.draft.id)){
+  const d=state.draft;
+  out+=`<div class="card"><h2>${t("editing",{n:esc(d.name)})}</h2><div class="field"><label for="lnameIn">${t("lName")}</label><input id="lnameIn" value="${esc(d.name)}"></div><div class="trow hint" style="margin-top:12px"><span>${t("tName")}</span><span>${t("half")}</span><span>${t("seats")}</span><span></span></div><div id="trows">${d.tables.map((x,i)=>`<div class="trow"><input data-tl="name" data-i="${i}" value="${esc(x.name)}" aria-label="${t("tName")}"><select data-tl="half" data-i="${i}" aria-label="${t("half")}">${HALVES.map(hf=>`<option ${hf===x.half?"selected":""}>${hf}</option>`).join("")}</select><input data-tl="seats" data-i="${i}" type="number" min="1" max="40" value="${x.seats}" aria-label="${t("seats")}"><button type="button" data-act="rmT" data-i="${i}" aria-label="${t("del")}">×</button></div>`).join("")}</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn ghost" data-act="addT">+ ${t("addT")}</button><button class="btn pri" data-act="saveLayout">${t("saveLayout")}</button><button class="btn ghost" data-act="closeEdit">${t("close")}</button></div></div>`;
+ }
+ if(can&&Ls.length)out+=`<div class="card"><h2>${t("clean")}</h2><p class="hint">${t("cleanP")}</p><p style="margin-top:8px"><button class="btn ghost" data-act="cleanup">${t("cleanB")}</button></p></div>`;
+ root.innerHTML=out;
+}
+
+/* ---------- history ---------- */
+function histShell(){return `<input class="search" id="histSearch" type="search" placeholder="${esc(t("histSearch"))}" value="${esc(state.histQ)}"><div id="histBody"></div>`}
+function histFiltered(){
+ let list=state.hist.slice();
+ if(state.histRange!=="all"){const d=new Date();d.setDate(d.getDate()-(+state.histRange));const from=dstr(d);list=list.filter(b=>b.date>=from)}
+ const q=fold(state.histQ).trim();
+ if(q)list=list.filter(b=>q.split(/\s+/).every(w=>fold([b.name,b.phone,b.note,b.bracelet,"#"+(b.bracelet||""),tablesLabel(b.tables)].join(" ")).includes(w)));
+ return list.sort((a,b)=>a.date===b.date?toMin(b.time)-toMin(a.time):(a.date<b.date?1:-1));
+}
+function renderHist(){
+ const el=document.getElementById("histBody");if(!el)return;
+ const list=histFiltered();const p=list.reduce((a,b)=>a+pax(b),0);const combos=list.filter(b=>b.type==="combo"||b.type==="lobster").length;
+ const srcCount={};list.forEach(b=>{if(b.source)srcCount[b.source]=(srcCount[b.source]||0)+1});
+ const srcLine=Object.entries(srcCount).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${U[lang].src[k]||k}: ${n}`).join(", ");
+ let out=`<div class="chips" style="margin-top:10px">${[["7","r7"],["30","r30"],["all","rAll"]].map(([r,k])=>`<button type="button" data-act="range" data-r="${r}" aria-pressed="${state.histRange===r}">${t(k)}</button>`).join("")}${list.length?`<button type="button" data-act="csv">${t("csv")}</button>`:""}</div>
+ <p class="sumline">${t("histSum",{g:list.length,p,c:list.length?Math.round(combos/list.length*100):0})}${srcLine?`<br>${esc(srcLine)}`:""}</p>`;
+ if(!list.length){el.innerHTML=out+`<p class="empty">${t("histEmpty")}</p>`;return}
+ const dates=[...new Set(list.map(b=>b.date))];
+ for(const d of dates){out+=`<div class="tgroup"><h3>${d}</h3>${list.filter(b=>b.date===d).map(b=>{
+  const meta=[`${pax(b)} ${t("guestsU")}`];const est=estimate(b);if(est)meta.push(est);if(b.phone)meta.push(esc(b.phone));
+  return `<article class="bk st-left" style="opacity:1"><div class="top"><div><div class="nm">${esc(b.name)}</div><div class="meta">${t("seatedLeft",{a:b.seatedAt||b.time,b:b.leftAt||"?"})}, ${meta.join(", ")}</div></div><div>${typeChip(b)}</div></div><div class="meta">${t("tables")}: ${esc(tablesLabel(b.tables)||"-")}${b.source?`, ${esc(U[lang].src[b.source]||b.source)}`:""}${b.by?`, ${t("by",{n:esc(b.by)})}`:""}</div>${b.note?`<div class="note">${esc(b.note)}</div>`:""}</article>`}).join("")}</div>`}
+ el.innerHTML=out;
+}
+async function exportCsv(){
+ const list=histFiltered();
+ const cols=["date","time","seatedAt","leftAt","name","phone","bracelet","type","adults","kids","small","tables","deposit","depAmt","source","note","by"];
+ const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+ const rows=[cols.join(",")].concat(list.map(b=>cols.map(c=>q(c==="tables"?tablesLabel(b.tables):b[c])).join(",")));
+ const blob=new Blob(["\ufeff"+rows.join("\n")],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`khach-da-ve-${todayKey}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)
+}
+
+/* ---------- sheets ---------- */
+let sheetData=null;
+function openSheet(html){document.getElementById("sheetRoot").innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;const f=document.querySelector(".sheet input,.sheet button");if(f)f.focus()}
+function closeSheet(){document.getElementById("sheetRoot").innerHTML="";sheetData=null}
+function tableSheet(id){
+ const tb=tById(id);if(!tb)return;const s=tableStatus(tb);
+ const phys=isToday()?physGroup(id):[id];const bt=(s.kind==="busy"||s.kind==="soon")&&s.b?(s.b.tables||[]):[];
+ const grp=[...new Set([...phys,...bt])];const many=grp.length>1;
+ let body=`<h2>${esc(many?tablesLabel(grp):tb.name)}</h2><p class="sub">${t("sec"+tb.half)}, ${effSeats(grp)} ${t("seatsU")}${isToday()?", "+t(s.kind):", "+state.date}</p>`;
+ if(s.kind==="busy"){const b=s.b;body+=bookingCard(b).replace(/<div class="acts">[\s\S]*?<\/div><\/article>/,"</article>");
+  if(state.canWrite)body+=`<div class="acts"><button class="btn pri" data-act="leave" data-id="${b.id}">${t("left")}</button><button class="btn teal" data-act="moveStart" data-id="${b.id}" data-from="${(b.tables||[id]).join(",")}">${t("moveT")}</button></div><div class="acts"><button class="btn ghost" data-act="joinOpen" data-id="${b.id}">${t("joinT")}</button>${b.type==="walkin"||b.type==="normal"?`<button class="btn ghost" data-act="convOpen" data-id="${b.id}">${t("convert")}</button>`:""}<button class="btn ghost" data-act="edit" data-id="${b.id}">${t("edit")}</button></div>`;}
+ else{
+  const up=(s.up||[]);
+  if(up.length){body+=`<p class="flabel" style="margin-top:6px">${t("upcoming")}</p>`+up.map(b=>`<div class="bk st-booked"><div class="top"><div><div class="nm">${b.time} ${esc(b.name)}</div><div class="meta">${pax(b)} ${t("seatsU")}, ${t(b.type)}</div></div></div>${state.canWrite?`<div class="acts">${isToday()?`<button class="btn teal sm" data-act="seat" data-id="${b.id}">${t("arrived")}</button>`:""}<button class="btn ghost sm" data-act="joinOpen" data-id="${b.id}">${t("joinT")}</button><button class="btn ghost sm" data-act="noshow" data-id="${b.id}">${t("noshow")}</button><button class="btn ghost sm" data-act="edit" data-id="${b.id}">${t("edit")}</button></div>`:""}</div>`).join("")}
+  if(state.canWrite)body+=`<div class="acts">${isToday()?`<button class="btn pri" data-act="walkin" data-table="${id}">${t("seatWalkin")}</button>`:""}<button class="btn ${isToday()?"ghost":"pri"}" data-act="assignList" data-table="${id}">${t("assign")}</button></div>${isToday()&&phys.length>1?`<div class="acts"><button class="btn ghost" data-act="splitFree" data-ids="${phys.join(",")}">${t("splitT")}</button></div>`:""}`;
+ }
+ body+=`<div class="acts"><button class="btn ghost" data-act="close">${t("close")}</button></div>`;
+ openSheet(body);
+}
+const stepHTML=(p,k,v)=>`<div class="field"><label class="flabel" for="${p}_${k}">${t(k)}</label><div class="stepper"><button type="button" data-act="nstep" data-p="${p}" data-k="${k}" data-d="-1" aria-label="-">−</button><input class="numin" id="${p}_${k}" data-p="${p}" data-k="${k}" type="number" inputmode="numeric" min="0" max="999" value="${v||0}"><button type="button" data-act="nstep" data-p="${p}" data-k="${k}" data-d="1" aria-label="+">+</button></div></div>`;
+function syncNum(p,k,v){
+ if(p==="f"&&sheetData){sheetData.b[k]=v;const e=document.getElementById("f_est");if(e){const x=estimate(sheetData.b);e.textContent=x?t("estimate")+": "+x:""}}
+ else if(p==="ws"&&state.walk)state.walk[k]=v;
+ else if(p==="bc"&&state.beach)state.beach[k]=v;
+ else if(p==="cv"&&state.conv){state.conv[k]=v;const e=document.getElementById("cv_est");if(e){const x=estimate(state.conv);e.textContent=x?t("estimate")+": "+x:""}}
+}
+function walkinSheet(tid){
+ const base=physGroup(tid);state.walk={adults:2,kids:0,small:0,extra:[],tid,base};const tb=tById(tid)||{};
+ const cm=conflictSet(todayKey,nowHM(),"walkin",null);
+ const extras=tables().filter(x=>!base.includes(x.id)&&x.half===tb.half&&!cm.has(x.id)&&tableStatus(x).kind!=="busy"&&physGroup(x.id).length===1);
+ openSheet(`<h2>${t("walkinT",{n:esc(tablesLabel(base))})}</h2><p class="sub">${effSeats(base)} ${t("seatsU")}</p><div class="row3">${["adults","kids","small"].map(k=>stepHTML("ws",k,state.walk[k])).join("")}</div>
+ ${extras.length?`<div class="field"><span class="flabel">${t("addTables")}</span><div class="chips">${extras.map(x=>`<button type="button" data-act="wx" data-tid="${x.id}" aria-pressed="false">${esc(x.name)} (${x.seats})</button>`).join("")}</div><p class="hint" id="ws_seats">${t("seatsTotal",{s:effSeats(base)})}</p></div>`:""}<div class="field"><label for="w_br">${t("bracelet")}</label><input id="w_br" placeholder="${esc(t("braceletHint"))}" autocomplete="off"></div><div class="field"><label for="w_note">${t("walkNote")}</label><textarea id="w_note" rows="2"></textarea></div><div class="acts"><button class="btn pri" data-act="walkSave" data-table="${tid}">${t("seatNow")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>`);
+}
+function beachSheet(){state.beach={adults:2,kids:0,small:0};
+ openSheet(`<h2>${t("beachT")}</h2><div class="row3">${["adults","kids","small"].map(k=>stepHTML("bc",k,state.beach[k])).join("")}</div><div class="field"><label for="b_br">${t("bracelet")}</label><input id="b_br" placeholder="${esc(t("braceletHint"))}" autocomplete="off"></div><div class="field"><label for="b_note">${t("walkNote")}</label><textarea id="b_note" rows="2"></textarea></div><div class="acts"><button class="btn pri" data-act="beachSave">${t("save")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>`)}
+function convSheet(id){const b0=findB(id);const fb=b0&&b0.type==="beach";if(fb){state.conv={id,name:b0.name,type:"walkin",fromBeach:true,adults:+b0.adults||0,kids:+b0.kids||0,small:+b0.small||0,tables:[],orig:[],touched:true};drawConv();return}
+ const b=b0;if(!b)return;state.conv={id,name:b.name,type:"combo",adults:Math.max(1,+b.adults||0),kids:+b.kids||0,small:+b.small||0,tables:[...(b.tables||[])],orig:[...(b.tables||[])],touched:false};drawConv()}
+function drawConv(){
+ const c=state.conv;const cur=new Set(c.tables);
+ const halves=[...new Set(tables().filter(x=>c.fromBeach||x.half[0]==="A"||x.half[0]==="B"||cur.has(x.id)).map(x=>x.half))].sort();
+ const est=estimate({type:c.type,adults:c.adults,kids:c.kids});const cmap=conflictSet(todayKey,nowHM(),c.type,c.id);
+ openSheet(`<h2>${c.fromBeach?t("convTableT",{n:esc(c.name)}):t("convT",{n:esc(c.name)})}</h2>
+ <div class="field"><span class="flabel">${t("type")}</span><div class="seg">${(c.fromBeach?["walkin","normal","combo","lobster"]:["combo","lobster"]).map(x=>`<button type="button" data-act="cvType" data-v="${x}" aria-pressed="${c.type===x}">${t(x)}</button>`).join("")}</div></div>
+ <div class="row3">${["adults","kids","small"].map(k=>stepHTML("cv",k,c[k])).join("")}</div>
+ <div class="field"><span class="flabel">${t("tables")}</span><p class="hint" style="margin:0 0 6px">${c.fromBeach?t("convTableHint"):t("convHint")}</p>
+ ${halves.map(hf=>`<p class="hint" style="margin:8px 0 4px">${t("sec"+hf)}</p><div class="tiles">${tables().filter(x=>x.half===hf&&(c.fromBeach||x.half[0]!=="C"||cur.has(x.id))).map(x=>{const ob=cmap.get(x.id);const other=ob&&!cur.has(x.id);return `<button type="button" class="tile ${other?(ob.status==="seated"?"busy":"soon"):"free"} ${cur.has(x.id)?"sel":""}" data-act="cvPick" data-tid="${x.id}" ${other?"disabled":""} aria-pressed="${cur.has(x.id)}"><span class="n">${esc(x.name)}</span><span class="s">${x.seats} ${t("seatsU")}</span><span class="x">${ob?(ob.status==="seated"?esc(ob.name):ob.time):""}</span></button>`}).join("")}</div>`).join("")}</div>
+ <p class="est" id="cv_est">${est?`${t("estimate")}: ${est}`:""}</p><p class="err" id="cv_err"></p>
+ <div class="acts"><button class="btn pri" data-act="cvSave">${t("save")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>`);
+}
+function ask(msg,okLabel){return new Promise(res=>{const r=document.getElementById("askRoot");r.innerHTML=`<div class="scrim ask"><div class="sheet" role="alertdialog" aria-modal="true"><p style="font-weight:600;margin:0">${esc(msg)}</p><div class="acts"><button class="btn pri" type="button" id="askYes">${esc(okLabel||t("proceed"))}</button><button class="btn ghost" type="button" id="askNo">${t("cancel")}</button></div></div></div>`;
+ const done=v=>{r.innerHTML="";res(v)};const sc=r.querySelector(".scrim");sc.addEventListener("click",e=>{e.stopPropagation();if(e.target===sc)done(false)});r.querySelector("#askYes").addEventListener("click",e=>{e.stopPropagation();done(true)});r.querySelector("#askNo").addEventListener("click",e=>{e.stopPropagation();done(false)});r.querySelector("#askYes").focus()})}
+async function capOk(b,ts){const seats=effSeats(ts);const p=pax(b);if(!ts.length||p<=seats)return true;return ask(t("overCap",{p,t:ts.map(tName).join(", "),s:seats}))}
+function joinSheet(id){const b=findB(id);if(!b)return;state.join={id,tables:[...(b.tables||[])]};drawJoin()}
+function drawJoin(){
+ const j=state.join;const b=findB(j.id);if(!b){closeSheet();return}
+ const cm=conflictSet(b.date,b.status==="seated"?nowHM():b.time,b.type,b.id);const cur=new Set(j.tables);
+ const secs=[...new Set(tables().map(x=>x.half))].sort();
+ const seats=effSeats(j.tables);
+ openSheet(`<h2>${t("joinT")}</h2><p class="sub">${esc(b.name)}, ${pax(b)} ${t("guestsU")}</p><p class="hint">${t("joinHint")}</p>
+ ${secs.map(hf=>`<p class="hint" style="margin:10px 0 4px">${t("sec"+hf)}</p><div class="tiles">${tables().filter(x=>x.half===hf).map(x=>{const ob=cm.get(x.id);const mine=cur.has(x.id);const blocked=ob&&!mine;return `<button type="button" class="tile ${ob&&!mine?(ob.status==="seated"?"busy":"soon"):"free"} ${mine?"sel":""}" data-act="jPick" data-tid="${x.id}" ${blocked?"disabled":""} aria-pressed="${mine}"><span class="n">${esc(x.name)}</span><span class="s">${x.seats} ${t("seatsU")}</span><span class="x">${blocked?(ob.status==="seated"?esc(ob.name):ob.time):""}</span></button>`}).join("")}</div>`).join("")}
+ <p class="est">${j.tables.length?esc(tablesLabel(j.tables))+": ":""}${t("seatsTotal",{s:seats})}</p><p class="err" id="j_err"></p>
+ <div class="acts"><button class="btn pri" data-act="jSave">${t("save")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>`);
+}
+async function performMove(id,from,to){
+ state.moveFrom=null;const b=findB(id);const tt=tById(to);if(!b||!tt){render();return}
+ from=Array.isArray(from)?from:String(from).split(",");if(from.includes(to)){render();return}
+ const tgt=physGroup(to);const tl=tablesLabel(tgt);
+ for(const x of tgt){const s=tableStatus(tById(x)||{});if(s.kind==="busy"&&s.b.id!==b.id){toast(t("targetBusy",{t:tl}));render();return}}
+ for(const x of tgt){const s=tableStatus(tById(x)||{});if(s.kind==="soon"&&s.b.id!==b.id){if(!(await ask(t("targetSoon",{t:tl,h:s.b.time})))){render();return}break}}
+ const rest=(b.tables||[]).filter(x=>!from.includes(x)&&!tgt.includes(x));const ts=[...tgt,...rest];
+ if(!(await capOk(b,ts))){render();return}
+ const prev=[...(b.tables||[])];
+ if(await write(()=>store.patchBooking(id,{tables:ts,...stamp()})))toast(t("moved",{n:b.name,t:tablesLabel(ts)}),()=>write(()=>store.patchBooking(id,{tables:prev,...stamp()})));
+ render();
+}
+function assignSheet(tid){
+ const list=dayList().filter(b=>b.status==="booked"&&!(b.tables||[]).includes(tid)).sort((a,b)=>toMin(a.time)-toMin(b.time));
+ const why=b=>conflictSet(b.date,b.time,b.type,b.id).get(tid);
+ openSheet(`<h2>${t("assign")}</h2><p class="sub">${esc(tName(tid))}, ${isToday()?t("today"):state.date}</p><div class="list-pick">${list.length?list.map(b=>{const ob=why(b);return `<button type="button" data-act="assignTo" data-id="${b.id}" data-table="${tid}" ${ob?"disabled":""}><b>${b.time}</b> ${esc(b.name)}, ${pax(b)} ${t("guestsU")}, ${t(b.type)}${(b.tables||[]).length?`, ${esc(b.tables.map(tName).join(", "))}`:""}${ob?`<br><span class="err" style="font-size:.8rem">${t("clash",{t:esc(tName(tid)),h:ob.time,n:esc(ob.name)})}</span>`:""}</button>`}).join(""):`<p class="empty">${t("noneToAssign")}<br><span class="hint">${t("pickDateHint")}</span></p>`}</div><div class="acts"><button class="btn ghost" data-act="close">${t("close")}</button></div>`);
+}
+const TMIN=7*60,TMAX=17*60;
+function timeOpts(cur){const out=[];for(let m=TMIN;m<=TMAX;m+=15)out.push(pad(Math.floor(m/60))+":"+pad(m%60));if(cur&&!out.includes(cur))out.push(cur);out.sort();return out.map(x=>`<option ${x===cur?"selected":""}>${x}</option>`).join("")}
+function formSheet(b,opts={}){
+ sheetData={b:{...b,tables:[...(b.tables||[])]},opts:{...opts,origTime:b.id?b.time:null}};drawForm();
+}
+function drawForm(){
+ const {b,opts}=sheetData;const isNew=!b.id;
+ const conf=conflictSet(b.date,b.time,b.type,b.id);
+ const slot=SLOTS.find(([tm])=>tm===b.time);
+ const sugg=(b.type==="combo"||b.type==="lobster")&&slot?t("suggest",{s:slot[1],t:slot[0]}):"";
+ const step=k=>stepHTML("f",k,b[k]);
+ const halves=[...new Set(tables().map(x=>x.half))].sort();
+ const est=estimate(b);
+ openSheet(`<h2>${opts.walkin?t("walkinT",{n:esc(tName(b.tables[0]))}):isNew?t("newB"):t("editB")}</h2>
+ <div class="field"><span class="flabel">${t("type")}</span><div class="seg">${(b.type==="walkin"?["combo","lobster","normal","beach","walkin"]:["combo","lobster","normal","beach"]).map(x=>`<button type="button" data-type="${x}" aria-pressed="${b.type===x}">${t(x)}</button>`).join("")}</div></div>
+ <div class="field"><label for="f_name">${t("name")}</label><input id="f_name" name="guest-label" value="${esc(b.name)}" autocomplete="off" autocapitalize="words" spellcheck="false"></div>
+ <div class="field"><label for="f_phone">${t("phone")}</label><input id="f_phone" name="guest-contact" type="tel" value="${esc(b.phone||"")}" autocomplete="off"></div>
+ <div class="row2"><div class="field"><label for="f_date">${t("date")}</label><input id="f_date" type="date" value="${b.date}"></div><div class="field"><label for="f_time">${t("time")}</label><select id="f_time">${timeOpts(b.time)}</select></div></div>
+ ${b.type==="combo"||b.type==="lobster"?`<div class="chips">${SLOTS.map(([tm])=>`<button type="button" data-slot="${tm}" aria-pressed="${b.time===tm}">${tm}</button>`).join("")}</div>`:""}
+ <div class="row3">${step("adults")}${step("kids")}${step("small")}</div>
+ <div class="row2"><div class="field"><label for="f_br">${t("bracelet")}</label><input id="f_br" value="${esc(b.bracelet||"")}" placeholder="${esc(t("braceletHint"))}" autocomplete="off"></div>
+ <div class="field"><span class="flabel">${t("deposit")}</span><div class="depwrap"><label class="ck"><input type="checkbox" id="f_dep" ${b.deposit?"checked":""}> ${t("deposit")}</label><input id="f_depAmt" type="number" inputmode="numeric" min="0" placeholder="0" value="${b.depAmt||""}" aria-label="${esc(t("depAmt"))}" ${b.deposit?"":"disabled"}><span class="hint">k</span></div></div></div>
+ <div class="field"><label for="f_src">${t("source")}</label><select id="f_src"><option value=""></option>${Object.entries(U[lang].src).map(([k,v])=>`<option value="${k}" ${b.source===k?"selected":""}>${v}</option>`).join("")}</select></div>
+ <div class="field"><label for="f_note">${t("note")}</label><textarea id="f_note" rows="2">${esc(b.note||"")}</textarea></div>
+ ${b.type==="beach"?"":`<div class="field"><span class="flabel">${t("tables")}</span>${sugg?`<p class="hint" style="margin:0 0 6px">${sugg}</p>`:""}
+ ${halves.map(hf=>`<p class="hint" style="margin:8px 0 4px">${t("sec"+hf)}</p><div class="tiles">${tables().filter(x=>x.half===hf).map(x=>{const ob=conf.get(x.id);const mine=b.tables.includes(x.id);const blocked=ob&&!mine;return `<button type="button" class="tile ${ob?(ob.status==="seated"?"busy":"soon"):"free"} ${mine?"sel":""}" data-pick="${x.id}" ${blocked?"disabled":""} aria-pressed="${mine}"><span class="n">${esc(x.name)}</span><span class="s">${x.seats} ${t("seatsU")}</span><span class="x">${ob?`${ob.time} ${esc(ob.name)}`:""}</span></button>`}).join("")}</div>`).join("")}
+ ${conf.size?`<p class="hint">${t("conflict")}</p>`:""}</div>`}
+ <p class="est" id="f_est">${est?`${t("estimate")}: ${est}`:""}</p>
+ <p class="err" id="f_err"></p>
+ <div class="acts"><button class="btn pri" data-act="saveForm">${t("save")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>
+ ${!isNew&&isActive(b)?`<div class="acts"><button class="btn ghost" data-act="cancelBk">${t("cancelB")}</button></div>`:""}
+ ${!isNew&&state.canWrite?`<p style="text-align:center;margin:16px 0 0"><button type="button" class="linkdel" data-act="delBk">${t("delBk")}</button></p>`:""}`);
+ if(!isNew||opts.walkin){}else{const n=document.getElementById("f_name");if(n)n.focus()}
+}
+function readForm(){
+ const b=sheetData.b;const g=id=>document.getElementById(id);
+ if(g("f_name"))b.name=g("f_name").value.trim();if(g("f_phone"))b.phone=g("f_phone").value.trim();
+ if(g("f_date"))b.date=g("f_date").value||b.date;if(g("f_time"))b.time=g("f_time").value||b.time;
+ if(g("f_src"))b.source=g("f_src").value;if(g("f_note"))b.note=g("f_note").value.trim();
+ ["adults","kids","small"].forEach(k=>{const x=g("f_"+k);if(x)b[k]=Math.max(0,parseInt(x.value,10)||0)});
+ if(g("f_br"))b.bracelet=g("f_br").value.trim();if(g("f_dep"))b.deposit=g("f_dep").checked;if(g("f_depAmt"))b.depAmt=b.deposit?Math.max(0,parseInt(g("f_depAmt").value,10)||0):0;
+ if(b.type==="beach")b.tables=[];
+}
+
+/* ---------- actions ---------- */
+function toast(msg,undo){
+ const r=document.getElementById("toastRoot");r.innerHTML=`<div class="toast">${esc(msg)}${undo?`<button type="button" id="undoBtn">${t("undo")}</button>`:""}</div>`;
+ if(undo)document.getElementById("undoBtn").onclick=()=>{undo();r.innerHTML=""};
+ clearTimeout(toast.tm);toast.tm=setTimeout(()=>r.innerHTML="",undo?6000:2500);
+}
+const findB=id=>state.today.find(b=>b.id===id)||state.day.find(b=>b.id===id);
+const stamp=()=>({updatedAt:Date.now(),by:state.staff||""});
+function blank(over){return{name:"",phone:"",date:state.tab==="book"?state.date:todayKey,time:"08:30",type:"combo",adults:2,kids:0,small:0,note:"",source:"",tables:[],status:"booked",...over}}
+
+document.addEventListener("click",async e=>{
+ if(justDragged){e.preventDefault();return}
+ const el=e.target.closest("[data-act],[data-tab],[data-lang],[data-table],[data-type],[data-slot],[data-step],[data-pick]");if(!el)return;
+ if(el.dataset.act==="scrim"&&e.target!==el)return;
+ if(el.dataset.lang){lang=el.dataset.lang;ls.set("lang",lang);const m=document.getElementById("main");m.innerHTML="";hbLang=null;if(sheetData){readForm();drawForm()}else closeSheet();render();return}
+ if(el.dataset.tab&&!el.dataset.act){state.tab=el.dataset.tab;ls.set("tab",state.tab);document.getElementById("main").innerHTML="";closeSheet();if(store)resubHist();render();try{window.scrollTo(0,0)}catch(_){}return}
+ if(el.dataset.type){readForm();sheetData.b.type=el.dataset.type;drawForm();return}
+ if(el.dataset.slot){readForm();sheetData.b.time=el.dataset.slot;drawForm();return}
+ if(el.dataset.pick){readForm();const ts=sheetData.b.tables,id=el.dataset.pick,i=ts.indexOf(id);i<0?ts.push(id):ts.splice(i,1);drawForm();return}
+ const act=el.dataset.act;
+ if(!act&&el.dataset.table){if(state.moveFrom&&isToday()){const mf=state.moveFrom;if(mf.from.includes(el.dataset.table)){state.moveFrom=null;render()}else performMove(mf.id,mf.from,el.dataset.table)}else tableSheet(el.dataset.table);return}
+ switch(act){
+  case "scrim":case "close":closeSheet();break;
+  case "day":{const d=new Date(state.date+"T12:00:00");d.setDate(d.getDate()+(+el.dataset.d));state.date=dstr(d);resubDay();render();break}
+  case "range":state.histRange=el.dataset.r;resubHist(true);renderHist();break;
+  case "csv":exportCsv();break;
+  case "useL":{const c=JSON.parse(JSON.stringify(state.config));c.activeId=el.dataset.id;c.updatedAt=Date.now();if(await write(()=>store.saveConfig(c)))toast(t("switched",{n:(c.layouts.find(l=>l.id===c.activeId)||{}).name}));break}
+  case "editL":{const l=layouts().find(x=>x.id===el.dataset.id);if(l){state.editId=l.id;state.creating=false;state.draft=JSON.parse(JSON.stringify(l))}renderSettings();break}
+  case "dupL":{const l=layouts().find(x=>x.id===el.dataset.id);if(!l)break;const c=JSON.parse(JSON.stringify(state.config));const n={...JSON.parse(JSON.stringify(l)),id:"L"+Date.now().toString(36),name:t("copyOf",{n:l.name})};c.layouts.push(n);c.updatedAt=Date.now();if(await write(()=>store.saveConfig(c))){state.editId=n.id;state.draft=JSON.parse(JSON.stringify(n));toast(t("saved"))}break}
+  case "delL":{const l=layouts().find(x=>x.id===el.dataset.id);if(!l||!(await ask(t("delLWarn",{n:l.name}),t("del"))))break;const c=JSON.parse(JSON.stringify(state.config));c.layouts=c.layouts.filter(x=>x.id!==l.id);if(c.activeId===l.id)c.activeId=(c.layouts[0]||{}).id||null;c.updatedAt=Date.now();if(state.editId===l.id){state.editId=null;state.draft=null}if(await write(()=>store.saveConfig(c)))toast(t("saved"));break}
+  case "newL":state.creating=true;state.editId=null;state.draft=null;renderSettings();break;
+  case "today":state.date=todayKey;resubDay();render();break;
+  case "walkin":walkinSheet(el.dataset.table);break;
+  case "beachNew":beachSheet();break;
+  case "signOut":try{await firebase.auth().signOut()}catch(_){}location.reload();break;
+  case "beachSave":{const bc=state.beach;if(bc.adults+bc.kids+bc.small<1)break;const g=id=>(document.getElementById(id).value||"").trim();const rec={name:t("beach"),phone:"",bracelet:g("b_br"),note:g("b_note"),date:todayKey,time:nowHM(),type:"beach",adults:bc.adults,kids:bc.kids,small:bc.small,source:"walk",tables:[],status:"seated",seatedAt:nowHM(),createdAt:Date.now(),...stamp()};closeSheet();if(await write(()=>store.putBooking(store.newId(),rec)))toast(t("saved"));break}
+  case "nkind":state.noticeKind=el.dataset.k;renderSettings();break;
+  case "noticeSave":{const tx=(document.getElementById("noticeIn").value||"").trim();if(!tx)break;if(await write(()=>store.setDoc("notice/main",{text:tx,kind:state.noticeKind||"info",by:state.staff||"",at:Date.now()})))toast(t("noticePosted"));break}
+  case "noticeClear":{if(await write(()=>store.setDoc("notice/main",{text:"",kind:"info",by:state.staff||"",at:Date.now()})))toast(t("noticeRemoved"));break}
+  case "nstep":{const inp=document.getElementById(el.dataset.p+"_"+el.dataset.k);if(!inp)break;const v=Math.max(0,(parseInt(inp.value,10)||0)+(+el.dataset.d));inp.value=v;syncNum(el.dataset.p,el.dataset.k,v);break}
+  case "flt":state.floorFilter=state.floorFilter===el.dataset.f?null:el.dataset.f;render();break;
+  case "moveStart":state.moveFrom={id:el.dataset.id,from:String(el.dataset.from).split(",")};closeSheet();render();break;
+  case "moveCancel":state.moveFrom=null;render();break;
+  case "convOpen":convSheet(el.dataset.id);break;
+  case "cvType":state.conv.type=el.dataset.v;drawConv();break;
+  case "cvPick":{const c=state.conv,id=el.dataset.tid;
+   if(!c.touched&&!c.orig.includes(id)){c.tables=[id];c.touched=true}
+   else{c.touched=true;const i=c.tables.indexOf(id);i<0?c.tables.push(id):c.tables.splice(i,1)}
+   drawConv();break}
+  case "cvSave":{const c=state.conv;const err=document.getElementById("cv_err");
+   if(c.type==="lobster"&&c.adults<2){err.textContent=t("lobsterMin");break}
+   if(!c.tables.length){err.textContent=t("needTable");break}
+   if(c.adults+c.kids+c.small<1)break;
+   if(!(await capOk(c,c.tables)))break;
+   const b=findB(c.id);if(!b)break;const prev={type:b.type,adults:b.adults,kids:b.kids,small:b.small,tables:b.tables};
+   closeSheet();if(c.tables.length>1)await joinIds(c.tables);const rn=c.fromBeach&&(b.name===U.vi.beach||b.name===U.en.beach)?{name:t(c.type==="walkin"?"walkin":"normal")}:{};if(c.fromBeach)prev.name=b.name;if(await write(()=>store.patchBooking(c.id,{...rn,type:c.type,adults:c.adults,kids:c.kids,small:c.small,tables:c.tables,...stamp()})))toast(t("converted",{c:t(c.type)}),()=>write(()=>store.patchBooking(c.id,{...prev,...stamp()})));break}
+  case "walkSave":{const tid=el.dataset.table;const w=state.walk;if(w.adults+w.kids+w.small<1)break;const note=(document.getElementById("w_note").value||"").trim();const bracelet=(document.getElementById("w_br").value||"").trim();const rec={bracelet,name:t("walkin"),phone:"",date:todayKey,time:nowHM(),type:"walkin",adults:w.adults,kids:w.kids,small:w.small,note,source:"walk",tables:[...w.base,...(w.extra||[])],status:"seated",seatedAt:nowHM(),createdAt:Date.now(),...stamp()};
+   {const cm=conflictSet(todayKey,rec.time,"walkin",null);const hit=rec.tables.find(x=>cm.has(x));const ob=hit&&cm.get(hit);if(ob&&!(await ask(t("clashWalk",{t:tName(hit),h:ob.time,n:ob.name}))))break}
+   if(!(await capOk(rec,rec.tables)))break;closeSheet();const id=store.newId();if(w.extra.length)await joinIds(rec.tables);if(await write(()=>store.putBooking(id,rec)))toast(t("seatedT",{n:`${pax(rec)} ${t("guestsU")}, ${tablesLabel(rec.tables)}`}));break}
+  case "wx":{const w=state.walk,id=el.dataset.tid,i=w.extra.indexOf(id);i<0?w.extra.push(id):w.extra.splice(i,1);el.setAttribute("aria-pressed",i<0);const all=[...w.base,...w.extra];const e=document.getElementById("ws_seats");if(e)e.textContent=t("seatsTotal",{s:effSeats(all)})+" ("+tablesLabel(all)+")";break}
+  case "splitFree":{const ids=String(el.dataset.ids).split(",");closeSheet();const prev=await setJoins(gs=>gs.map(g=>g.filter(x=>!ids.includes(x))));toast(t("splitDone",{t:tablesLabel(ids)}),()=>restoreJoins(prev));break}
+  case "joinOpen":joinSheet(el.dataset.id);break;
+  case "jPick":{const j=state.join,id=el.dataset.tid,i=j.tables.indexOf(id);i<0?j.tables.push(id):j.tables.splice(i,1);drawJoin();break}
+  case "jSave":{const j=state.join;const b=findB(j.id);if(!b)break;const err=document.getElementById("j_err");if(!j.tables.length){err.textContent=t("needTable");break}
+   if(!(await capOk(b,j.tables)))break;const prev=[...(b.tables||[])];const removed=prev.filter(x=>!j.tables.includes(x));closeSheet();
+   let pj=null;if(b.date===todayKey)pj=await setJoins(gs=>bySection(j.tables).filter(a=>a.length>1).reduce((acc,a)=>mergeG(acc,a),gs.map(g=>g.filter(x=>!removed.includes(x)))));
+   if(await write(()=>store.patchBooking(b.id,{tables:j.tables,...stamp()})))toast(t("joinedT",{t:tablesLabel(j.tables)}),()=>{write(()=>store.patchBooking(b.id,{tables:prev,...stamp()}));if(pj)restoreJoins(pj)});break}
+  case "assignList":assignSheet(el.dataset.table);break;
+  case "assignTo":{const b=findB(el.dataset.id);if(!b)break;{const ob=conflictSet(b.date,b.time,b.type,b.id).get(el.dataset.table);if(ob){toast(t("clash",{t:tName(el.dataset.table),h:ob.time,n:ob.name}));break}}const add=isToday()?physGroup(el.dataset.table):[el.dataset.table];const ts=[...new Set([...(b.tables||[]),...add])];if(!(await capOk(b,ts)))break;closeSheet();if(await write(()=>store.patchBooking(b.id,{tables:ts,...stamp()})))toast(t("saved"));break}
+  case "seat":{const b=findB(el.dataset.id);if(!b)break;if(!(b.tables||[]).length&&b.type!=="beach"){formSheet({...b,status:"seated"},{});break}closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"seated",seatedAt:nowHM(),...stamp()})))toast(t("seatedT",{n:b.name}));break}
+  case "leave":{const b=findB(el.dataset.id);if(!b)break;closeSheet();const prev=b.status;if(await write(()=>store.patchBooking(b.id,{status:"left",leftAt:nowHM(),...stamp()})))toast((b.tables||[]).length?t("freed",{t:tablesLabel(b.tables)}):t("saved"),()=>write(()=>store.patchBooking(b.id,{status:prev,...stamp()})));break}
+  case "noshow":{const b=findB(el.dataset.id);if(!b)break;closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"noshow",...stamp()})))toast(t("s_noshow"),()=>write(()=>store.patchBooking(b.id,{status:"booked",...stamp()})));break}
+  case "edit":{const b=findB(el.dataset.id);if(b)formSheet(b,{});break}
+  case "delBk":{const b=sheetData&&sheetData.b;if(!b||!b.id)break;if(!(await ask(t("delBkWarn",{n:b.name}),t("del"))))break;const copy={...findB(b.id)};closeSheet();if(await write(()=>store.deleteBooking(b.id)))toast(t("deleted"),()=>write(()=>store.putBooking(copy.id,copy)));break}
+  case "cancelBk":{const b=sheetData.b;closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"cancelled",...stamp()})))toast(t("s_cancelled"),()=>write(()=>store.patchBooking(b.id,{status:"booked",...stamp()})));break}
+  case "saveForm":{
+   readForm();const b=sheetData.b;const err=document.getElementById("f_err");
+   if(!b.name){err.textContent=t("needName");break}
+   if(b.type==="lobster"&&(+b.adults||0)<2){err.textContent=t("lobsterMin");break}
+   if(b.time!==sheetData.opts.origTime&&(toMin(b.time)<TMIN||toMin(b.time)>TMAX)){err.textContent=t("timeRange");break}
+   const id=b.id||store.newId();const rec={...b,...stamp()};if(!b.id)rec.createdAt=Date.now();
+   if(rec.status==="seated"&&!rec.seatedAt)rec.seatedAt=nowHM();
+   if(isActive(rec)){const cm=conflictSet(rec.date,rec.time,rec.type,rec.id);const hit=(rec.tables||[]).find(x=>cm.has(x));if(hit){const ob=cm.get(hit);err.textContent=t("clash",{t:tName(hit),h:ob.time,n:ob.name});break}}
+   if(!(await capOk(rec,rec.tables||[])))break;
+   closeSheet();if(await write(()=>store.putBooking(id,rec))){toast(t("saved"));if(rec.date!==state.date&&state.tab==="book"){state.date=rec.date;resubDay();render()}}
+   break}
+  case "quick":{
+   const seats=Math.max(1,+document.getElementById("qs_seats").value||6);const list=[];
+   HALVES.forEach(hf=>{const n=Math.max(0,Math.min(40,+document.getElementById("qs_"+hf).value||0));for(let i=1;i<=n;i++)list.push({id:hf+i+"-"+Math.random().toString(36).slice(2,6),name:hf+i,half:hf,seats})});
+   if(!list.length)break;
+   const nm=(document.getElementById("qs_name").value||"").trim()||t("defaultLName");
+   const c=state.config?JSON.parse(JSON.stringify(state.config)):{layouts:[],activeId:null};const L={id:"L"+Date.now().toString(36),name:nm,tables:list};c.layouts.push(L);if(!c.activeId||!c.layouts.some(x=>x.id===c.activeId))c.activeId=L.id;c.updatedAt=Date.now();
+   if(await write(()=>store.saveConfig(c))){state.creating=false;state.editId=L.id;state.draft=JSON.parse(JSON.stringify(L));toast(t("saved"));render()}
+   break}
+  case "cancelNew":state.creating=false;renderSettings();break;
+  case "closeEdit":state.editId=null;state.draft=null;renderSettings();break;
+  case "addT":state.draft.tables.push({id:"t-"+Math.random().toString(36).slice(2,9),name:"C"+(state.draft.tables.filter(x=>x.half==="C").length+1),half:"C",seats:6});renderSettings();break;
+  case "rmT":state.draft.tables.splice(+el.dataset.i,1);renderSettings();break;
+  case "saveLayout":{const d=state.draft;if(!d)break;const c=JSON.parse(JSON.stringify(state.config));const i=c.layouts.findIndex(x=>x.id===d.id);if(i<0)break;c.layouts[i]={id:d.id,name:(d.name||"").trim()||t("defaultLName"),tables:d.tables.filter(x=>String(x.name).trim()).map(x=>({...x,name:String(x.name).trim(),seats:Math.max(1,+x.seats||1)}))};c.updatedAt=Date.now();if(await write(()=>store.saveConfig(c)))toast(t("saved"));break}
+  case "cleanup":{const d=new Date();d.setDate(d.getDate()-365);let n=0;if(await write(async()=>{n=await store.cleanup(dstr(d))}))toast(t("cleaned",{n}));break}
+ }
+});
+document.addEventListener("input",e=>{
+ const el=e.target;
+ if(el.id==="hbSearch"){state.q=el.value;renderHB();return}
+ if(el.id==="staffIn"){state.staff=el.value.trim();ls.set("staff",state.staff);renderBanner();return}
+ if(el.classList&&el.classList.contains("numin")){const v=Math.max(0,parseInt(el.value,10)||0);syncNum(el.dataset.p,el.dataset.k,v);return}
+ if(el.id==="histSearch"){state.histQ=el.value;renderHist();return}
+ if(el.id==="lnameIn"&&state.draft){state.draft.name=el.value;return}
+ if(el.dataset.tl){const x=state.draft&&state.draft.tables[+el.dataset.i];if(x)x[el.dataset.tl]=el.value;return}
+});
+document.addEventListener("change",e=>{
+ const el=e.target;
+ if(el.id==="dateIn"&&el.value){state.date=el.value;resubDay();render();return}
+ if(el.id==="lossIn"&&state.config){const c=JSON.parse(JSON.stringify(state.config));c.joinLoss=Math.max(0,Math.min(10,parseInt(el.value,10)||0));c.updatedAt=Date.now();write(()=>store.saveConfig(c)).then(ok=>ok&&toast(t("saved")));return}
+ if(el.id==="f_dep"){const a=document.getElementById("f_depAmt");if(a){a.disabled=!el.checked;if(el.checked)a.focus()}return}
+ if(el.id==="typeFlt"){state.typeFilter=el.value||null;render();return}
+ if(el.id==="showDone"){state.showDone=el.checked;render();return}
+ if(el.dataset.tl==="half"){const x=state.draft&&state.draft.tables[+el.dataset.i];if(x)x.half=el.value}
+ if(sheetData&&(el.id==="f_time"||el.id==="f_date")){readForm();drawForm()}
+});
+document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("numin"))setTimeout(()=>{try{e.target.select()}catch(_){}},0)});
+document.getElementById("fab").addEventListener("click",()=>formSheet(blank()));
+document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(document.querySelector(".scrim.ask"))return;if(state.moveFrom){state.moveFrom=null;render();return}if(document.querySelector(".scrim"))closeSheet()});
+setInterval(()=>{if(state.tab==="floor"&&!drag&&!document.querySelector(".scrim"))render()},60000);
+/* drag: move or join */
+document.addEventListener("pointerdown",e=>{
+ if(state.tab!=="floor"||!isToday()||!state.canWrite||state.moveFrom||document.querySelector(".scrim"))return;
+ const tile=e.target.closest&&e.target.closest("#main .tile[data-table]");if(!tile||(e.pointerType==="mouse"&&e.button!==0))return;
+ drag={from:String(tile.dataset.group||tile.dataset.table).split(","),x:e.clientX,y:e.clientY,active:false,tile,type:e.pointerType,timer:null,to:null,toGroup:null};
+ if(e.pointerType!=="mouse")drag.timer=setTimeout(()=>startDrag(drag&&drag.x,drag&&drag.y),300);
+});
+function startDrag(x,y){if(!drag||drag.active)return;drag.active=true;try{navigator.vibrate&&navigator.vibrate(15)}catch(_){}
+ const g=drag.tile.cloneNode(true);g.classList.add("dragghost");g.style.width=Math.min(drag.tile.offsetWidth,180)+"px";g.style.gridColumn="";document.body.appendChild(g);drag.ghost=g;drag.tile.classList.add("dragsrc");document.body.classList.add("dragging");moveGhost(x,y)}
+function moveGhost(x,y){const g=drag.ghost;if(!g)return;g.style.left=(x-g.offsetWidth/2)+"px";g.style.top=(y-g.offsetHeight-12)+"px";
+ document.querySelectorAll(".tile.droptgt").forEach(n=>n.classList.remove("droptgt"));
+ const el=document.elementFromPoint(x,y);const tt=el&&el.closest&&el.closest("#main .tile[data-table]");
+ if(tt&&!drag.from.includes(tt.dataset.table)){tt.classList.add("droptgt");drag.to=tt.dataset.table;drag.toGroup=String(tt.dataset.group||tt.dataset.table).split(",")}else{drag.to=null;drag.toGroup=null}}
+document.addEventListener("pointermove",e=>{if(!drag)return;const dist=Math.hypot(e.clientX-drag.x,e.clientY-drag.y);
+ if(!drag.active){if(drag.type==="mouse"){if(dist>8)startDrag(e.clientX,e.clientY)}else if(dist>10){clearTimeout(drag.timer);drag=null}else{drag.x=e.clientX;drag.y=e.clientY}return}
+ moveGhost(e.clientX,e.clientY)});
+function endDrag(commit){if(!drag)return;clearTimeout(drag.timer);const d=drag;drag=null;if(!d.active)return;justDragged=true;setTimeout(()=>{justDragged=false},350);
+ if(d.ghost)d.ghost.remove();document.body.classList.remove("dragging");document.querySelectorAll(".droptgt,.dragsrc").forEach(n=>n.classList.remove("droptgt","dragsrc"));
+ if(commit&&d.to)dropOn(d.from,d.toGroup||[d.to])}
+const bookingAt=ids=>{for(const x of ids){const s=tableStatus(tById(x)||{});if((s.kind==="busy"||s.kind==="soon")&&s.b)return s.b}return null};
+async function addToBooking(b,ids){
+ const cm=conflictSet(b.date,b.status==="seated"?nowHM():b.time,b.type,b.id);const hit=ids.find(x=>cm.has(x));
+ if(hit){const ob=cm.get(hit);toast(t("clash",{t:tName(hit),h:ob.time,n:ob.name}));return}
+ const prev=[...(b.tables||[])];const ts=[...new Set([...prev,...ids])];
+ const pj=await joinIds(ts);
+ if(await write(()=>store.patchBooking(b.id,{tables:ts,...stamp()})))toast(t("joinedT",{t:tablesLabel(ts)}),()=>{write(()=>store.patchBooking(b.id,{tables:prev,...stamp()}));restoreJoins(pj)});
+}
+async function dropOn(fromIds,toIds){
+ const sb=bookingAt(fromIds),tb=bookingAt(toIds);
+ if(sb&&tb){if(sb.id!==tb.id)toast(t("targetBusy",{t:tablesLabel(toIds)}));return}
+ if(sb){const tl=tablesLabel(toIds);const ch=await choose(t("dropAsk",{n:sb.name,t:tl}),[["move",t("dropMove",{t:tl})],["join",t("dropJoin",{t:tl})]]);
+  if(ch==="move")performMove(sb.id,fromIds,toIds[0]);else if(ch==="join"){if(!sameSec(fromIds,toIds)){toast(t("diffSec"));return}addToBooking(sb,toIds)}return}
+ if(!sameSec(fromIds,toIds)){toast(t("diffSec"));return}
+ if(tb){addToBooking(tb,fromIds);return}
+ const all=[...fromIds,...toIds];const prev=await joinIds(all);toast(t("joinedFree",{t:tablesLabel(all)}),()=>restoreJoins(prev));
+}
+document.addEventListener("pointerup",()=>endDrag(true));
+document.addEventListener("pointercancel",()=>endDrag(false));
+document.addEventListener("touchmove",e=>{if(drag&&drag.active)e.preventDefault()},{passive:false});
+document.addEventListener("contextmenu",e=>{if(drag)e.preventDefault()});
+
+/* ---------- boot ---------- */
+document.addEventListener("submit",async e=>{if(e.target.id!=="loginForm")return;e.preventDefault();
+ const em=document.getElementById("lg_email").value.trim(),pw=document.getElementById("lg_pw").value;const err=document.getElementById("lg_err");err.textContent="";
+ try{await firebase.auth().signInWithEmailAndPassword(em,pw)}catch(x){err.textContent=t("loginErr")}});
+window.addEventListener("online",()=>{if(state.mode==="offline"){state.mode="live";renderBanner()}});
+window.addEventListener("offline",()=>{if(state.mode==="live"){state.mode="offline";renderBanner()}});
+render();
+(function boot(){
+ const cfg=window.FIREBASE_CONFIG;
+ if(typeof firebase==="undefined"||!cfg||!cfg.apiKey||/PASTE/.test(cfg.apiKey)){store=memStore();state.mode="preview";subscribe();render();return}
+ firebase.initializeApp(cfg);
+ const fs=firebase.firestore();
+ try{fs.settings({ignoreUndefinedProperties:true,merge:true})}catch(_){}
+ try{fs.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(_){}
+ firebase.auth().onAuthStateChanged(u=>{
+  if(u){state.user=u.email||"";if(!store){store=dbStore(fs);state.mode=navigator.onLine?"live":"offline";subscribe();resubHist()}document.getElementById("main").innerHTML="";render()}
+  else{if(store){location.reload();return}state.mode="login";render()}
+ });
+})();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
