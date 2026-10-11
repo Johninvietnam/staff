@@ -217,6 +217,25 @@ body.dragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .tile.busy .brc{background:#fff;color:var(--maroon)}
 .tile .n{padding-right:36px}
 .pi{width:12px;height:12px;vertical-align:-1px;margin-right:2px}
+.ckbig{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1rem;margin:4px 0}
+.field .ckbig input{width:22px;height:22px;flex:none;accent-color:var(--maroon)}
+.amt{display:flex;align-items:center;gap:8px;margin-top:8px}
+.field .amt input{flex:1;font-size:1.15rem;font-weight:600;padding:11px 12px}
+.amt span{font-weight:700;font-size:1.1rem}
+.amt[hidden]{display:none}
+.hrow{gap:8px}
+.bell{position:relative;margin-left:auto;background:none;border:1.5px solid var(--line);border-radius:999px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:var(--ink);flex:none}
+.bell svg{width:20px;height:20px}
+.bell .cnt{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--maroon);color:#fff;font-size:.7rem;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px}
+.bell.has .cnt{display:flex}
+.bell[hidden]{display:none}
+.alert{max-width:980px;margin:8px auto 0;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--maroon);color:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.alert small{display:block;opacity:.85;font-size:.78rem;margin-top:2px}
+.alert .btn{background:#fff;color:var(--maroon);border-color:#fff}
+@media (prefers-reduced-motion:no-preference){.alert{animation:pop .25s ease-out}@keyframes pop{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}}
+.mrow,.lgrow{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:.92rem}
+.mrow .tm,.lgrow .tm{color:var(--muted);font-variant-numeric:tabular-nums;min-width:42px}
+.mrow small,.lgrow small{color:var(--muted)}
 .qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;display:flex;gap:12px;align-items:center;font-size:.9rem;max-width:92vw}
@@ -227,12 +246,14 @@ body.dragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 <header class="app">
   <div class="hrow">
     <div class="brand"><h1>Nhà Trên Biển</h1><small id="who"></small></div>
+    <button type="button" class="bell" id="bellBtn" data-act="msgs" aria-label="Messages" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="cnt"></span></button>
     <div class="lang" role="group" aria-label="Language">
       <button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button>
     </div>
   </div>
   <div class="banner" id="banner" role="status"></div>
   <div id="noticeBox"></div>
+  <div id="alertBox" aria-live="assertive"></div>
 </header>
 <main id="main"></main>
 <button class="btn pri fab" id="fab" type="button" hidden></button>
@@ -448,7 +469,7 @@ vi:{sub:"Ứng dụng nhân viên",tFloor:"Sơ đồ bàn",tBook:"Đặt chỗ",
  clean:"Dọn dữ liệu",cleanP:"Xoá đặt chỗ cũ hơn 1 năm để app chạy nhanh. Muốn giữ lại thì tải CSV ở tab Lịch sử trước.",cleanB:"Xoá đặt chỗ cũ",cleaned:"Đã xoá {n} đặt chỗ cũ.",
  saved:"Đã lưu.",freed:"Đã trả bàn {t}.",undo:"Hoàn tác",seatedT:"Đã xếp {n} vào bàn.",errSave:"Không lưu được. Thử lại.",
  search:"Tìm: tôm hùm, sao biển, dị ứng, mưa…",hQA:"Khi có sự cố",hHard:"Khách khó tính",hRules:"Nguyên tắc",hCombo:"Hai loại combo",hSched:"Lịch khung giờ",hRoles:"Việc từng bộ phận",noHits:"Không tìm thấy. Thử từ khác.",
- slotLine:"Khu {s}",tHist:"Lịch sử",login:"Đăng nhập",email:"Email",password:"Mật khẩu",loginErr:"Sai email hoặc mật khẩu.",loginHint:"Dùng tài khoản do quản lý tạo.",signOut:"Đăng xuất",signedAs:"Đang đăng nhập: {e}",account:"Tài khoản",noPerm:"Không có quyền lưu. Hãy đăng nhập lại.",beach:"Khách đi biển",beachSec:"Đang ở bãi biển",beachAdd:"+ Khách đi biển",beachNone:"Chưa có khách đi biển.",leftBeach:"Khách về",beachT:"Khách đi biển",toTable:"Cho ngồi bàn",convTableT:"Cho {n} ngồi bàn",convTableHint:"Chọn loại khách và bàn cho nhóm.",bracelet:"Số vòng tay",braceletHint:"Ví dụ 12 hoặc 12–15",deposit:"Đã đặt cọc",depAmt:"Tiền cọc (nghìn đồng)",depShort:"Cọc {a}",remain:"còn {a}",noticeH:"Thông báo cho nhân viên",noticeP:"Hiện ở đầu ứng dụng cho mọi nhân viên, ví dụ món cần bán hôm nay.",info:"Thông tin",warn:"Cảnh báo",noticeSave:"Đăng thông báo",noticeClear:"Gỡ thông báo",noticePosted:"Đã đăng thông báo.",noticeRemoved:"Đã gỡ thông báo.",delBk:"Xoá đặt chỗ này",delBkWarn:"Xoá hẳn đặt chỗ của {n}? Chỉ dùng khi tạo nhầm. Nếu khách đã về, hãy bấm “Khách về” để giữ lịch sử.",deleted:"Đã xoá đặt chỗ.",moveT:"Chuyển bàn",moveHint:"Mẹo: giữ và kéo một bàn lên bàn khác để ghép bàn. Kéo bàn có khách sang bàn trống để chuyển hoặc ghép thêm.",dropAsk:"Kéo {n} lên {t}:",dropMove:"Chuyển nhóm sang {t}",dropJoin:"Ghép {t} vào nhóm",joinedFree:"Đã ghép {t}.",splitT:"Tách bàn",splitDone:"Đã tách {t}.",diffSec:"Chỉ ghép được bàn trong cùng một khu.",lossL:"Số chỗ mất mỗi chỗ nối khi ghép bàn",lossHint:"Mặc định 2: hai bàn 4 chỗ ghép lại còn 6 chỗ, bốn bàn 4 chỗ còn 10 chỗ.",movePick:"Chọn bàn mới cho {n} (đang ở {t})",cancel:"Huỷ",moved:"Đã chuyển {n} sang {t}.",targetBusy:"Bàn {t} đang có khách.",targetSoon:"Bàn {t} có đặt chỗ lúc {h}. Vẫn chuyển?",overCap:"{p} khách nhưng {t} chỉ có {s} chỗ. Vẫn tiếp tục? (ví dụ đã kê thêm ghế)",proceed:"Vẫn tiếp tục",convert:"Chuyển thành combo",convT:"Chuyển {n} thành combo",convHint:"Bấm bàn mới ở khu A hoặc B để chuyển khách sang đó (bàn cũ sẽ được trả). Bấm thêm bàn nếu nhóm cần nhiều bàn.",converted:"Đã chuyển thành {c}.",walkNote:"Ghi chú",needTable:"Chọn ít nhất 1 bàn.",howMany:"Số khách",seatNow:"Xếp bàn",notBooked:"chưa có đặt",guestsU:"khách",groupsU:"nhóm",bookedTables:"{n} bàn đã có đặt chỗ",layouts:"Sơ đồ bàn",active:"Đang dùng",useThis:"Dùng sơ đồ này",dupL:"Nhân bản",delLWarn:"Xoá sơ đồ “{n}”? Không hoàn tác được.",newL:"Sơ đồ mới",lName:"Tên sơ đồ",defaultLName:"Sơ đồ chính",copyOf:"{n} (bản sao)",switched:"Đang dùng: {n}",editing:"Đang sửa: {n}",histSearch:"Tìm tên, SĐT, số vòng tay, ghi chú",r7:"7 ngày",r30:"30 ngày",rAll:"Tất cả",histSum:"{g} nhóm, {p} khách, {c}% combo",histEmpty:"Chưa có khách nào trong khoảng này.",csv:"Tải CSV",pickDateHint:"Đặt chỗ ở ngày khác? Đổi ngày ở trên sơ đồ.",seatedLeft:"{a} đến {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Khách lẻ",other:"Khác"}},
+ slotLine:"Khu {s}",tHist:"Lịch sử",msgs:"Tin nhắn nhanh",msgPh:"Ví dụ: Số 23 đang trên đường về từ bãi biển",send:"Gửi",msgNone:"Chưa có tin nhắn hôm nay.",q1:"đang trên đường về từ bãi biển",q2:"đã đến, cần xếp bàn",q3:"cần thanh toán",q4:"cần thêm nhân viên hỗ trợ",ok:"OK",newMsg:"Tin nhắn mới",notifOn:"Bật thông báo trên máy này",notifGranted:"Thông báo đã bật trên máy này.",notifDenied:"Thông báo bị chặn. Bật lại trong cài đặt trình duyệt của máy.",notifNA:"Máy hoặc trình duyệt này không hỗ trợ thông báo.",notifNote:"Thông báo hiện khi ứng dụng đang mở hoặc vừa chạy nền.",pinH:"Thông tin cố định",pinP:"Hiện ở trang Sơ đồ bàn và Đặt chỗ cho tới khi gỡ. Tin nhắn nhanh thì dùng nút chuông ở góc trên.",vLeft:"Khách đã về",vLog:"Nhật ký",logSearch:"Tìm nhân viên, khách, số vòng tay",logNone:"Chưa có hoạt động trong khoảng này.",log_create:"Tạo đặt chỗ",log_edit:"Sửa đặt chỗ",log_delete:"Xoá đặt chỗ",log_seat:"Khách đã đến",log_leave:"Khách về, trả bàn",log_noshow:"Không đến",log_cancel:"Huỷ đặt chỗ",log_assign:"Gán bàn {d}",log_move:"Chuyển bàn {d}",log_tables:"Đổi bàn: {d}",log_join:"Ghép bàn {d}",log_split:"Tách bàn {d}",log_convert:"Chuyển thành {d}",log_walkin:"Xếp khách lẻ vào {d}",log_beach:"Thêm khách đi biển",log_notice:"Đăng thông tin: {d}",log_noticeOff:"Gỡ thông tin",log_msg:"Gửi tin nhắn: {d}",log_undo:"Hoàn tác: {d}",login:"Đăng nhập",email:"Email",password:"Mật khẩu",loginErr:"Sai email hoặc mật khẩu.",loginHint:"Dùng tài khoản do quản lý tạo.",signOut:"Đăng xuất",signedAs:"Đang đăng nhập: {e}",account:"Tài khoản",noPerm:"Không có quyền lưu. Hãy đăng nhập lại.",beach:"Khách đi biển",beachSec:"Đang ở bãi biển",beachAdd:"+ Khách đi biển",beachNone:"Chưa có khách đi biển.",leftBeach:"Khách về",beachT:"Khách đi biển",toTable:"Cho ngồi bàn",convTableT:"Cho {n} ngồi bàn",convTableHint:"Chọn loại khách và bàn cho nhóm.",bracelet:"Số vòng tay",braceletHint:"Ví dụ 12 hoặc 12–15",deposit:"Đã đặt cọc",depAmt:"Tiền cọc (nghìn đồng)",depShort:"Cọc {a}",remain:"còn {a}",noticeH:"Thông báo cho nhân viên",noticeP:"Hiện ở đầu ứng dụng cho mọi nhân viên, ví dụ món cần bán hôm nay.",info:"Thông tin",warn:"Cảnh báo",noticeSave:"Đăng thông báo",noticeClear:"Gỡ thông báo",noticePosted:"Đã đăng thông báo.",noticeRemoved:"Đã gỡ thông báo.",delBk:"Xoá đặt chỗ này",delBkWarn:"Xoá hẳn đặt chỗ của {n}? Chỉ dùng khi tạo nhầm. Nếu khách đã về, hãy bấm “Khách về” để giữ lịch sử.",deleted:"Đã xoá đặt chỗ.",moveT:"Chuyển bàn",moveHint:"Mẹo: giữ và kéo một bàn lên bàn khác để ghép bàn. Kéo bàn có khách sang bàn trống để chuyển hoặc ghép thêm.",dropAsk:"Kéo {n} lên {t}:",dropMove:"Chuyển nhóm sang {t}",dropJoin:"Ghép {t} vào nhóm",joinedFree:"Đã ghép {t}.",splitT:"Tách bàn",splitDone:"Đã tách {t}.",diffSec:"Chỉ ghép được bàn trong cùng một khu.",lossL:"Số chỗ mất mỗi chỗ nối khi ghép bàn",lossHint:"Mặc định 2: hai bàn 4 chỗ ghép lại còn 6 chỗ, bốn bàn 4 chỗ còn 10 chỗ.",movePick:"Chọn bàn mới cho {n} (đang ở {t})",cancel:"Huỷ",moved:"Đã chuyển {n} sang {t}.",targetBusy:"Bàn {t} đang có khách.",targetSoon:"Bàn {t} có đặt chỗ lúc {h}. Vẫn chuyển?",overCap:"{p} khách nhưng {t} chỉ có {s} chỗ. Vẫn tiếp tục? (ví dụ đã kê thêm ghế)",proceed:"Vẫn tiếp tục",convert:"Chuyển thành combo",convT:"Chuyển {n} thành combo",convHint:"Bấm bàn mới ở khu A hoặc B để chuyển khách sang đó (bàn cũ sẽ được trả). Bấm thêm bàn nếu nhóm cần nhiều bàn.",converted:"Đã chuyển thành {c}.",walkNote:"Ghi chú",needTable:"Chọn ít nhất 1 bàn.",howMany:"Số khách",seatNow:"Xếp bàn",notBooked:"chưa có đặt",guestsU:"khách",groupsU:"nhóm",bookedTables:"{n} bàn đã có đặt chỗ",layouts:"Sơ đồ bàn",active:"Đang dùng",useThis:"Dùng sơ đồ này",dupL:"Nhân bản",delLWarn:"Xoá sơ đồ “{n}”? Không hoàn tác được.",newL:"Sơ đồ mới",lName:"Tên sơ đồ",defaultLName:"Sơ đồ chính",copyOf:"{n} (bản sao)",switched:"Đang dùng: {n}",editing:"Đang sửa: {n}",histSearch:"Tìm tên, SĐT, số vòng tay, ghi chú",r7:"7 ngày",r30:"30 ngày",rAll:"Tất cả",histSum:"{g} nhóm, {p} khách, {c}% combo",histEmpty:"Chưa có khách nào trong khoảng này.",csv:"Tải CSV",pickDateHint:"Đặt chỗ ở ngày khác? Đổi ngày ở trên sơ đồ.",seatedLeft:"{a} đến {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Khách lẻ",other:"Khác"}},
 en:{sub:"Staff app",tFloor:"Tables",tBook:"Bookings",tHb:"Handbook",tSet:"Settings",
  connecting:"Connecting…",preview:"Preview mode: Firebase isn't set up yet (firebase-config.js), so nothing is saved.",readOnly:"You can view but not change data.",offline:"Offline. Changes will save automatically when the connection is back.",
  freeNow:"Free now",tablesU:"tables",seatsU:"seats",free:"Free",soon:"Reserved soon",busy:"Seated",bookedAt:"Booked {t}",
@@ -469,7 +490,7 @@ en:{sub:"Staff app",tFloor:"Tables",tBook:"Bookings",tHb:"Handbook",tSet:"Settin
  clean:"Clean up",cleanP:"Delete bookings older than 1 year to keep the app fast. Download the CSV in History first if you want to keep them.",cleanB:"Delete old bookings",cleaned:"Deleted {n} old bookings.",
  saved:"Saved.",freed:"Freed table {t}.",undo:"Undo",seatedT:"Seated {n}.",errSave:"Couldn't save. Try again.",
  search:"Search: lobster, starfish, allergy, rain…",hQA:"When things go wrong",hHard:"Difficult guests",hRules:"Rules",hCombo:"The two combos",hSched:"Slot schedule",hRoles:"What each team does",noHits:"Nothing found. Try another word.",
- slotLine:"Section {s}",tHist:"History",login:"Sign in",email:"Email",password:"Password",loginErr:"Wrong email or password.",loginHint:"Use the account your manager created.",signOut:"Sign out",signedAs:"Signed in as {e}",account:"Account",noPerm:"Not allowed to save. Please sign in again.",beach:"Beach",beachSec:"At the beach",beachAdd:"+ Beach guests",beachNone:"No beach guests right now.",leftBeach:"Left",beachT:"Beach guests",toTable:"Give a table",convTableT:"Give {n} a table",convTableHint:"Pick the guest type and the table(s).",bracelet:"Bracelet no.",braceletHint:"E.g. 12 or 12–15",deposit:"Deposit paid",depAmt:"Deposit (k VND)",depShort:"Deposit {a}",remain:"{a} left to pay",noticeH:"Staff notice",noticeP:"Shown at the top of the app for all staff, e.g. something to sell today.",info:"Info",warn:"Warning",noticeSave:"Post notice",noticeClear:"Remove notice",noticePosted:"Notice posted.",noticeRemoved:"Notice removed.",delBk:"Delete this booking",delBkWarn:"Permanently delete {n}'s booking? Only for bookings made by mistake. If the guests have left, use “Guests left” instead to keep the history.",deleted:"Booking deleted.",moveT:"Move table",moveHint:"Tip: press and hold a table and drag it onto another table to join them. Drag a seated table onto a free one to move or extend the group.",dropAsk:"Drop {n} onto {t}:",dropMove:"Move the group to {t}",dropJoin:"Join {t} to the group",joinedFree:"Joined {t}.",splitT:"Split tables",splitDone:"Split {t}.",diffSec:"You can only join tables in the same section.",lossL:"Seats lost at each join",lossHint:"Default 2: two 4-seat tables joined seat 6, four 4-seat tables seat 10.",movePick:"Pick the new table for {n} (now at {t})",cancel:"Cancel",moved:"Moved {n} to {t}.",targetBusy:"Table {t} already has guests.",targetSoon:"Table {t} has a booking at {h}. Move anyway?",overCap:"{p} guests but {t} only seats {s}. Continue anyway? (e.g. an extra chair was added)",proceed:"Continue",convert:"Convert to combo",convT:"Convert {n} to a combo",convHint:"Tap a new table in section A or B to move the group there (the old table is freed). Tap more tables if the group needs several.",converted:"Converted to {c}.",walkNote:"Notes",needTable:"Pick at least one table.",howMany:"Guests",seatNow:"Seat now",notBooked:"not booked",guestsU:"guests",groupsU:"groups",bookedTables:"{n} tables booked",layouts:"Table layouts",active:"In use",useThis:"Use this layout",dupL:"Duplicate",delLWarn:"Delete layout “{n}”? This can't be undone.",newL:"New layout",lName:"Layout name",defaultLName:"Main layout",copyOf:"{n} (copy)",switched:"Now using: {n}",editing:"Editing: {n}",histSearch:"Search name, phone, bracelet, notes",r7:"7 days",r30:"30 days",rAll:"All",histSum:"{g} groups, {p} guests, {c}% combos",histEmpty:"No guests in this period.",csv:"Download CSV",pickDateHint:"Booking on another day? Change the date above the tables.",seatedLeft:"{a} to {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Walk-in",other:"Other"}}
+ slotLine:"Section {s}",tHist:"History",msgs:"Quick messages",msgPh:"E.g. No. 23 on the way back from the beach",send:"Send",msgNone:"No messages today.",q1:"on the way back from the beach",q2:"arrived, needs a table",q3:"wants to pay",q4:"needs extra staff",ok:"OK",newMsg:"New message",notifOn:"Turn on notifications on this phone",notifGranted:"Notifications are on for this phone.",notifDenied:"Notifications are blocked. Turn them back on in the phone's browser settings.",notifNA:"This phone or browser doesn't support notifications.",notifNote:"Notifications show while the app is open or was just in the background.",pinH:"Pinned info",pinP:"Shown on the Tables and Bookings pages until removed. For quick messages, use the bell at the top.",vLeft:"Guests who left",vLog:"Activity log",logSearch:"Search staff, guest, bracelet",logNone:"No activity in this period.",log_create:"Created booking",log_edit:"Edited booking",log_delete:"Deleted booking",log_seat:"Guests arrived",log_leave:"Guests left, table freed",log_noshow:"No-show",log_cancel:"Cancelled booking",log_assign:"Assigned table {d}",log_move:"Moved table {d}",log_tables:"Changed tables: {d}",log_join:"Joined tables {d}",log_split:"Split tables {d}",log_convert:"Converted to {d}",log_walkin:"Seated walk-ins at {d}",log_beach:"Added beach guests",log_notice:"Posted info: {d}",log_noticeOff:"Removed info",log_msg:"Sent message: {d}",log_undo:"Undid: {d}",login:"Sign in",email:"Email",password:"Password",loginErr:"Wrong email or password.",loginHint:"Use the account your manager created.",signOut:"Sign out",signedAs:"Signed in as {e}",account:"Account",noPerm:"Not allowed to save. Please sign in again.",beach:"Beach",beachSec:"At the beach",beachAdd:"+ Beach guests",beachNone:"No beach guests right now.",leftBeach:"Left",beachT:"Beach guests",toTable:"Give a table",convTableT:"Give {n} a table",convTableHint:"Pick the guest type and the table(s).",bracelet:"Bracelet no.",braceletHint:"E.g. 12 or 12–15",deposit:"Deposit paid",depAmt:"Deposit (k VND)",depShort:"Deposit {a}",remain:"{a} left to pay",noticeH:"Staff notice",noticeP:"Shown at the top of the app for all staff, e.g. something to sell today.",info:"Info",warn:"Warning",noticeSave:"Post notice",noticeClear:"Remove notice",noticePosted:"Notice posted.",noticeRemoved:"Notice removed.",delBk:"Delete this booking",delBkWarn:"Permanently delete {n}'s booking? Only for bookings made by mistake. If the guests have left, use “Guests left” instead to keep the history.",deleted:"Booking deleted.",moveT:"Move table",moveHint:"Tip: press and hold a table and drag it onto another table to join them. Drag a seated table onto a free one to move or extend the group.",dropAsk:"Drop {n} onto {t}:",dropMove:"Move the group to {t}",dropJoin:"Join {t} to the group",joinedFree:"Joined {t}.",splitT:"Split tables",splitDone:"Split {t}.",diffSec:"You can only join tables in the same section.",lossL:"Seats lost at each join",lossHint:"Default 2: two 4-seat tables joined seat 6, four 4-seat tables seat 10.",movePick:"Pick the new table for {n} (now at {t})",cancel:"Cancel",moved:"Moved {n} to {t}.",targetBusy:"Table {t} already has guests.",targetSoon:"Table {t} has a booking at {h}. Move anyway?",overCap:"{p} guests but {t} only seats {s}. Continue anyway? (e.g. an extra chair was added)",proceed:"Continue",convert:"Convert to combo",convT:"Convert {n} to a combo",convHint:"Tap a new table in section A or B to move the group there (the old table is freed). Tap more tables if the group needs several.",converted:"Converted to {c}.",walkNote:"Notes",needTable:"Pick at least one table.",howMany:"Guests",seatNow:"Seat now",notBooked:"not booked",guestsU:"guests",groupsU:"groups",bookedTables:"{n} tables booked",layouts:"Table layouts",active:"In use",useThis:"Use this layout",dupL:"Duplicate",delLWarn:"Delete layout “{n}”? This can't be undone.",newL:"New layout",lName:"Layout name",defaultLName:"Main layout",copyOf:"{n} (copy)",switched:"Now using: {n}",editing:"Editing: {n}",histSearch:"Search name, phone, bracelet, notes",r7:"7 days",r30:"30 days",rAll:"All",histSum:"{g} groups, {p} guests, {c}% combos",histEmpty:"No guests in this period.",csv:"Download CSV",pickDateHint:"Booking on another day? Change the date above the tables.",seatedLeft:"{a} to {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Walk-in",other:"Other"}}
 };
 const SLOTS=[["08:30","A"],["09:30","A"],["10:30","B"],["13:30","B"],["14:30","A"]];
 const SLOTPLAN=[[["welcome","08:30"],["beach","09:00"],["activity","10:30"],["lunch","11:00"]],[["welcome","09:30"],["beach","10:00"],["activity","11:30"],["lunch","12:00"]],[["welcome","10:30"],["beach","11:00"],["activity","12:30"],["lunch","13:00"]],[["welcome","13:30"],["lunch","13:45"],["beach","14:30"],["activity","16:00"]],[["welcome","14:30"],["beach","15:00"],["activity","16:30"],["dinner","17:30"]]];
@@ -493,7 +514,8 @@ const isActive=b=>b.status==="booked"||b.status==="seated";
 
 /* ---------- stores ---------- */
 function memStore(){
- let config=null;const bookings={};const docs={},dl=new Set();const cl=new Set(),bl=new Set(),hl=new Set();const joins={},jl=new Set();
+ let config=null;const bookings={};const msgs=[],logs=[],ml=new Set(),ll=new Set();
+ const emitM=()=>ml.forEach(o=>o.cb(msgs.filter(m=>m.date===o.date).map(m=>({...m}))));const emitL=()=>ll.forEach(o=>o.cb(logs.filter(e=>!o.from||e.date>=o.from).map(e=>({...e}))));const docs={},dl=new Set();const cl=new Set(),bl=new Set(),hl=new Set();const joins={},jl=new Set();
  const hist=()=>Object.values(bookings).filter(b=>b.status==="left").sort((a,b)=>a.date<b.date?1:-1).map(b=>({...b}));
  const emitC=()=>cl.forEach(f=>f(config));
  const emitB=()=>{bl.forEach(o=>o.cb(Object.values(bookings).filter(b=>b.date===o.date).map(b=>({...b}))));hl.forEach(f=>f(hist()))};
@@ -501,6 +523,10 @@ function memStore(){
   watchConfig(cb){cl.add(cb);setTimeout(()=>cb(config));return()=>cl.delete(cb)},
   async saveConfig(c){config=JSON.parse(JSON.stringify(c));emitC()},
   watchBookings(date,cb){const o={date,cb};bl.add(o);setTimeout(()=>cb(Object.values(bookings).filter(b=>b.date===date).map(b=>({...b}))));return()=>bl.delete(o)},
+  watchMsgs(date,cb){const o={date,cb};ml.add(o);setTimeout(emitM);return()=>ml.delete(o)},
+  async addMsg(m){const id="m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);msgs.push({...m,id});emitM();return id},
+  watchLog(from,cb){const o={from,cb};ll.add(o);setTimeout(emitL);return()=>ll.delete(o)},
+  async addLog(e){logs.push({...e,id:"l"+Math.random().toString(36).slice(2,9)});emitL()},
   watchDoc(path,cb){const o={path,cb};dl.add(o);setTimeout(()=>cb(docs[path]||null));return()=>dl.delete(o)},
   async setDoc(path,d){docs[path]={...d};dl.forEach(o=>{if(o.path===path)o.cb({...docs[path]})})},
   watchJoins(lid,cb){const o={lid,cb};jl.add(o);setTimeout(()=>cb((joins[lid]||[]).map(g=>[...g])));return()=>jl.delete(o)},
@@ -519,6 +545,10 @@ function dbStore(db){
   watchConfig(cb){return db.doc("config/main").onSnapshot(s=>cb(s.exists?s.data():null),onErr)},
   saveConfig(c){return db.doc("config/main").set(c)},
   watchBookings(date,cb){return db.collection("bookings").where("date","==",date).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
+  watchMsgs(date,cb){return db.collection("messages").where("date","==",date).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
+  async addMsg(m){const r=db.collection("messages").doc();await r.set(m);return r.id},
+  watchLog(from,cb){let q=db.collection("log");if(from)q=q.where("date",">=",from);return q.orderBy("date","desc").limit(1500).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
+  addLog(e){return db.collection("log").doc().set(e)},
   watchDoc(path,cb){return db.doc(path).onSnapshot(s=>cb(s.exists?{...s.data()}:null),onErr)},
   setDoc(path,d){return db.doc(path).set(d)},
   watchJoins(lid,cb){return db.doc("joins/"+lid).onSnapshot(s=>{const d=s.exists?s.data():null;cb(d&&Array.isArray(d.groups)?d.groups.map(x=>String(x).split(",").filter(Boolean)):[])},onErr)},
@@ -527,7 +557,7 @@ function dbStore(db){
   putBooking(id,b){const {id:_,...r}=b;return db.doc("bookings/"+id).set(r)},
   patchBooking(id,p){return db.doc("bookings/"+id).update(p)},
   deleteBooking(id){return db.doc("bookings/"+id).delete()},
-  async cleanup(before){const s=await db.collection("bookings").where("date","<",before).limit(300).get();for(const d of s.docs){await db.doc("bookings/"+d.id).delete()}return s.size},
+  async cleanup(before){let n=0;for(const c of ["bookings","log","messages"]){const s=await db.collection(c).where("date","<",before).limit(300).get();for(const d of s.docs){await db.doc(c+"/"+d.id).delete()}if(c==="bookings")n=s.size}return n},
   newId(){return db.collection("bookings").doc().id}
  };
 }
@@ -545,11 +575,16 @@ async function write(fn){
 function subscribe(){
  store.watchConfig(c=>{state.config=norm(c);const lid=(activeLayout()||{}).id||null;if(lid!==joinsLid){if(unsubJoins)unsubJoins();unsubJoins=null;joinsLid=lid;state.joins=[];if(lid)unsubJoins=store.watchJoins(lid,g=>{state.joins=g;render()})}render()});
  store.watchDoc("notice/main",d=>{state.notice=d;renderNotice();if(state.tab==="set")render()});
- resubToday();resubDay();
+ resubToday();resubDay();resubMsgs();
 }
 function resubToday(){if(unsubToday)unsubToday();todayKey=todayStr();unsubToday=store.watchBookings(todayKey,list=>{state.today=list;if(state.date===todayKey)state.day=list;render()})}
 function histFrom(){if(state.histRange==="all")return null;const d=new Date();d.setDate(d.getDate()-(+state.histRange));return dstr(d)}
-function resubHist(force){if(!store)return;if(state.tab==="hist"){if(force&&unsubHist){unsubHist();unsubHist=null}if(!unsubHist)unsubHist=store.watchHistory(histFrom(),list=>{state.hist=list;if(state.tab==="hist")renderHist()})}else if(unsubHist){unsubHist();unsubHist=null}}
+function resubHist(force){if(!store)return;if(state.tab==="hist"){if(force&&unsubHist){unsubHist();unsubHist=null}if(!unsubHist)unsubHist=(state.histView==="log"&&store.watchLog)?store.watchLog(histFrom(),list=>{state.log=list;if(state.tab==="hist")renderHist()}):store.watchHistory(histFrom(),list=>{state.hist=list;if(state.tab==="hist")renderHist()})}else if(unsubHist){unsubHist();unsubHist=null}}
+let unsubMsgs=null,msgKey=null,msgSeeded=false;const seenMsg=new Set();const sentByMe=new Set();
+function resubMsgs(){if(!store||!store.watchMsgs)return;const k=todayStr();if(k===msgKey&&unsubMsgs)return;if(unsubMsgs)unsubMsgs();msgKey=k;msgSeeded=false;
+ unsubMsgs=store.watchMsgs(k,list=>{state.msgs=list.sort((a,b)=>b.at-a.at);const fresh=[];list.forEach(m=>{if(!seenMsg.has(m.id)){seenMsg.add(m.id);if(msgSeeded)fresh.push(m)}});msgSeeded=true;fresh.forEach(notifyMsg);renderAlerts();renderBell();if(document.querySelector("#msgList"))drawMsgs()})}
+let lastLog=null;
+function L(act,b,o){o=o||{};if(store&&store.addLog){const e={at:Date.now(),date:todayStr(),time:nowHM(),by:state.staff||state.user||"?",act,bid:(b&&b.id)||"",name:(b&&b.name)||"",br:(b&&b.bracelet)||"",type:(b&&b.type)||"",d:o.d||"",dt:o.dt||"",u:o.u||""};Promise.resolve(store.addLog(e)).catch(()=>{})}lastLog={act,b};return true}
 function resubDay(){if(unsubDay){unsubDay();unsubDay=null}if(state.date===todayKey){state.day=state.today;return}unsubDay=store.watchBookings(state.date,list=>{state.day=list;render()})}
 
 /* ---------- table logic ---------- */
@@ -616,8 +651,23 @@ function renderTabs(){
  const tabs=[["floor","tFloor"],["book","tBook"],["hist","tHist"],["hb","tHb"],["set","tSet"]];
  document.getElementById("tabs").innerHTML=tabs.map(([id,k])=>`<button type="button" data-tab="${id}" ${state.tab===id?'aria-current="page"':""}>${ICON[id]}<span>${t(k)}</span></button>`).join("");
 }
-function renderNotice(){const el=document.getElementById("noticeBox");if(!el)return;const n=state.notice;
- el.innerHTML=n&&n.text?`<div class="notice ${n.kind==="warn"?"warn":"info"}" role="${n.kind==="warn"?"alert":"status"}"><b>${n.kind==="warn"?"⚠ "+t("warn"):"ℹ "+t("info")}:</b> ${esc(n.text).replace(/\n/g,"<br>")}${n.by?`<small> — ${esc(n.by)}</small>`:""}</div>`:""}
+function renderNotice(){const el=document.getElementById("noticeBox");if(!el)return;const n=state.notice;const show=state.mode!=="login"&&(state.tab==="floor"||state.tab==="book");
+ el.innerHTML=show&&n&&n.text?`<div class="notice info" role="status"><b>📌 ${t("pinH")}:</b> ${esc(n.text).replace(/\n/g,"<br>")}${n.by?`<small> — ${esc(n.by)}</small>`:""}</div>`:""}
+function renderBell(){const b=document.getElementById("bellBtn");if(!b)return;b.hidden=!store||state.mode==="login";const seen=Math.max(+(ls.get("msgSeen")||0),seenMem);const n=(state.msgs||[]).filter(m=>m.at>seen&&!sentByMe.has(m.id)).length;b.querySelector(".cnt").textContent=n?String(n):"";b.classList.toggle("has",n>0)}
+const ackMem=new Set();let seenMem=0;
+function acked(){let a=[];try{a=JSON.parse(ls.get("acked")||"[]")}catch(_){}return [...new Set([...a,...ackMem])]}
+function renderAlerts(){const el=document.getElementById("alertBox");if(!el)return;if(state.mode==="login"){el.innerHTML="";return}const ak=new Set(acked());const now=Date.now();
+ const list=(state.msgs||[]).filter(m=>!ak.has(m.id)&&now-m.at<15*60000&&(state.mode==="preview"||!sentByMe.has(m.id))).slice(0,2);
+ el.innerHTML=list.map(m=>`<div class="alert" role="alert"><div><b>⚠ ${esc(m.text)}</b><small>${esc(m.time||"")}${m.by?" · "+esc(m.by):""}</small></div><button type="button" class="btn sm" data-act="ack" data-id="${m.id}">${t("ok")}</button></div>`).join("")}
+function notifyMsg(m){if(state.mode!=="preview"&&sentByMe.has(m.id))return;try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(_){}
+ if(document.hidden&&"Notification" in window&&Notification.permission==="granted"&&navigator.serviceWorker){navigator.serviceWorker.ready.then(r=>r.showNotification("Nhà Trên Biển",{body:m.text+(m.by?" — "+m.by:""),icon:"icons/icon-192.png",tag:m.id,vibrate:[200,100,200]})).catch(()=>{})}}
+function msgSheet(){seenMem=Date.now();ls.set("msgSeen",String(seenMem));renderBell();
+ const perm="Notification" in window?Notification.permission:"na";
+ openSheet(`<h2>${t("msgs")}</h2><div class="field"><textarea id="msgIn" rows="2" placeholder="${esc(t("msgPh"))}"></textarea></div><div class="chips">${["q1","q2","q3","q4"].map(k=>`<button type="button" data-act="qchip" data-k="${k}">${t(k)}</button>`).join("")}</div>
+ <div class="acts"><button class="btn pri" data-act="msgSend">${t("send")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>
+ <p class="hint" style="margin-top:12px">${perm==="granted"?t("notifGranted"):perm==="denied"?t("notifDenied"):perm==="na"?t("notifNA"):`<button type="button" class="btn ghost sm" data-act="notifOn">🔔 ${t("notifOn")}</button>`} ${perm!=="na"?t("notifNote"):""}</p>
+ <div id="msgList" style="margin-top:10px"></div>`);drawMsgs()}
+function drawMsgs(){const el=document.getElementById("msgList");if(!el)return;const l=state.msgs||[];el.innerHTML=l.length?l.map(m=>`<div class="mrow"><span class="tm">${esc(m.time||"")}</span><span><b>${esc(m.text)}</b>${m.by?`<small> — ${esc(m.by)}</small>`:""}</span></div>`).join(""):`<p class="hint">${t("msgNone")}</p>`}
 function loginHTML(){return `<form class="card" id="loginForm" style="max-width:420px;margin:30px auto" autocomplete="on"><h2>${t("login")}</h2><p class="hint">${t("loginHint")}</p><div class="field"><label for="lg_email">${t("email")}</label><input id="lg_email" type="email" autocomplete="username" required></div><div class="field"><label for="lg_pw">${t("password")}</label><input id="lg_pw" type="password" autocomplete="current-password" required></div><p class="err" id="lg_err"></p><div style="margin-top:14px"><button class="btn pri" type="submit" style="width:100%">${t("login")}</button></div></form>`}
 function renderBanner(){
  const m={connecting:t("connecting"),preview:t("preview"),offline:t("offline")}[state.mode]||"";
@@ -627,7 +677,7 @@ function renderBanner(){
 }
 function render(){
  if(todayStr()!==todayKey&&store){resubToday();if(state.date<todayStr())state.date=todayStr();resubDay()}
- document.documentElement.lang=lang;renderBanner();renderNotice();renderTabs();
+ document.documentElement.lang=lang;renderBanner();renderNotice();renderBell();renderAlerts();renderTabs();
  const navEl=document.querySelector("nav.tabs");navEl.hidden=state.mode==="login";
  if(state.mode==="login"){document.getElementById("fab").hidden=true;const m=document.getElementById("main");if(!m.querySelector("#loginForm"))m.innerHTML=loginHTML();return}
  const fab=document.getElementById("fab");
@@ -734,7 +784,7 @@ function renderHB(){
 function renderSettings(){
  const root=document.getElementById("setRoot");if(!root)return;
  const nk=state.noticeKind||(state.notice&&state.notice.kind)||"info";if(!state.noticeKind)state.noticeKind=nk;
- let out=`${state.canWrite&&state.mode!=="connecting"?`<div class="card"><h2>${t("noticeH")}</h2><p class="hint">${t("noticeP")}</p><div class="seg" style="margin-top:10px;max-width:320px">${["info","warn"].map(k=>`<button type="button" data-act="nkind" data-k="${k}" aria-pressed="${nk===k}">${t(k)}</button>`).join("")}</div><div class="field"><textarea id="noticeIn" rows="3">${esc((state.notice&&state.notice.text)||"")}</textarea></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" data-act="noticeSave">${t("noticeSave")}</button>${state.notice&&state.notice.text?`<button class="btn ghost" data-act="noticeClear">${t("noticeClear")}</button>`:""}</div></div>`:""}${state.user?`<div class="card"><h2>${t("account")}</h2><p class="hint">${t("signedAs",{e:esc(state.user)})}</p><p style="margin-top:8px"><button class="btn ghost sm" data-act="signOut">${t("signOut")}</button></p></div>`:""}<div class="card"><h2>${t("me")}</h2><div class="field" style="margin-top:0"><input id="staffIn" value="${esc(state.staff)}" autocomplete="name"></div><p class="hint">${t("meHint")}</p></div>`;
+ let out=`${state.canWrite&&state.mode!=="connecting"?`<div class="card"><h2>📌 ${t("pinH")}</h2><p class="hint">${t("pinP")}</p><div class="field"><textarea id="noticeIn" rows="3">${esc((state.notice&&state.notice.text)||"")}</textarea></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" data-act="noticeSave">${t("noticeSave")}</button>${state.notice&&state.notice.text?`<button class="btn ghost" data-act="noticeClear">${t("noticeClear")}</button>`:""}</div></div>`:""}${state.user?`<div class="card"><h2>${t("account")}</h2><p class="hint">${t("signedAs",{e:esc(state.user)})}</p><p style="margin-top:8px"><button class="btn ghost sm" data-act="signOut">${t("signOut")}</button></p></div>`:""}<div class="card"><h2>${t("me")}</h2><div class="field" style="margin-top:0"><input id="staffIn" value="${esc(state.staff)}" autocomplete="name"></div><p class="hint">${t("meHint")}</p></div>`;
  const can=state.canWrite&&state.mode!=="connecting";
  const Ls=layouts();const act=activeLayout();
  out+=`<div class="card"><h2>${t("layouts")}</h2>${Ls.length?Ls.map(l=>`<div class="lrow"><div><b>${esc(l.name)}</b>${act&&act.id===l.id?` <span class="chip s-booked">${t("active")}</span>`:""}<div class="hint">${l.tables.length} ${t("tablesU")}, ${l.tables.reduce((a,x)=>a+(+x.seats||0),0)} ${t("seatsU")}</div></div>${can?`<div class="lacts">${act&&act.id===l.id?"":`<button class="btn teal sm" data-act="useL" data-id="${l.id}">${t("useThis")}</button>`}<button class="btn ghost sm" data-act="editL" data-id="${l.id}">${t("edit")}</button><button class="btn ghost sm" data-act="dupL" data-id="${l.id}">${t("dupL")}</button><button class="btn ghost sm" data-act="delL" data-id="${l.id}">${t("del")}</button></div>`:""}</div>`).join(""):`<p class="hint">${t("setupNeeded")}</p>`}
@@ -753,7 +803,19 @@ function renderSettings(){
 }
 
 /* ---------- history ---------- */
-function histShell(){return `<input class="search" id="histSearch" type="search" placeholder="${esc(t("histSearch"))}" value="${esc(state.histQ)}"><div id="histBody"></div>`}
+function histShell(){const v=state.histView||"left";return `<div class="seg" style="max-width:420px;margin-bottom:10px">${[["left","vLeft"],["log","vLog"]].map(([k,l])=>`<button type="button" data-act="hview" data-v="${k}" aria-pressed="${v===k}">${t(l)}</button>`).join("")}</div><input class="search" id="histSearch" type="search" placeholder="${esc(t(v==="log"?"logSearch":"histSearch"))}" value="${esc(state.histQ)}"><div id="histBody"></div>`}
+function logText(e){const d=e.act==="undo"?t("log_"+(e.u||"edit"),{d:""}).replace(/[:\s]+$/,""):e.dt?t(e.dt)+(e.d?", "+e.d:""):e.d;return t("log_"+e.act,{d:d||""}).replace(/\s*:\s*$/,"")}
+function renderLog(){
+ const el=document.getElementById("histBody");if(!el)return;
+ let list=(state.log||[]).slice();const q=fold(state.histQ).trim();
+ if(q)list=list.filter(e=>q.split(/\s+/).every(w=>fold([e.by,e.name,e.br,"#"+(e.br||""),e.d,logText(e)].join(" ")).includes(w)));
+ list.sort((a,b)=>b.at-a.at);
+ let out=`<div class="chips" style="margin-top:10px">${[["7","r7"],["30","r30"],["all","rAll"]].map(([r,k])=>`<button type="button" data-act="range" data-r="${r}" aria-pressed="${state.histRange===r}">${t(k)}</button>`).join("")}</div>`;
+ if(!list.length){el.innerHTML=out+`<p class="empty">${t("logNone")}</p>`;return}
+ const dates=[...new Set(list.map(e=>e.date))];
+ for(const d of dates){out+=`<div class="tgroup"><h3>${d}</h3>${list.filter(e=>e.date===d).map(e=>`<div class="lgrow"><span class="tm">${esc(e.time||"")}</span><span><b>${esc(e.by||"?")}</b> · ${esc(logText(e))}${e.name||e.br?`<br><small>${e.br?`<span class="br">#${esc(e.br)}</span> `:""}${esc(e.name||"")}</small>`:""}</span></div>`).join("")}</div>`}
+ el.innerHTML=out;
+}
 function histFiltered(){
  let list=state.hist.slice();
  if(state.histRange!=="all"){const d=new Date();d.setDate(d.getDate()-(+state.histRange));const from=dstr(d);list=list.filter(b=>b.date>=from)}
@@ -762,6 +824,7 @@ function histFiltered(){
  return list.sort((a,b)=>a.date===b.date?toMin(b.time)-toMin(a.time):(a.date<b.date?1:-1));
 }
 function renderHist(){
+ if((state.histView||"left")==="log")return renderLog();
  const el=document.getElementById("histBody");if(!el)return;
  const list=histFiltered();const p=list.reduce((a,b)=>a+pax(b),0);const combos=list.filter(b=>b.type==="combo"||b.type==="lobster").length;
  const srcCount={};list.forEach(b=>{if(b.source)srcCount[b.source]=(srcCount[b.source]||0)+1});
@@ -855,7 +918,7 @@ async function performMove(id,from,to){
  const rest=(b.tables||[]).filter(x=>!from.includes(x)&&!tgt.includes(x));const ts=[...tgt,...rest];
  if(!(await capOk(b,ts))){render();return}
  const prev=[...(b.tables||[])];
- if(await write(()=>store.patchBooking(id,{tables:ts,...stamp()})))toast(t("moved",{n:b.name,t:tablesLabel(ts)}),()=>write(()=>store.patchBooking(id,{tables:prev,...stamp()})));
+ if(await write(()=>store.patchBooking(id,{tables:ts,...stamp()}))&&L("move",b,{d:tablesLabel(prev)+" → "+tablesLabel(ts)}))toast(t("moved",{n:b.name,t:tablesLabel(ts)}),()=>write(()=>store.patchBooking(id,{tables:prev,...stamp()})));
  render();
 }
 function assignSheet(tid){
@@ -883,8 +946,8 @@ function drawForm(){
  <div class="row2"><div class="field"><label for="f_date">${t("date")}</label><input id="f_date" type="date" value="${b.date}"></div><div class="field"><label for="f_time">${t("time")}</label><select id="f_time">${timeOpts(b.time)}</select></div></div>
  ${b.type==="combo"||b.type==="lobster"?`<div class="chips">${SLOTS.map(([tm])=>`<button type="button" data-slot="${tm}" aria-pressed="${b.time===tm}">${tm}</button>`).join("")}</div>`:""}
  <div class="row3">${step("adults")}${step("kids")}${step("small")}</div>
- <div class="row2"><div class="field"><label for="f_br">${t("bracelet")}</label><input id="f_br" value="${esc(b.bracelet||"")}" placeholder="${esc(t("braceletHint"))}" autocomplete="off"></div>
- <div class="field"><span class="flabel">${t("deposit")}</span><div class="depwrap"><label class="ck"><input type="checkbox" id="f_dep" ${b.deposit?"checked":""}> ${t("deposit")}</label><input id="f_depAmt" type="number" inputmode="numeric" min="0" placeholder="0" value="${b.depAmt||""}" aria-label="${esc(t("depAmt"))}" ${b.deposit?"":"disabled"}><span class="hint">k</span></div></div></div>
+ <div class="field"><label for="f_br">${t("bracelet")}</label><input id="f_br" value="${esc(b.bracelet||"")}" placeholder="${esc(t("braceletHint"))}" autocomplete="off"></div>
+ <div class="field"><label class="ckbig"><input type="checkbox" id="f_dep" ${b.deposit?"checked":""}> ${t("deposit")}</label><div class="amt" id="f_amtRow" ${b.deposit?"":"hidden"}><input id="f_depAmt" type="number" inputmode="numeric" min="0" placeholder="${esc(t("depAmt"))}" value="${b.depAmt||""}" aria-label="${esc(t("depAmt"))}"><span>k</span></div></div>
  <div class="field"><label for="f_src">${t("source")}</label><select id="f_src"><option value=""></option>${Object.entries(U[lang].src).map(([k,v])=>`<option value="${k}" ${b.source===k?"selected":""}>${v}</option>`).join("")}</select></div>
  <div class="field"><label for="f_note">${t("note")}</label><textarea id="f_note" rows="2">${esc(b.note||"")}</textarea></div>
  ${b.type==="beach"?"":`<div class="field"><span class="flabel">${t("tables")}</span>${sugg?`<p class="hint" style="margin:0 0 6px">${sugg}</p>`:""}
@@ -909,8 +972,9 @@ function readForm(){
 
 /* ---------- actions ---------- */
 function toast(msg,undo){
+ const ctx=lastLog;lastLog=null;
  const r=document.getElementById("toastRoot");r.innerHTML=`<div class="toast">${esc(msg)}${undo?`<button type="button" id="undoBtn">${t("undo")}</button>`:""}</div>`;
- if(undo)document.getElementById("undoBtn").onclick=()=>{undo();r.innerHTML=""};
+ if(undo)document.getElementById("undoBtn").onclick=()=>{undo();if(ctx)L("undo",ctx.b,{u:ctx.act});r.innerHTML=""};
  clearTimeout(toast.tm);toast.tm=setTimeout(()=>r.innerHTML="",undo?6000:2500);
 }
 const findB=id=>state.today.find(b=>b.id===id)||state.day.find(b=>b.id===id);
@@ -941,11 +1005,18 @@ document.addEventListener("click",async e=>{
   case "today":state.date=todayKey;resubDay();render();break;
   case "walkin":walkinSheet(el.dataset.table);break;
   case "beachNew":beachSheet();break;
+  case "msgs":msgSheet();break;
+  case "qchip":{const i=document.getElementById("msgIn");if(i){i.value=(i.value.trim()?i.value.trim()+" ":"")+t(el.dataset.k);i.focus()}break}
+  case "msgSend":{const tx=(document.getElementById("msgIn").value||"").trim();if(!tx)break;const m={text:tx,by:state.staff||state.user||"",at:Date.now(),date:todayStr(),time:nowHM()};
+   try{const id=await store.addMsg(m);if(id)sentByMe.add(id);L("msg",null,{d:tx});document.getElementById("msgIn").value="";toast(t("saved"))}catch(e){toast(t("errSave"))}break}
+  case "ack":{ackMem.add(el.dataset.id);const a=acked();ls.set("acked",JSON.stringify(a.slice(-200)));renderAlerts();break}
+  case "notifOn":{try{const r=await Notification.requestPermission();if(r==="granted"&&navigator.serviceWorker)navigator.serviceWorker.ready.then(x=>x.showNotification("Nhà Trên Biển",{body:t("notifGranted"),icon:"icons/icon-192.png"})).catch(()=>{})}catch(_){}msgSheet();break}
+  case "hview":state.histView=el.dataset.v;resubHist(true);document.getElementById("main").innerHTML=histShell();renderHist();break;
   case "signOut":try{await firebase.auth().signOut()}catch(_){}location.reload();break;
-  case "beachSave":{const bc=state.beach;if(bc.adults+bc.kids+bc.small<1)break;const g=id=>(document.getElementById(id).value||"").trim();const rec={name:t("beach"),phone:"",bracelet:g("b_br"),note:g("b_note"),date:todayKey,time:nowHM(),type:"beach",adults:bc.adults,kids:bc.kids,small:bc.small,source:"walk",tables:[],status:"seated",seatedAt:nowHM(),createdAt:Date.now(),...stamp()};closeSheet();if(await write(()=>store.putBooking(store.newId(),rec)))toast(t("saved"));break}
+  case "beachSave":{const bc=state.beach;if(bc.adults+bc.kids+bc.small<1)break;const g=id=>(document.getElementById(id).value||"").trim();const rec={name:t("beach"),phone:"",bracelet:g("b_br"),note:g("b_note"),date:todayKey,time:nowHM(),type:"beach",adults:bc.adults,kids:bc.kids,small:bc.small,source:"walk",tables:[],status:"seated",seatedAt:nowHM(),createdAt:Date.now(),...stamp()};closeSheet();const nid=store.newId();if(await write(()=>store.putBooking(nid,rec))&&L("beach",{...rec,id:nid}))toast(t("saved"));break}
   case "nkind":state.noticeKind=el.dataset.k;renderSettings();break;
-  case "noticeSave":{const tx=(document.getElementById("noticeIn").value||"").trim();if(!tx)break;if(await write(()=>store.setDoc("notice/main",{text:tx,kind:state.noticeKind||"info",by:state.staff||"",at:Date.now()})))toast(t("noticePosted"));break}
-  case "noticeClear":{if(await write(()=>store.setDoc("notice/main",{text:"",kind:"info",by:state.staff||"",at:Date.now()})))toast(t("noticeRemoved"));break}
+  case "noticeSave":{const tx=(document.getElementById("noticeIn").value||"").trim();if(!tx)break;if(await write(()=>store.setDoc("notice/main",{text:tx,kind:"info",by:state.staff||"",at:Date.now()}))&&L("notice",null,{d:tx}))toast(t("noticePosted"));break}
+  case "noticeClear":{if(await write(()=>store.setDoc("notice/main",{text:"",kind:"info",by:state.staff||"",at:Date.now()}))&&L("noticeOff",null))toast(t("noticeRemoved"));break}
   case "nstep":{const inp=document.getElementById(el.dataset.p+"_"+el.dataset.k);if(!inp)break;const v=Math.max(0,(parseInt(inp.value,10)||0)+(+el.dataset.d));inp.value=v;syncNum(el.dataset.p,el.dataset.k,v);break}
   case "flt":state.floorFilter=state.floorFilter===el.dataset.f?null:el.dataset.f;render();break;
   case "moveStart":state.moveFrom={id:el.dataset.id,from:String(el.dataset.from).split(",")};closeSheet();render();break;
@@ -962,26 +1033,26 @@ document.addEventListener("click",async e=>{
    if(c.adults+c.kids+c.small<1)break;
    if(!(await capOk(c,c.tables)))break;
    const b=findB(c.id);if(!b)break;const prev={type:b.type,adults:b.adults,kids:b.kids,small:b.small,tables:b.tables};
-   closeSheet();if(c.tables.length>1)await joinIds(c.tables);const rn=c.fromBeach&&(b.name===U.vi.beach||b.name===U.en.beach)?{name:t(c.type==="walkin"?"walkin":"normal")}:{};if(c.fromBeach)prev.name=b.name;if(await write(()=>store.patchBooking(c.id,{...rn,type:c.type,adults:c.adults,kids:c.kids,small:c.small,tables:c.tables,...stamp()})))toast(t("converted",{c:t(c.type)}),()=>write(()=>store.patchBooking(c.id,{...prev,...stamp()})));break}
+   closeSheet();if(c.tables.length>1)await joinIds(c.tables);const rn=c.fromBeach&&(b.name===U.vi.beach||b.name===U.en.beach)?{name:t(c.type==="walkin"?"walkin":"normal")}:{};if(c.fromBeach)prev.name=b.name;if(await write(()=>store.patchBooking(c.id,{...rn,type:c.type,adults:c.adults,kids:c.kids,small:c.small,tables:c.tables,...stamp()}))&&L("convert",b,{dt:c.type,d:tablesLabel(c.tables)}))toast(t("converted",{c:t(c.type)}),()=>write(()=>store.patchBooking(c.id,{...prev,...stamp()})));break}
   case "walkSave":{const tid=el.dataset.table;const w=state.walk;if(w.adults+w.kids+w.small<1)break;const note=(document.getElementById("w_note").value||"").trim();const bracelet=(document.getElementById("w_br").value||"").trim();const rec={bracelet,name:t("walkin"),phone:"",date:todayKey,time:nowHM(),type:"walkin",adults:w.adults,kids:w.kids,small:w.small,note,source:"walk",tables:[...w.base,...(w.extra||[])],status:"seated",seatedAt:nowHM(),createdAt:Date.now(),...stamp()};
    {const cm=conflictSet(todayKey,rec.time,"walkin",null);const hit=rec.tables.find(x=>cm.has(x));const ob=hit&&cm.get(hit);if(ob&&!(await ask(t("clashWalk",{t:tName(hit),h:ob.time,n:ob.name}))))break}
-   if(!(await capOk(rec,rec.tables)))break;closeSheet();const id=store.newId();if(w.extra.length)await joinIds(rec.tables);if(await write(()=>store.putBooking(id,rec)))toast(t("seatedT",{n:`${pax(rec)} ${t("guestsU")}, ${tablesLabel(rec.tables)}`}));break}
+   if(!(await capOk(rec,rec.tables)))break;closeSheet();const id=store.newId();if(w.extra.length)await joinIds(rec.tables);if(await write(()=>store.putBooking(id,rec))&&L("walkin",{...rec,id},{d:tablesLabel(rec.tables)}))toast(t("seatedT",{n:`${pax(rec)} ${t("guestsU")}, ${tablesLabel(rec.tables)}`}));break}
   case "wx":{const w=state.walk,id=el.dataset.tid,i=w.extra.indexOf(id);i<0?w.extra.push(id):w.extra.splice(i,1);el.setAttribute("aria-pressed",i<0);const all=[...w.base,...w.extra];const e=document.getElementById("ws_seats");if(e)e.textContent=t("seatsTotal",{s:effSeats(all)})+" ("+tablesLabel(all)+")";break}
-  case "splitFree":{const ids=String(el.dataset.ids).split(",");closeSheet();const prev=await setJoins(gs=>gs.map(g=>g.filter(x=>!ids.includes(x))));toast(t("splitDone",{t:tablesLabel(ids)}),()=>restoreJoins(prev));break}
+  case "splitFree":{const ids=String(el.dataset.ids).split(",");closeSheet();const prev=await setJoins(gs=>gs.map(g=>g.filter(x=>!ids.includes(x))));L("split",null,{d:tablesLabel(ids)});toast(t("splitDone",{t:tablesLabel(ids)}),()=>restoreJoins(prev));break}
   case "joinOpen":joinSheet(el.dataset.id);break;
   case "jPick":{const j=state.join,id=el.dataset.tid,i=j.tables.indexOf(id);i<0?j.tables.push(id):j.tables.splice(i,1);drawJoin();break}
   case "jSave":{const j=state.join;const b=findB(j.id);if(!b)break;const err=document.getElementById("j_err");if(!j.tables.length){err.textContent=t("needTable");break}
    if(!(await capOk(b,j.tables)))break;const prev=[...(b.tables||[])];const removed=prev.filter(x=>!j.tables.includes(x));closeSheet();
    let pj=null;if(b.date===todayKey)pj=await setJoins(gs=>bySection(j.tables).filter(a=>a.length>1).reduce((acc,a)=>mergeG(acc,a),gs.map(g=>g.filter(x=>!removed.includes(x)))));
-   if(await write(()=>store.patchBooking(b.id,{tables:j.tables,...stamp()})))toast(t("joinedT",{t:tablesLabel(j.tables)}),()=>{write(()=>store.patchBooking(b.id,{tables:prev,...stamp()}));if(pj)restoreJoins(pj)});break}
+   if(await write(()=>store.patchBooking(b.id,{tables:j.tables,...stamp()}))&&L("tables",b,{d:tablesLabel(j.tables)}))toast(t("joinedT",{t:tablesLabel(j.tables)}),()=>{write(()=>store.patchBooking(b.id,{tables:prev,...stamp()}));if(pj)restoreJoins(pj)});break}
   case "assignList":assignSheet(el.dataset.table);break;
-  case "assignTo":{const b=findB(el.dataset.id);if(!b)break;{const ob=conflictSet(b.date,b.time,b.type,b.id).get(el.dataset.table);if(ob){toast(t("clash",{t:tName(el.dataset.table),h:ob.time,n:ob.name}));break}}const add=isToday()?physGroup(el.dataset.table):[el.dataset.table];const ts=[...new Set([...(b.tables||[]),...add])];if(!(await capOk(b,ts)))break;closeSheet();if(await write(()=>store.patchBooking(b.id,{tables:ts,...stamp()})))toast(t("saved"));break}
-  case "seat":{const b=findB(el.dataset.id);if(!b)break;if(!(b.tables||[]).length&&b.type!=="beach"){formSheet({...b,status:"seated"},{});break}closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"seated",seatedAt:nowHM(),...stamp()})))toast(t("seatedT",{n:b.name}));break}
-  case "leave":{const b=findB(el.dataset.id);if(!b)break;closeSheet();const prev=b.status;if(await write(()=>store.patchBooking(b.id,{status:"left",leftAt:nowHM(),...stamp()})))toast((b.tables||[]).length?t("freed",{t:tablesLabel(b.tables)}):t("saved"),()=>write(()=>store.patchBooking(b.id,{status:prev,...stamp()})));break}
-  case "noshow":{const b=findB(el.dataset.id);if(!b)break;closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"noshow",...stamp()})))toast(t("s_noshow"),()=>write(()=>store.patchBooking(b.id,{status:"booked",...stamp()})));break}
+  case "assignTo":{const b=findB(el.dataset.id);if(!b)break;{const ob=conflictSet(b.date,b.time,b.type,b.id).get(el.dataset.table);if(ob){toast(t("clash",{t:tName(el.dataset.table),h:ob.time,n:ob.name}));break}}const add=isToday()?physGroup(el.dataset.table):[el.dataset.table];const ts=[...new Set([...(b.tables||[]),...add])];if(!(await capOk(b,ts)))break;closeSheet();if(await write(()=>store.patchBooking(b.id,{tables:ts,...stamp()}))&&L("assign",b,{d:tablesLabel(ts)}))toast(t("saved"));break}
+  case "seat":{const b=findB(el.dataset.id);if(!b)break;if(!(b.tables||[]).length&&b.type!=="beach"){formSheet({...b,status:"seated"},{});break}closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"seated",seatedAt:nowHM(),...stamp()}))&&L("seat",b))toast(t("seatedT",{n:b.name}));break}
+  case "leave":{const b=findB(el.dataset.id);if(!b)break;closeSheet();const prev=b.status;if(await write(()=>store.patchBooking(b.id,{status:"left",leftAt:nowHM(),...stamp()}))&&L("leave",b,{d:tablesLabel(b.tables)}))toast((b.tables||[]).length?t("freed",{t:tablesLabel(b.tables)}):t("saved"),()=>write(()=>store.patchBooking(b.id,{status:prev,...stamp()})));break}
+  case "noshow":{const b=findB(el.dataset.id);if(!b)break;closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"noshow",...stamp()}))&&L("noshow",b))toast(t("s_noshow"),()=>write(()=>store.patchBooking(b.id,{status:"booked",...stamp()})));break}
   case "edit":{const b=findB(el.dataset.id);if(b)formSheet(b,{});break}
-  case "delBk":{const b=sheetData&&sheetData.b;if(!b||!b.id)break;if(!(await ask(t("delBkWarn",{n:b.name}),t("del"))))break;const copy={...findB(b.id)};closeSheet();if(await write(()=>store.deleteBooking(b.id)))toast(t("deleted"),()=>write(()=>store.putBooking(copy.id,copy)));break}
-  case "cancelBk":{const b=sheetData.b;closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"cancelled",...stamp()})))toast(t("s_cancelled"),()=>write(()=>store.patchBooking(b.id,{status:"booked",...stamp()})));break}
+  case "delBk":{const b=sheetData&&sheetData.b;if(!b||!b.id)break;if(!(await ask(t("delBkWarn",{n:b.name}),t("del"))))break;const copy={...findB(b.id)};closeSheet();if(await write(()=>store.deleteBooking(b.id))&&L("delete",copy))toast(t("deleted"),()=>write(()=>store.putBooking(copy.id,copy)));break}
+  case "cancelBk":{const b=sheetData.b;closeSheet();if(await write(()=>store.patchBooking(b.id,{status:"cancelled",...stamp()}))&&L("cancel",b))toast(t("s_cancelled"),()=>write(()=>store.patchBooking(b.id,{status:"booked",...stamp()})));break}
   case "saveForm":{
    readForm();const b=sheetData.b;const err=document.getElementById("f_err");
    if(!b.name){err.textContent=t("needName");break}
@@ -991,7 +1062,7 @@ document.addEventListener("click",async e=>{
    if(rec.status==="seated"&&!rec.seatedAt)rec.seatedAt=nowHM();
    if(isActive(rec)){const cm=conflictSet(rec.date,rec.time,rec.type,rec.id);const hit=(rec.tables||[]).find(x=>cm.has(x));if(hit){const ob=cm.get(hit);err.textContent=t("clash",{t:tName(hit),h:ob.time,n:ob.name});break}}
    if(!(await capOk(rec,rec.tables||[])))break;
-   closeSheet();if(await write(()=>store.putBooking(id,rec))){toast(t("saved"));if(rec.date!==state.date&&state.tab==="book"){state.date=rec.date;resubDay();render()}}
+   closeSheet();if(await write(()=>store.putBooking(id,rec))){L(b.id?"edit":"create",{...rec,id},{d:tablesLabel(rec.tables)});toast(t("saved"));if(rec.date!==state.date&&state.tab==="book"){state.date=rec.date;resubDay();render()}}
    break}
   case "quick":{
    const seats=Math.max(1,+document.getElementById("qs_seats").value||6);const list=[];
@@ -1022,7 +1093,7 @@ document.addEventListener("change",e=>{
  const el=e.target;
  if(el.id==="dateIn"&&el.value){state.date=el.value;resubDay();render();return}
  if(el.id==="lossIn"&&state.config){const c=JSON.parse(JSON.stringify(state.config));c.joinLoss=Math.max(0,Math.min(10,parseInt(el.value,10)||0));c.updatedAt=Date.now();write(()=>store.saveConfig(c)).then(ok=>ok&&toast(t("saved")));return}
- if(el.id==="f_dep"){const a=document.getElementById("f_depAmt");if(a){a.disabled=!el.checked;if(el.checked)a.focus()}return}
+ if(el.id==="f_dep"){const r=document.getElementById("f_amtRow"),a=document.getElementById("f_depAmt");if(r)r.hidden=!el.checked;if(a&&el.checked)a.focus();return}
  if(el.id==="typeFlt"){state.typeFilter=el.value||null;render();return}
  if(el.id==="showDone"){state.showDone=el.checked;render();return}
  if(el.dataset.tl==="half"){const x=state.draft&&state.draft.tables[+el.dataset.i];if(x)x.half=el.value}
@@ -1031,7 +1102,7 @@ document.addEventListener("change",e=>{
 document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("numin"))setTimeout(()=>{try{e.target.select()}catch(_){}},0)});
 document.getElementById("fab").addEventListener("click",()=>formSheet(blank()));
 document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(document.querySelector(".scrim.ask"))return;if(state.moveFrom){state.moveFrom=null;render();return}if(document.querySelector(".scrim"))closeSheet()});
-setInterval(()=>{if(state.tab==="floor"&&!drag&&!document.querySelector(".scrim"))render()},60000);
+setInterval(()=>{renderAlerts();if(store&&todayStr()!==msgKey)resubMsgs();if(state.tab==="floor"&&!drag&&!document.querySelector(".scrim"))render()},60000);
 /* drag: move or join */
 document.addEventListener("pointerdown",e=>{
  if(state.tab!=="floor"||!isToday()||!state.canWrite||state.moveFrom||document.querySelector(".scrim"))return;
@@ -1057,7 +1128,7 @@ async function addToBooking(b,ids){
  if(hit){const ob=cm.get(hit);toast(t("clash",{t:tName(hit),h:ob.time,n:ob.name}));return}
  const prev=[...(b.tables||[])];const ts=[...new Set([...prev,...ids])];
  const pj=await joinIds(ts);
- if(await write(()=>store.patchBooking(b.id,{tables:ts,...stamp()})))toast(t("joinedT",{t:tablesLabel(ts)}),()=>{write(()=>store.patchBooking(b.id,{tables:prev,...stamp()}));restoreJoins(pj)});
+ if(await write(()=>store.patchBooking(b.id,{tables:ts,...stamp()}))&&L("tables",b,{d:tablesLabel(ts)}))toast(t("joinedT",{t:tablesLabel(ts)}),()=>{write(()=>store.patchBooking(b.id,{tables:prev,...stamp()}));restoreJoins(pj)});
 }
 async function dropOn(fromIds,toIds){
  const sb=bookingAt(fromIds),tb=bookingAt(toIds);
@@ -1066,7 +1137,7 @@ async function dropOn(fromIds,toIds){
   if(ch==="move")performMove(sb.id,fromIds,toIds[0]);else if(ch==="join"){if(!sameSec(fromIds,toIds)){toast(t("diffSec"));return}addToBooking(sb,toIds)}return}
  if(!sameSec(fromIds,toIds)){toast(t("diffSec"));return}
  if(tb){addToBooking(tb,fromIds);return}
- const all=[...fromIds,...toIds];const prev=await joinIds(all);toast(t("joinedFree",{t:tablesLabel(all)}),()=>restoreJoins(prev));
+ const all=[...fromIds,...toIds];const prev=await joinIds(all);L("join",null,{d:tablesLabel(all)});toast(t("joinedFree",{t:tablesLabel(all)}),()=>restoreJoins(prev));
 }
 document.addEventListener("pointerup",()=>endDrag(true));
 document.addEventListener("pointercancel",()=>endDrag(false));
@@ -1080,9 +1151,32 @@ document.addEventListener("submit",async e=>{if(e.target.id!=="loginForm")return
 window.addEventListener("online",()=>{if(state.mode==="offline"){state.mode="live";renderBanner()}});
 window.addEventListener("offline",()=>{if(state.mode==="live"){state.mode="offline";renderBanner()}});
 render();
+async function seedDemo(){
+ const mk=(sec,n,seats)=>Array.from({length:n},(_,i)=>({id:sec+(i+1)+"-d",name:sec+(i+1),half:sec,seats}));
+ const tables=[...mk("A",6,4),...mk("B",6,4),...mk("C",8,6)];
+ await store.saveConfig({layouts:[{id:"demo",name:"Sơ đồ chính",tables}],activeId:"demo",joinLoss:2});
+ await store.saveJoins("demo",[["A1-d","A2-d"]]);
+ const T=todayStr();const y=new Date();y.setDate(y.getDate()-1);const Y=dstr(y);
+ const ago=m=>{const d=new Date(Date.now()-m*60000);return pad(d.getHours())+":"+pad(d.getMinutes())};
+ const B=(o)=>({phone:"",note:"",source:"",kids:0,small:0,deposit:false,depAmt:0,by:"An",createdAt:Date.now(),...o});
+ const rows=[
+  ["d1",B({name:"Chị Lan",bracelet:"21-24",date:T,time:"08:30",type:"lobster",adults:4,tables:["A1-d","A2-d"],status:"seated",seatedAt:"08:35",deposit:true,depAmt:1000,source:"zalo"})],
+  ["d2",B({name:"Khách lẻ",bracelet:"14",date:T,time:ago(40),type:"walkin",adults:3,tables:["C2-d"],status:"seated",seatedAt:ago(40),source:"walk"})],
+  ["d3",B({name:"Đoàn Hà Nội",bracelet:"",date:T,time:"13:30",type:"combo",adults:7,kids:2,tables:["B1-d","B2-d"],status:"booked",deposit:true,depAmt:2000,source:"gyg",note:"Sinh nhật bà"})],
+  ["d4",B({name:"Anh Minh",date:T,time:"16:00",type:"normal",adults:4,tables:["C5-d"],status:"booked",source:"fb"})],
+  ["d5",B({name:"Khách đi biển",bracelet:"30",date:T,time:ago(25),type:"beach",adults:2,tables:[],status:"seated",seatedAt:ago(25),source:"walk"})],
+  ["d6",B({name:"Mr. Jensen",bracelet:"8",date:Y,time:"09:30",type:"combo",adults:2,tables:["A3-d"],status:"left",seatedAt:"09:32",leftAt:"13:10",source:"viator"})],
+  ["d7",B({name:"Khách lẻ",bracelet:"5",date:Y,time:"12:10",type:"walkin",adults:5,tables:["C1-d"],status:"left",seatedAt:"12:10",leftAt:"13:40",source:"walk"})]
+ ];
+ for(const [id,b] of rows)await store.putBooking(id,b);
+ await store.setDoc("notice/main",{text:"Hôm nay giới thiệu combo 750k trước. Còn 6 suất tôm hùm.",kind:"info",by:"John",at:Date.now()});
+ const lg=(m,by,act,b,o)=>store.addLog({at:Date.now()-m*60000,date:T,time:ago(m),by,act,bid:"",name:b?b.name:"",br:b?b.bracelet:"",type:b?b.type:"",d:"",dt:"",u:"",...o});
+ await lg(200,"An","create",rows[2][1],{d:"B1-2"});await lg(180,"Đạt","seat",rows[0][1]);await lg(40,"Đạt","walkin",rows[1][1],{d:"C2"});await lg(25,"An","beach",rows[4][1]);await lg(10,"John","move",rows[1][1],{d:"C1 → C2"});
+ await store.addMsg({text:"Số 21-24 đang trên đường về từ bãi biển",by:"Đạt",at:Date.now()-2*60000,date:T,time:ago(2)});
+}
 (function boot(){
  const cfg=window.FIREBASE_CONFIG;
- if(typeof firebase==="undefined"||!cfg||!cfg.apiKey||/PASTE/.test(cfg.apiKey)){store=memStore();state.mode="preview";subscribe();render();return}
+ if(typeof firebase==="undefined"||!cfg||!cfg.apiKey||/PASTE/.test(cfg.apiKey)){store=memStore();state.mode="preview";seedDemo().then(()=>{subscribe();render()});return}
  firebase.initializeApp(cfg);
  const fs=firebase.firestore();
  try{fs.settings({ignoreUndefinedProperties:true,merge:true})}catch(_){}

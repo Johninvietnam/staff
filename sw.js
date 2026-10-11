@@ -1,6 +1,6 @@
 // Service worker: makes the app installable and lets it open without signal.
 // Bump VERSION whenever you upload a new index.html so phones pick up the update.
-const VERSION = "ntb-v1";
+const VERSION = "ntb-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./firebase-config.js",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 
@@ -29,4 +29,13 @@ self.addEventListener("fetch", e => {
   if (url.hostname === "www.gstatic.com" || url.hostname.startsWith("fonts.")) {
     e.respondWith(caches.match(req).then(m => m || fetch(req).then(save)));
   }
+});
+
+// Tapping a notification opens (or focuses) the app.
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+    for (const c of list) { if ("focus" in c) return c.focus(); }
+    return self.clients.openWindow("./");
+  }));
 });
