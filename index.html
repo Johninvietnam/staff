@@ -641,7 +641,7 @@ const joinIds=ids=>setJoins(gs=>bySection(ids).filter(a=>a.length>1).reduce((acc
 const restoreJoins=prev=>setJoins(()=>prev);
 function sameSec(a,b){const x=tById(a[0]),y=tById(b[0]);return x&&y&&x.half===y.half}
 function choose(msg,opts){return new Promise(res=>{const r=document.getElementById("askRoot");r.innerHTML=`<div class="scrim ask"><div class="sheet" role="alertdialog" aria-modal="true"><p style="font-weight:600;margin:0">${esc(msg)}</p><div class="acts" style="flex-direction:column">${opts.map(([k,l],i)=>`<button class="btn ${i?"teal":"pri"}" type="button" data-ck="${k}">${esc(l)}</button>`).join("")}<button class="btn ghost" type="button" data-ck="">${t("cancel")}</button></div></div></div>`;
- const done=v=>{r.innerHTML="";res(v)};const sc=r.querySelector(".scrim");sc.addEventListener("click",e=>{e.stopPropagation();const b=e.target.closest("[data-ck]");if(b)done(b.dataset.ck||null);else if(e.target===sc)done(null)})})}
+ const done=v=>{r.innerHTML="";res(v)};const sc=r.querySelector(".scrim");const t0=Date.now();sc.addEventListener("click",e=>{e.stopPropagation();const b=e.target.closest("[data-ck]");if(b){if(Date.now()-t0>300)done(b.dataset.ck||null)}else if(e.target===sc&&Date.now()-t0>500)done(null)})})}
 function tableStatus(tb){
  const now=toMin(nowHM());
  const mine=dayList().filter(b=>isActive(b)&&(b.tables||[]).includes(tb.id));
@@ -919,7 +919,8 @@ async function exportCsv(){
 
 /* ---------- sheets ---------- */
 let sheetData=null;
-function openSheet(html){document.getElementById("sheetRoot").innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;const f=document.querySelector(".sheet input,.sheet button");if(f)f.focus()}
+let sheetAt=0;
+function openSheet(html){sheetAt=Date.now();document.getElementById("sheetRoot").innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;const f=document.querySelector(".sheet input,.sheet button");if(f)f.focus()}
 function closeSheet(){document.getElementById("sheetRoot").innerHTML="";sheetData=null}
 function tableSheet(id){
  const tb=tById(id);if(!tb)return;const s=tableStatus(tb);
@@ -967,7 +968,7 @@ function drawConv(){
  <div class="acts"><button class="btn pri" data-act="cvSave">${t("save")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>`);
 }
 function ask(msg,okLabel){return new Promise(res=>{const r=document.getElementById("askRoot");r.innerHTML=`<div class="scrim ask"><div class="sheet" role="alertdialog" aria-modal="true"><p style="font-weight:600;margin:0">${esc(msg)}</p><div class="acts"><button class="btn pri" type="button" id="askYes">${esc(okLabel||t("proceed"))}</button><button class="btn ghost" type="button" id="askNo">${t("cancel")}</button></div></div></div>`;
- const done=v=>{r.innerHTML="";res(v)};const sc=r.querySelector(".scrim");sc.addEventListener("click",e=>{e.stopPropagation();if(e.target===sc)done(false)});r.querySelector("#askYes").addEventListener("click",e=>{e.stopPropagation();done(true)});r.querySelector("#askNo").addEventListener("click",e=>{e.stopPropagation();done(false)});r.querySelector("#askYes").focus()})}
+ const done=v=>{r.innerHTML="";res(v)};const sc=r.querySelector(".scrim");const t0=Date.now();sc.addEventListener("click",e=>{e.stopPropagation();if(e.target===sc&&Date.now()-t0>500)done(false)});r.querySelector("#askYes").addEventListener("click",e=>{e.stopPropagation();done(true)});r.querySelector("#askNo").addEventListener("click",e=>{e.stopPropagation();done(false)});r.querySelector("#askYes").focus()})}
 async function capOk(b,ts){const seats=effSeats(ts);const p=pax(b);if(!ts.length||p<=seats)return true;return ask(t("overCap",{p,t:ts.map(tName).join(", "),s:seats}))}
 function joinSheet(id){const b=findB(id);if(!b)return;state.join={id,tables:[...(b.tables||[])]};drawJoin()}
 function drawJoin(){
@@ -1055,7 +1056,7 @@ function blank(over){return{name:"",phone:"",date:state.tab==="book"?state.date:
 document.addEventListener("click",async e=>{
  if(justDragged){e.preventDefault();return}
  const el=e.target.closest("[data-act],[data-tab],[data-lang],[data-table],[data-type],[data-slot],[data-step],[data-pick]");if(!el)return;
- if(el.dataset.act==="scrim"&&e.target!==el)return;
+ if(el.dataset.act==="scrim"&&(e.target!==el||Date.now()-sheetAt<500))return;
  if(el.dataset.lang){lang=el.dataset.lang;ls.set("lang",lang);const m=document.getElementById("main");m.innerHTML="";hbLang=null;if(sheetData){readForm();drawForm()}else closeSheet();render();return}
  if(el.dataset.tab&&!el.dataset.act){state.tab=el.dataset.tab;ls.set("tab",state.tab);document.getElementById("main").innerHTML="";closeSheet();if(store)resubHist();render();try{window.scrollTo(0,0)}catch(_){}return}
  if(el.dataset.type){readForm();sheetData.b.type=el.dataset.type;drawForm();return}
@@ -1190,7 +1191,7 @@ document.addEventListener("pointerdown",e=>{if(!state.arrange||state.tab!=="floo
 document.addEventListener("pointermove",e=>{if(!rdrag)return;e.preventDefault();const d=rdrag;
  d.w=Math.round(Math.max(5,Math.min(70,d.w0+(e.clientX-d.x0)/d.bw*100))*10)/10;d.hw=Math.round(Math.max(4,Math.min(70,d.hw0+(e.clientY-d.y0)/d.bw*100))*10)/10;
  d.el.style.width=d.w+"%";d.el.style.height=(d.hw*100/d.sh)+"%"},{passive:false});
-async function endResize(){if(!rdrag)return;const d=rdrag;rdrag=null;d.el.classList.remove("lift");document.body.classList.remove("dragging");if(d.w==null){render();return}
+async function endResize(){if(!rdrag)return;const d=rdrag;rdrag=null;justDragged=true;setTimeout(()=>{justDragged=false},450);d.el.classList.remove("lift");document.body.classList.remove("dragging");if(d.w==null){render();return}
  await setSize(d.id,{w:d.w,hw:d.hw})}
 async function setSize(id,size){const c=JSON.parse(JSON.stringify(state.config));const L=c.layouts.find(l=>l.id===(activeLayout()||{}).id);if(!L)return;const pm=posMap(L);L.tables.forEach(x=>{if(!x.pos)x.pos=pm[x.id]});const tb=L.tables.find(x=>x.id===id);if(!tb)return;
  if(size)tb.size=size;else delete tb.size;c.updatedAt=Date.now();state.config=c;render();if(document.getElementById("szBox"))sizeSheet(id);await write(()=>store.saveConfig(c))}
@@ -1226,7 +1227,7 @@ async function arrangeJoin(fromIds,toIds){
  if(tb&&!sb)await addToBooking(tb,fromIds);else if(sb&&!tb)await addToBooking(sb,toIds);else if(!sb&&!tb){const all=[...toIds,...fromIds];const prev=await joinIds(all);L("join",null,{d:tablesLabel(all)});toast(t("joinedFree",{t:tablesLabel(all)}),()=>restoreJoins(prev))}
  render();
 }
-async function endArrange(){if(!adrag)return;const d=adrag;adrag=null;d.el.classList.remove("lift");document.body.classList.remove("dragging");document.querySelectorAll(".pbox.over").forEach(b=>b.classList.remove("over"));
+async function endArrange(){if(!adrag)return;const d=adrag;adrag=null;justDragged=true;setTimeout(()=>{justDragged=false},450);d.el.classList.remove("lift");document.body.classList.remove("dragging");document.querySelectorAll(".pbox.over").forEach(b=>b.classList.remove("over"));
  const gid=d.el.dataset.gid?d.el.dataset.gid.split(","):null;
  document.querySelectorAll(".ptab.droptgt").forEach(n=>n.classList.remove("droptgt"));
  if(d.pos&&d.over){await arrangeJoin(gid||[d.id],d.over.dataset.gid?d.over.dataset.gid.split(","):[d.over.dataset.tid]);return}
