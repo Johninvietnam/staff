@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nhà Trên Biển | Nhân viên</title>
-<meta name="theme-color" content="#7A1F2B">
+<meta name="theme-color" content="#053B39">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nhà Trên Biển">
@@ -21,17 +21,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
+  --green:#1F7A3D; --greenTint:#E3F3E8;
   --bg:#FBF6EC; --surface:#FFFDF8; --ink:#2A2724; --muted:#6B645C; --line:#E7DDCB;
   --maroon:#7A1F2B; --gold:#C2902A; --teal:#1E7272; --goldTint:#F6E7C3; --tealTint:#E2F0EE; --onGold:#2A2724;
   box-sizing:border-box;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
+    --green:#3FB26A; --greenTint:#1E3326;
     --bg:#1C1A18; --surface:#25221F; --ink:#F2EBDD; --muted:#B5AC9E; --line:#3A352F;
     --maroon:#B9505D; --gold:#D9A945; --teal:#3A9C99; --goldTint:#3A3020; --tealTint:#1E302E; --onGold:#1C1A18;
   }
 }
 :root[data-theme="dark"]{
+  --green:#3FB26A; --greenTint:#1E3326;
   --bg:#1C1A18; --surface:#25221F; --ink:#F2EBDD; --muted:#B5AC9E; --line:#3A352F;
   --maroon:#B9505D; --gold:#D9A945; --teal:#3A9C99; --goldTint:#3A3020; --tealTint:#1E302E; --onGold:#1C1A18;
 }
@@ -50,10 +53,12 @@ header.app{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1p
 .lang{display:flex;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;flex:none}
 .lang button{background:none;border:0;padding:5px 10px;font-weight:600;font-size:.82rem}
 .lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.subhead{padding:0 16px}
+.subhead:has(#banner:empty):has(#noticeBox:empty){display:none}
 .banner{max-width:980px;margin:8px auto 0;font-size:.82rem;padding:6px 10px;border-radius:8px;background:var(--goldTint)}
 .banner:empty{display:none}
 
-main{max-width:980px;margin:0 auto;padding:14px 16px calc(96px + env(safe-area-inset-bottom,0px))}
+main{max-width:980px;margin:0 auto;padding:6px 16px calc(96px + env(safe-area-inset-bottom,0px))}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
 nav.tabs .in{display:flex;width:100%;max-width:560px}
 nav.tabs button{flex:1;background:none;border:0;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted);border-radius:10px}
@@ -267,6 +272,40 @@ body.dragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .plink{position:absolute;border:2.5px dashed var(--teal);border-radius:12px;background:color-mix(in srgb,var(--teal) 8%,transparent);pointer-events:none}
 .plink span{position:absolute;top:-11px;left:8px;background:var(--teal);color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap}
 .plink .lk{width:10px;height:10px;margin:0 3px 0 0;vertical-align:-1px}
+.dep{display:inline-block;font-weight:700;font-size:.8rem;line-height:1.2;padding:3px 9px;border-radius:999px;white-space:nowrap;vertical-align:1px}
+.dep.yes{background:var(--green);color:#fff}
+.dep.no{border:1.5px dashed var(--maroon);color:var(--maroon);background:transparent}
+.fab{width:58px;height:58px;padding:0;font-size:2rem;line-height:1;display:flex;align-items:center;justify-content:center}
+.fab[hidden]{display:none}
+.agbar{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.agnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.agnav input{padding:6px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface)}
+.agday{display:flex;align-items:center;gap:10px;background:var(--goldTint);margin:16px -16px 0;padding:10px 16px}
+.agday.past{background:color-mix(in srgb,var(--line) 70%,var(--bg))}
+.agday.today{background:var(--maroon);color:#fff}
+.agday .agd{font-weight:700;font-size:1rem;flex:1}
+.agday .agsum{font-size:.8rem;opacity:.85;white-space:nowrap}
+.agadd{width:32px;height:32px;border-radius:50%;border:1.5px solid currentColor;background:transparent;color:inherit;font-size:1.2rem;font-weight:700;line-height:1;flex:none}
+.agrow{display:flex;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer;align-items:flex-start}
+.agrow:hover{background:color-mix(in srgb,var(--goldTint) 40%,transparent)}
+.agrow .agt{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;min-width:48px;padding-top:1px}
+.agrow .agm{flex:1;min-width:0}
+.agrow .l1{font-size:1.02rem;line-height:1.35}
+.agrow .l2{font-size:.88rem;color:var(--muted);margin-top:3px;line-height:1.6}
+.agrow .l3{font-size:.86rem;margin-top:4px;padding:4px 8px;border-radius:7px;background:var(--goldTint)}
+.agrow .acts{margin-top:8px}
+.agrow.done{opacity:.55}
+.agrow.st-cancelled .l1 b{text-decoration:line-through}
+.agrow.rem .l1{color:var(--ink)}
+.remck{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--surface);color:transparent;font-weight:800;flex:none}
+.remck[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+.agrow.rem.done .l1 b{text-decoration:line-through}
+.tile .dpc{position:absolute;top:-9px;left:5px;z-index:2;font-size:.68rem;font-weight:800;line-height:1;padding:3px 6px;border-radius:999px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.tile .dpc.yes{background:var(--green);color:#fff}
+.tile .dpc.no{background:#fff;color:var(--maroon);border:1.5px dashed var(--maroon)}
+.ptab .dpc{left:-5px;font-size:.6rem;padding:2px 4px}
+.tile{overflow:visible}
+.tiles{row-gap:16px;padding-top:6px}
 .qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;display:flex;gap:12px;align-items:center;font-size:.9rem;max-width:92vw}
@@ -282,12 +321,15 @@ body.dragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
       <button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button>
     </div>
   </div>
-  <div class="banner" id="banner" role="status"></div>
-  <div id="noticeBox"></div>
   <div id="alertBox" aria-live="assertive"></div>
 </header>
+<div class="subhead">
+  <div class="banner" id="banner" role="status"></div>
+  <div id="noticeBox"></div>
+</div>
 <main id="main"></main>
 <button class="btn pri fab" id="fab" type="button" hidden></button>
+<button class="btn teal fab fab2" id="fab2" type="button" hidden></button>
 <nav class="tabs" aria-label="App"><div class="in" id="tabs"></div></nav>
 <div id="sheetRoot"></div>
 <div id="askRoot"></div>
@@ -500,7 +542,7 @@ vi:{sub:"Ứng dụng nhân viên",tFloor:"Sơ đồ bàn",tBook:"Đặt chỗ",
  clean:"Dọn dữ liệu",cleanP:"Xoá đặt chỗ cũ hơn 1 năm để app chạy nhanh. Muốn giữ lại thì tải CSV ở tab Lịch sử trước.",cleanB:"Xoá đặt chỗ cũ",cleaned:"Đã xoá {n} đặt chỗ cũ.",
  saved:"Đã lưu.",freed:"Đã trả bàn {t}.",undo:"Hoàn tác",seatedT:"Đã xếp {n} vào bàn.",errSave:"Không lưu được. Thử lại.",
  search:"Tìm: tôm hùm, sao biển, dị ứng, mưa…",hQA:"Khi có sự cố",hHard:"Khách khó tính",hRules:"Nguyên tắc",hCombo:"Hai loại combo",hSched:"Lịch khung giờ",hRoles:"Việc từng bộ phận",noHits:"Không tìm thấy. Thử từ khác.",
- slotLine:"Khu {s}",tHist:"Lịch sử",vGrid:"Lưới",vPlan:"Sơ đồ",arrangeBtn:"Sắp xếp bàn",arrDone:"Xong",arrangeHint:"Kéo bàn tới đúng vị trí thật, kéo sang khung khác để đổi khu. Thả một bàn lên bàn khác để ghép. Bàn đã ghép di chuyển cùng nhau, bấm vào để tách. Kéo góc ◢ để đổi kích thước, hoặc bấm vào bàn để chỉnh chính xác. − / + chỉnh chiều cao từng khu.",sizeT:"Kích thước bàn",szW:"Ngang",szH:"Dọc",resetSize:"Đặt lại kích thước gốc",autoArr:"Tự xếp lại",autoArrQ:"Xếp lại tất cả bàn của {s} theo lưới?",msgs:"Tin nhắn nhanh",msgPh:"Ví dụ: Số 23 đang trên đường về từ bãi biển",send:"Gửi",msgNone:"Chưa có tin nhắn hôm nay.",q1:"đang trên đường về từ bãi biển",q2:"đã đến, cần xếp bàn",q3:"cần thanh toán",q4:"cần thêm nhân viên hỗ trợ",ok:"OK",newMsg:"Tin nhắn mới",notifOn:"Bật thông báo trên máy này",notifGranted:"Thông báo đã bật trên máy này.",notifDenied:"Thông báo bị chặn. Bật lại trong cài đặt trình duyệt của máy.",notifNA:"Máy hoặc trình duyệt này không hỗ trợ thông báo.",notifNote:"Thông báo hiện khi ứng dụng đang mở hoặc vừa chạy nền.",pinH:"Thông tin cố định",pinP:"Hiện ở trang Sơ đồ bàn và Đặt chỗ cho tới khi gỡ. Tin nhắn nhanh thì dùng nút chuông ở góc trên.",vLeft:"Khách đã về",vLog:"Nhật ký",logSearch:"Tìm nhân viên, khách, số vòng tay",logNone:"Chưa có hoạt động trong khoảng này.",log_create:"Tạo đặt chỗ",log_edit:"Sửa đặt chỗ",log_delete:"Xoá đặt chỗ",log_seat:"Khách đã đến",log_leave:"Khách về, trả bàn",log_noshow:"Không đến",log_cancel:"Huỷ đặt chỗ",log_assign:"Gán bàn {d}",log_move:"Chuyển bàn {d}",log_tables:"Đổi bàn: {d}",log_join:"Ghép bàn {d}",log_split:"Tách bàn {d}",log_convert:"Chuyển thành {d}",log_walkin:"Xếp khách lẻ vào {d}",log_beach:"Thêm khách đi biển",log_notice:"Đăng thông tin: {d}",log_noticeOff:"Gỡ thông tin",log_msg:"Gửi tin nhắn: {d}",log_undo:"Hoàn tác: {d}",login:"Đăng nhập",email:"Email",password:"Mật khẩu",loginErr:"Sai email hoặc mật khẩu.",loginHint:"Dùng tài khoản do quản lý tạo.",signOut:"Đăng xuất",signedAs:"Đang đăng nhập: {e}",account:"Tài khoản",noPerm:"Không có quyền lưu. Hãy đăng nhập lại.",beach:"Khách đi biển",beachSec:"Đang ở bãi biển",beachAdd:"+ Khách đi biển",beachNone:"Chưa có khách đi biển.",leftBeach:"Khách về",beachT:"Khách đi biển",toTable:"Cho ngồi bàn",convTableT:"Cho {n} ngồi bàn",convTableHint:"Chọn loại khách và bàn cho nhóm.",bracelet:"Số vòng tay",braceletHint:"Ví dụ 12 hoặc 12–15",deposit:"Đã đặt cọc",depAmt:"Tiền cọc (nghìn đồng)",depShort:"Cọc {a}",remain:"còn {a}",noticeH:"Thông báo cho nhân viên",noticeP:"Hiện ở đầu ứng dụng cho mọi nhân viên, ví dụ món cần bán hôm nay.",info:"Thông tin",warn:"Cảnh báo",noticeSave:"Đăng thông báo",noticeClear:"Gỡ thông báo",noticePosted:"Đã đăng thông báo.",noticeRemoved:"Đã gỡ thông báo.",delBk:"Xoá đặt chỗ này",delBkWarn:"Xoá hẳn đặt chỗ của {n}? Chỉ dùng khi tạo nhầm. Nếu khách đã về, hãy bấm “Khách về” để giữ lịch sử.",deleted:"Đã xoá đặt chỗ.",moveT:"Chuyển bàn",moveHint:"Mẹo: giữ và kéo một bàn lên bàn khác để ghép bàn. Kéo bàn có khách sang bàn trống để chuyển hoặc ghép thêm.",dropAsk:"Kéo {n} lên {t}:",dropMove:"Chuyển nhóm sang {t}",dropJoin:"Ghép {t} vào nhóm",joinedFree:"Đã ghép {t}.",splitT:"Tách bàn",splitDone:"Đã tách {t}.",diffSec:"Chỉ ghép được bàn trong cùng một khu.",lossL:"Số chỗ mất mỗi chỗ nối khi ghép bàn",lossHint:"Mặc định 2: hai bàn 4 chỗ ghép lại còn 6 chỗ, bốn bàn 4 chỗ còn 10 chỗ.",movePick:"Chọn bàn mới cho {n} (đang ở {t})",cancel:"Huỷ",moved:"Đã chuyển {n} sang {t}.",targetBusy:"Bàn {t} đang có khách.",targetSoon:"Bàn {t} có đặt chỗ lúc {h}. Vẫn chuyển?",overCap:"{p} khách nhưng {t} chỉ có {s} chỗ. Vẫn tiếp tục? (ví dụ đã kê thêm ghế)",proceed:"Vẫn tiếp tục",convert:"Chuyển thành combo",convT:"Chuyển {n} thành combo",convHint:"Bấm bàn mới ở khu A hoặc B để chuyển khách sang đó (bàn cũ sẽ được trả). Bấm thêm bàn nếu nhóm cần nhiều bàn.",converted:"Đã chuyển thành {c}.",walkNote:"Ghi chú",needTable:"Chọn ít nhất 1 bàn.",howMany:"Số khách",seatNow:"Xếp bàn",notBooked:"chưa có đặt",guestsU:"khách",groupsU:"nhóm",bookedTables:"{n} bàn đã có đặt chỗ",layouts:"Sơ đồ bàn",active:"Đang dùng",useThis:"Dùng sơ đồ này",dupL:"Nhân bản",delLWarn:"Xoá sơ đồ “{n}”? Không hoàn tác được.",newL:"Sơ đồ mới",lName:"Tên sơ đồ",defaultLName:"Sơ đồ chính",copyOf:"{n} (bản sao)",switched:"Đang dùng: {n}",editing:"Đang sửa: {n}",histSearch:"Tìm tên, SĐT, số vòng tay, ghi chú",r7:"7 ngày",r30:"30 ngày",rAll:"Tất cả",histSum:"{g} nhóm, {p} khách, {c}% combo",histEmpty:"Chưa có khách nào trong khoảng này.",csv:"Tải CSV",pickDateHint:"Đặt chỗ ở ngày khác? Đổi ngày ở trên sơ đồ.",seatedLeft:"{a} đến {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Khách lẻ",other:"Khác"}},
+ slotLine:"Khu {s}",tHist:"Lịch sử",noDep:"Chưa cọc",agSearch:"Tìm tên, SĐT, số vòng tay, ghi chú",agEarlier:"↑ Xem các ngày trước",agLater:"↓ Xem thêm các ngày sau",agEmpty:"Chưa có đặt chỗ.",agJump:"Đến ngày",wd:["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"],todayDot:"Hôm nay",nl:"NL",te:"TE",be:"bé",remNew:"Nhắc việc",remT:"Nhắc việc",remEditT:"Sửa nhắc việc",remText:"Nội dung",remPh:"Ví dụ: Gọi lại chị Mai xác nhận cọc",remDone:"Đã xong",remDel:"Xoá nhắc việc này",remDelQ:"Xoá nhắc việc này?",newWhat:"Thêm gì cho ngày {d}?",log_rem:"Nhắc việc: {d}",log_remDel:"Xoá nhắc việc: {d}",vGrid:"Lưới",vPlan:"Sơ đồ",arrangeBtn:"Sắp xếp bàn",arrDone:"Xong",arrangeHint:"Kéo bàn tới đúng vị trí thật, kéo sang khung khác để đổi khu. Thả một bàn lên bàn khác để ghép. Bàn đã ghép di chuyển cùng nhau, bấm vào để tách. Kéo góc ◢ để đổi kích thước, hoặc bấm vào bàn để chỉnh chính xác. − / + chỉnh chiều cao từng khu.",sizeT:"Kích thước bàn",szW:"Ngang",szH:"Dọc",resetSize:"Đặt lại kích thước gốc",autoArr:"Tự xếp lại",autoArrQ:"Xếp lại tất cả bàn của {s} theo lưới?",msgs:"Tin nhắn nhanh",msgPh:"Ví dụ: Số 23 đang trên đường về từ bãi biển",send:"Gửi",msgNone:"Chưa có tin nhắn hôm nay.",q1:"đang trên đường về từ bãi biển",q2:"đã đến, cần xếp bàn",q3:"cần thanh toán",q4:"cần thêm nhân viên hỗ trợ",ok:"OK",newMsg:"Tin nhắn mới",notifOn:"Bật thông báo trên máy này",notifGranted:"Thông báo đã bật trên máy này.",notifDenied:"Thông báo bị chặn. Bật lại trong cài đặt trình duyệt của máy.",notifNA:"Máy hoặc trình duyệt này không hỗ trợ thông báo.",notifNote:"Thông báo hiện khi ứng dụng đang mở hoặc vừa chạy nền.",pinH:"Thông tin cố định",pinP:"Hiện ở trang Sơ đồ bàn và Đặt chỗ cho tới khi gỡ. Tin nhắn nhanh thì dùng nút chuông ở góc trên.",vLeft:"Khách đã về",vLog:"Nhật ký",logSearch:"Tìm nhân viên, khách, số vòng tay",logNone:"Chưa có hoạt động trong khoảng này.",log_create:"Tạo đặt chỗ",log_edit:"Sửa đặt chỗ",log_delete:"Xoá đặt chỗ",log_seat:"Khách đã đến",log_leave:"Khách về, trả bàn",log_noshow:"Không đến",log_cancel:"Huỷ đặt chỗ",log_assign:"Gán bàn {d}",log_move:"Chuyển bàn {d}",log_tables:"Đổi bàn: {d}",log_join:"Ghép bàn {d}",log_split:"Tách bàn {d}",log_convert:"Chuyển thành {d}",log_walkin:"Xếp khách lẻ vào {d}",log_beach:"Thêm khách đi biển",log_notice:"Đăng thông tin: {d}",log_noticeOff:"Gỡ thông tin",log_msg:"Gửi tin nhắn: {d}",log_undo:"Hoàn tác: {d}",login:"Đăng nhập",email:"Email",password:"Mật khẩu",loginErr:"Sai email hoặc mật khẩu.",loginHint:"Dùng tài khoản do quản lý tạo.",signOut:"Đăng xuất",signedAs:"Đang đăng nhập: {e}",account:"Tài khoản",noPerm:"Không có quyền lưu. Hãy đăng nhập lại.",beach:"Khách đi biển",beachSec:"Đang ở bãi biển",beachAdd:"+ Khách đi biển",beachNone:"Chưa có khách đi biển.",leftBeach:"Khách về",beachT:"Khách đi biển",toTable:"Cho ngồi bàn",convTableT:"Cho {n} ngồi bàn",convTableHint:"Chọn loại khách và bàn cho nhóm.",bracelet:"Số vòng tay",braceletHint:"Ví dụ 12 hoặc 12–15",deposit:"Đã đặt cọc",depAmt:"Tiền cọc (nghìn đồng)",depShort:"Cọc {a}",remain:"còn {a}",noticeH:"Thông báo cho nhân viên",noticeP:"Hiện ở đầu ứng dụng cho mọi nhân viên, ví dụ món cần bán hôm nay.",info:"Thông tin",warn:"Cảnh báo",noticeSave:"Đăng thông báo",noticeClear:"Gỡ thông báo",noticePosted:"Đã đăng thông báo.",noticeRemoved:"Đã gỡ thông báo.",delBk:"Xoá đặt chỗ này",delBkWarn:"Xoá hẳn đặt chỗ của {n}? Chỉ dùng khi tạo nhầm. Nếu khách đã về, hãy bấm “Khách về” để giữ lịch sử.",deleted:"Đã xoá đặt chỗ.",moveT:"Chuyển bàn",moveHint:"Mẹo: giữ và kéo một bàn lên bàn khác để ghép bàn. Kéo bàn có khách sang bàn trống để chuyển hoặc ghép thêm.",dropAsk:"Kéo {n} lên {t}:",dropMove:"Chuyển nhóm sang {t}",dropJoin:"Ghép {t} vào nhóm",joinedFree:"Đã ghép {t}.",splitT:"Tách bàn",splitDone:"Đã tách {t}.",diffSec:"Chỉ ghép được bàn trong cùng một khu.",lossL:"Số chỗ mất mỗi chỗ nối khi ghép bàn",lossHint:"Mặc định 2: hai bàn 4 chỗ ghép lại còn 6 chỗ, bốn bàn 4 chỗ còn 10 chỗ.",movePick:"Chọn bàn mới cho {n} (đang ở {t})",cancel:"Huỷ",moved:"Đã chuyển {n} sang {t}.",targetBusy:"Bàn {t} đang có khách.",targetSoon:"Bàn {t} có đặt chỗ lúc {h}. Vẫn chuyển?",overCap:"{p} khách nhưng {t} chỉ có {s} chỗ. Vẫn tiếp tục? (ví dụ đã kê thêm ghế)",proceed:"Vẫn tiếp tục",convert:"Chuyển thành combo",convT:"Chuyển {n} thành combo",convHint:"Bấm bàn mới ở khu A hoặc B để chuyển khách sang đó (bàn cũ sẽ được trả). Bấm thêm bàn nếu nhóm cần nhiều bàn.",converted:"Đã chuyển thành {c}.",walkNote:"Ghi chú",needTable:"Chọn ít nhất 1 bàn.",howMany:"Số khách",seatNow:"Xếp bàn",notBooked:"chưa có đặt",guestsU:"khách",groupsU:"nhóm",bookedTables:"{n} bàn đã có đặt chỗ",layouts:"Sơ đồ bàn",active:"Đang dùng",useThis:"Dùng sơ đồ này",dupL:"Nhân bản",delLWarn:"Xoá sơ đồ “{n}”? Không hoàn tác được.",newL:"Sơ đồ mới",lName:"Tên sơ đồ",defaultLName:"Sơ đồ chính",copyOf:"{n} (bản sao)",switched:"Đang dùng: {n}",editing:"Đang sửa: {n}",histSearch:"Tìm tên, SĐT, số vòng tay, ghi chú",r7:"7 ngày",r30:"30 ngày",rAll:"Tất cả",histSum:"{g} nhóm, {p} khách, {c}% combo",histEmpty:"Chưa có khách nào trong khoảng này.",csv:"Tải CSV",pickDateHint:"Đặt chỗ ở ngày khác? Đổi ngày ở trên sơ đồ.",seatedLeft:"{a} đến {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Khách lẻ",other:"Khác"}},
 en:{sub:"Staff app",tFloor:"Tables",tBook:"Bookings",tHb:"Handbook",tSet:"Settings",
  connecting:"Connecting…",preview:"Preview mode: Firebase isn't set up yet (firebase-config.js), so nothing is saved.",readOnly:"You can view but not change data.",offline:"Offline. Changes will save automatically when the connection is back.",
  freeNow:"Free now",tablesU:"tables",seatsU:"seats",free:"Free",soon:"Reserved soon",busy:"Seated",bookedAt:"Booked {t}",
@@ -521,7 +563,7 @@ en:{sub:"Staff app",tFloor:"Tables",tBook:"Bookings",tHb:"Handbook",tSet:"Settin
  clean:"Clean up",cleanP:"Delete bookings older than 1 year to keep the app fast. Download the CSV in History first if you want to keep them.",cleanB:"Delete old bookings",cleaned:"Deleted {n} old bookings.",
  saved:"Saved.",freed:"Freed table {t}.",undo:"Undo",seatedT:"Seated {n}.",errSave:"Couldn't save. Try again.",
  search:"Search: lobster, starfish, allergy, rain…",hQA:"When things go wrong",hHard:"Difficult guests",hRules:"Rules",hCombo:"The two combos",hSched:"Slot schedule",hRoles:"What each team does",noHits:"Nothing found. Try another word.",
- slotLine:"Section {s}",tHist:"History",vGrid:"Grid",vPlan:"Floor plan",arrangeBtn:"Arrange tables",arrDone:"Done",arrangeHint:"Drag tables to where they really stand, or into another box to change section. Drop a table onto another to join them. Joined tables move together; tap them to split. Drag the ◢ corner to resize, or tap a table to adjust it precisely. − / + changes each section's height.",sizeT:"Table size",szW:"Width",szH:"Length",resetSize:"Reset to original size",autoArr:"Auto-arrange",autoArrQ:"Put all tables in {s} back into a grid?",msgs:"Quick messages",msgPh:"E.g. No. 23 on the way back from the beach",send:"Send",msgNone:"No messages today.",q1:"on the way back from the beach",q2:"arrived, needs a table",q3:"wants to pay",q4:"needs extra staff",ok:"OK",newMsg:"New message",notifOn:"Turn on notifications on this phone",notifGranted:"Notifications are on for this phone.",notifDenied:"Notifications are blocked. Turn them back on in the phone's browser settings.",notifNA:"This phone or browser doesn't support notifications.",notifNote:"Notifications show while the app is open or was just in the background.",pinH:"Pinned info",pinP:"Shown on the Tables and Bookings pages until removed. For quick messages, use the bell at the top.",vLeft:"Guests who left",vLog:"Activity log",logSearch:"Search staff, guest, bracelet",logNone:"No activity in this period.",log_create:"Created booking",log_edit:"Edited booking",log_delete:"Deleted booking",log_seat:"Guests arrived",log_leave:"Guests left, table freed",log_noshow:"No-show",log_cancel:"Cancelled booking",log_assign:"Assigned table {d}",log_move:"Moved table {d}",log_tables:"Changed tables: {d}",log_join:"Joined tables {d}",log_split:"Split tables {d}",log_convert:"Converted to {d}",log_walkin:"Seated walk-ins at {d}",log_beach:"Added beach guests",log_notice:"Posted info: {d}",log_noticeOff:"Removed info",log_msg:"Sent message: {d}",log_undo:"Undid: {d}",login:"Sign in",email:"Email",password:"Password",loginErr:"Wrong email or password.",loginHint:"Use the account your manager created.",signOut:"Sign out",signedAs:"Signed in as {e}",account:"Account",noPerm:"Not allowed to save. Please sign in again.",beach:"Beach",beachSec:"At the beach",beachAdd:"+ Beach guests",beachNone:"No beach guests right now.",leftBeach:"Left",beachT:"Beach guests",toTable:"Give a table",convTableT:"Give {n} a table",convTableHint:"Pick the guest type and the table(s).",bracelet:"Bracelet no.",braceletHint:"E.g. 12 or 12–15",deposit:"Deposit paid",depAmt:"Deposit (k VND)",depShort:"Deposit {a}",remain:"{a} left to pay",noticeH:"Staff notice",noticeP:"Shown at the top of the app for all staff, e.g. something to sell today.",info:"Info",warn:"Warning",noticeSave:"Post notice",noticeClear:"Remove notice",noticePosted:"Notice posted.",noticeRemoved:"Notice removed.",delBk:"Delete this booking",delBkWarn:"Permanently delete {n}'s booking? Only for bookings made by mistake. If the guests have left, use “Guests left” instead to keep the history.",deleted:"Booking deleted.",moveT:"Move table",moveHint:"Tip: press and hold a table and drag it onto another table to join them. Drag a seated table onto a free one to move or extend the group.",dropAsk:"Drop {n} onto {t}:",dropMove:"Move the group to {t}",dropJoin:"Join {t} to the group",joinedFree:"Joined {t}.",splitT:"Split tables",splitDone:"Split {t}.",diffSec:"You can only join tables in the same section.",lossL:"Seats lost at each join",lossHint:"Default 2: two 4-seat tables joined seat 6, four 4-seat tables seat 10.",movePick:"Pick the new table for {n} (now at {t})",cancel:"Cancel",moved:"Moved {n} to {t}.",targetBusy:"Table {t} already has guests.",targetSoon:"Table {t} has a booking at {h}. Move anyway?",overCap:"{p} guests but {t} only seats {s}. Continue anyway? (e.g. an extra chair was added)",proceed:"Continue",convert:"Convert to combo",convT:"Convert {n} to a combo",convHint:"Tap a new table in section A or B to move the group there (the old table is freed). Tap more tables if the group needs several.",converted:"Converted to {c}.",walkNote:"Notes",needTable:"Pick at least one table.",howMany:"Guests",seatNow:"Seat now",notBooked:"not booked",guestsU:"guests",groupsU:"groups",bookedTables:"{n} tables booked",layouts:"Table layouts",active:"In use",useThis:"Use this layout",dupL:"Duplicate",delLWarn:"Delete layout “{n}”? This can't be undone.",newL:"New layout",lName:"Layout name",defaultLName:"Main layout",copyOf:"{n} (copy)",switched:"Now using: {n}",editing:"Editing: {n}",histSearch:"Search name, phone, bracelet, notes",r7:"7 days",r30:"30 days",rAll:"All",histSum:"{g} groups, {p} guests, {c}% combos",histEmpty:"No guests in this period.",csv:"Download CSV",pickDateHint:"Booking on another day? Change the date above the tables.",seatedLeft:"{a} to {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Walk-in",other:"Other"}}
+ slotLine:"Section {s}",tHist:"History",noDep:"No deposit",agSearch:"Search name, phone, bracelet, notes",agEarlier:"↑ Show earlier days",agLater:"↓ Show more days",agEmpty:"No bookings yet.",agJump:"Go to date",wd:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],todayDot:"Today",nl:"ad",te:"ch",be:"<7",remNew:"Reminder",remT:"New reminder",remEditT:"Edit reminder",remText:"Text",remPh:"E.g. Call Mai back to confirm the deposit",remDone:"Done",remDel:"Delete this reminder",remDelQ:"Delete this reminder?",newWhat:"Add what for {d}?",log_rem:"Reminder: {d}",log_remDel:"Deleted reminder: {d}",vGrid:"Grid",vPlan:"Floor plan",arrangeBtn:"Arrange tables",arrDone:"Done",arrangeHint:"Drag tables to where they really stand, or into another box to change section. Drop a table onto another to join them. Joined tables move together; tap them to split. Drag the ◢ corner to resize, or tap a table to adjust it precisely. − / + changes each section's height.",sizeT:"Table size",szW:"Width",szH:"Length",resetSize:"Reset to original size",autoArr:"Auto-arrange",autoArrQ:"Put all tables in {s} back into a grid?",msgs:"Quick messages",msgPh:"E.g. No. 23 on the way back from the beach",send:"Send",msgNone:"No messages today.",q1:"on the way back from the beach",q2:"arrived, needs a table",q3:"wants to pay",q4:"needs extra staff",ok:"OK",newMsg:"New message",notifOn:"Turn on notifications on this phone",notifGranted:"Notifications are on for this phone.",notifDenied:"Notifications are blocked. Turn them back on in the phone's browser settings.",notifNA:"This phone or browser doesn't support notifications.",notifNote:"Notifications show while the app is open or was just in the background.",pinH:"Pinned info",pinP:"Shown on the Tables and Bookings pages until removed. For quick messages, use the bell at the top.",vLeft:"Guests who left",vLog:"Activity log",logSearch:"Search staff, guest, bracelet",logNone:"No activity in this period.",log_create:"Created booking",log_edit:"Edited booking",log_delete:"Deleted booking",log_seat:"Guests arrived",log_leave:"Guests left, table freed",log_noshow:"No-show",log_cancel:"Cancelled booking",log_assign:"Assigned table {d}",log_move:"Moved table {d}",log_tables:"Changed tables: {d}",log_join:"Joined tables {d}",log_split:"Split tables {d}",log_convert:"Converted to {d}",log_walkin:"Seated walk-ins at {d}",log_beach:"Added beach guests",log_notice:"Posted info: {d}",log_noticeOff:"Removed info",log_msg:"Sent message: {d}",log_undo:"Undid: {d}",login:"Sign in",email:"Email",password:"Password",loginErr:"Wrong email or password.",loginHint:"Use the account your manager created.",signOut:"Sign out",signedAs:"Signed in as {e}",account:"Account",noPerm:"Not allowed to save. Please sign in again.",beach:"Beach",beachSec:"At the beach",beachAdd:"+ Beach guests",beachNone:"No beach guests right now.",leftBeach:"Left",beachT:"Beach guests",toTable:"Give a table",convTableT:"Give {n} a table",convTableHint:"Pick the guest type and the table(s).",bracelet:"Bracelet no.",braceletHint:"E.g. 12 or 12–15",deposit:"Deposit paid",depAmt:"Deposit (k VND)",depShort:"Deposit {a}",remain:"{a} left to pay",noticeH:"Staff notice",noticeP:"Shown at the top of the app for all staff, e.g. something to sell today.",info:"Info",warn:"Warning",noticeSave:"Post notice",noticeClear:"Remove notice",noticePosted:"Notice posted.",noticeRemoved:"Notice removed.",delBk:"Delete this booking",delBkWarn:"Permanently delete {n}'s booking? Only for bookings made by mistake. If the guests have left, use “Guests left” instead to keep the history.",deleted:"Booking deleted.",moveT:"Move table",moveHint:"Tip: press and hold a table and drag it onto another table to join them. Drag a seated table onto a free one to move or extend the group.",dropAsk:"Drop {n} onto {t}:",dropMove:"Move the group to {t}",dropJoin:"Join {t} to the group",joinedFree:"Joined {t}.",splitT:"Split tables",splitDone:"Split {t}.",diffSec:"You can only join tables in the same section.",lossL:"Seats lost at each join",lossHint:"Default 2: two 4-seat tables joined seat 6, four 4-seat tables seat 10.",movePick:"Pick the new table for {n} (now at {t})",cancel:"Cancel",moved:"Moved {n} to {t}.",targetBusy:"Table {t} already has guests.",targetSoon:"Table {t} has a booking at {h}. Move anyway?",overCap:"{p} guests but {t} only seats {s}. Continue anyway? (e.g. an extra chair was added)",proceed:"Continue",convert:"Convert to combo",convT:"Convert {n} to a combo",convHint:"Tap a new table in section A or B to move the group there (the old table is freed). Tap more tables if the group needs several.",converted:"Converted to {c}.",walkNote:"Notes",needTable:"Pick at least one table.",howMany:"Guests",seatNow:"Seat now",notBooked:"not booked",guestsU:"guests",groupsU:"groups",bookedTables:"{n} tables booked",layouts:"Table layouts",active:"In use",useThis:"Use this layout",dupL:"Duplicate",delLWarn:"Delete layout “{n}”? This can't be undone.",newL:"New layout",lName:"Layout name",defaultLName:"Main layout",copyOf:"{n} (copy)",switched:"Now using: {n}",editing:"Editing: {n}",histSearch:"Search name, phone, bracelet, notes",r7:"7 days",r30:"30 days",rAll:"All",histSum:"{g} groups, {p} guests, {c}% combos",histEmpty:"No guests in this period.",csv:"Download CSV",pickDateHint:"Booking on another day? Change the date above the tables.",seatedLeft:"{a} to {b}",src:{zalo:"Zalo",fb:"Facebook / TikTok",web:"Website",gyg:"GetYourGuide",viator:"Viator",trip:"Trip.com",walk:"Walk-in",other:"Other"}}
 };
 const SLOTS=[["08:30","A"],["09:30","A"],["10:30","B"],["13:30","B"],["14:30","A"]];
 const SLOTPLAN=[[["welcome","08:30"],["beach","09:00"],["activity","10:30"],["lunch","11:00"]],[["welcome","09:30"],["beach","10:00"],["activity","11:30"],["lunch","12:00"]],[["welcome","10:30"],["beach","11:00"],["activity","12:30"],["lunch","13:00"]],[["welcome","13:30"],["lunch","13:45"],["beach","14:30"],["activity","16:00"]],[["welcome","14:30"],["beach","15:00"],["activity","16:30"],["dinner","17:30"]]];
@@ -545,15 +587,20 @@ const isActive=b=>b.status==="booked"||b.status==="seated";
 
 /* ---------- stores ---------- */
 function memStore(){
- let config=null;const bookings={};const msgs=[],logs=[],ml=new Set(),ll=new Set();
+ let config=null;const bookings={};const rems=[],rl=new Set();const emitR=()=>rl.forEach(o=>o.cb(rems.filter(r=>r.date>=o.from&&r.date<=o.to).map(r=>({...r}))));const msgs=[],logs=[],ml=new Set(),ll=new Set();
  const emitM=()=>ml.forEach(o=>o.cb(msgs.filter(m=>m.date===o.date).map(m=>({...m}))));const emitL=()=>ll.forEach(o=>o.cb(logs.filter(e=>!o.from||e.date>=o.from).map(e=>({...e}))));const docs={},dl=new Set();const cl=new Set(),bl=new Set(),hl=new Set();const joins={},jl=new Set();
  const hist=()=>Object.values(bookings).filter(b=>b.status==="left").sort((a,b)=>a.date<b.date?1:-1).map(b=>({...b}));
  const emitC=()=>cl.forEach(f=>f(config));
- const emitB=()=>{bl.forEach(o=>o.cb(Object.values(bookings).filter(b=>b.date===o.date).map(b=>({...b}))));hl.forEach(f=>f(hist()))};
+ const emitB=()=>{bl.forEach(o=>{if(o.fn)o.cb();else o.cb(Object.values(bookings).filter(b=>b.date===o.date).map(b=>({...b})))});hl.forEach(f=>f(hist()))};
  return{
   watchConfig(cb){cl.add(cb);setTimeout(()=>cb(config));return()=>cl.delete(cb)},
   async saveConfig(c){config=JSON.parse(JSON.stringify(c));emitC()},
   watchBookings(date,cb){const o={date,cb};bl.add(o);setTimeout(()=>cb(Object.values(bookings).filter(b=>b.date===date).map(b=>({...b}))));return()=>bl.delete(o)},
+  watchRange(from,to,cb){const o={date:"__r",cb:()=>{},from,to,fn:cb};bl.add(o);const f=()=>cb(Object.values(bookings).filter(b=>b.date>=from&&b.date<=to).map(b=>({...b})));o.cb=f;setTimeout(f);return()=>bl.delete(o)},
+  watchRems(from,to,cb){const o={from,to,cb};rl.add(o);setTimeout(()=>cb(rems.filter(r=>r.date>=from&&r.date<=to).map(r=>({...r}))));return()=>rl.delete(o)},
+  async putRem(id,r){const i=rems.findIndex(x=>x.id===id);const v={...r,id};i<0?rems.push(v):rems[i]=v;emitR()},
+  async patchRem(id,p){const i=rems.findIndex(x=>x.id===id);if(i>=0)rems[i]={...rems[i],...p};emitR()},
+  async delRem(id){const i=rems.findIndex(x=>x.id===id);if(i>=0)rems.splice(i,1);emitR()},
   watchMsgs(date,cb){const o={date,cb};ml.add(o);setTimeout(emitM);return()=>ml.delete(o)},
   async addMsg(m){const id="m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);msgs.push({...m,id});emitM();return id},
   watchLog(from,cb){const o={from,cb};ll.add(o);setTimeout(emitL);return()=>ll.delete(o)},
@@ -576,6 +623,12 @@ function dbStore(db){
   watchConfig(cb){return db.doc("config/main").onSnapshot(s=>cb(s.exists?s.data():null),onErr)},
   saveConfig(c){return db.doc("config/main").set(c)},
   watchBookings(date,cb){return db.collection("bookings").where("date","==",date).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
+  watchRange(from,to,cb){return db.collection("bookings").where("date",">=",from).where("date","<=",to).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
+  watchRems(from,to,cb){return db.collection("reminders").where("date",">=",from).where("date","<=",to).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
+  putRem(id,r){const {id:_,...x}=r;return db.doc("reminders/"+id).set(x)},
+  patchRem(id,p){return db.doc("reminders/"+id).update(p)},
+  delRem(id){return db.doc("reminders/"+id).delete()},
+  newRemId(){return db.collection("reminders").doc().id},
   watchMsgs(date,cb){return db.collection("messages").where("date","==",date).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
   async addMsg(m){const r=db.collection("messages").doc();await r.set(m);return r.id},
   watchLog(from,cb){let q=db.collection("log");if(from)q=q.where("date",">=",from);return q.orderBy("date","desc").limit(1500).onSnapshot(s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),onErr)},
@@ -588,7 +641,7 @@ function dbStore(db){
   putBooking(id,b){const {id:_,...r}=b;return db.doc("bookings/"+id).set(r)},
   patchBooking(id,p){return db.doc("bookings/"+id).update(p)},
   deleteBooking(id){return db.doc("bookings/"+id).delete()},
-  async cleanup(before){let n=0;for(const c of ["bookings","log","messages"]){const s=await db.collection(c).where("date","<",before).limit(300).get();for(const d of s.docs){await db.doc(c+"/"+d.id).delete()}if(c==="bookings")n=s.size}return n},
+  async cleanup(before){let n=0;for(const c of ["bookings","log","messages","reminders"]){const s=await db.collection(c).where("date","<",before).limit(300).get();for(const d of s.docs){await db.doc(c+"/"+d.id).delete()}if(c==="bookings")n=s.size}return n},
   newId(){return db.collection("bookings").doc().id}
  };
 }
@@ -610,6 +663,46 @@ function subscribe(){
 }
 function resubToday(){if(unsubToday)unsubToday();todayKey=todayStr();unsubToday=store.watchBookings(todayKey,list=>{state.today=list;if(state.date===todayKey)state.day=list;render()})}
 function histFrom(){if(state.histRange==="all")return null;const d=new Date();d.setDate(d.getDate()-(+state.histRange));return dstr(d)}
+let unsubAg=null,unsubRem=null,agKey="";
+const addDays=(d,n)=>{const x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return dstr(x)};
+function resubAgenda(force){if(!store||!store.watchRange)return;if(!state.agFrom){state.agFrom=addDays(todayStr(),-7);state.agTo=addDays(todayStr(),30)}
+ const k=state.agFrom+"|"+state.agTo;if(!force&&k===agKey&&unsubAg)return;if(unsubAg)unsubAg();if(unsubRem)unsubRem();agKey=k;
+ unsubAg=store.watchRange(state.agFrom,state.agTo,list=>{state.agenda=list;if(state.tab==="book")renderAgenda()});
+ unsubRem=store.watchRems?store.watchRems(state.agFrom,state.agTo,list=>{state.rems=list;if(state.tab==="book")renderAgenda()}):null}
+function ensureRange(d){let ch=false;if(d<state.agFrom){state.agFrom=addDays(d,-3);ch=true}if(d>state.agTo){state.agTo=addDays(d,7);ch=true}if(ch)resubAgenda(true)}
+function agendaShell(){return `<div class="agbar"><input class="search" id="agSearch" type="search" placeholder="${esc(t("agSearch"))}" value="${esc(state.agQ||"")}"><div class="agnav"><button type="button" class="btn sm" data-act="agToday">${t("todayDot")}</button><label class="hint" for="agJump">${t("agJump")}</label><input type="date" id="agJump"></div></div><div id="agBody"></div>`}
+function dayLabel(d){const x=new Date(d+"T12:00:00");const wd=U[lang].wd[x.getDay()];const dm=x.getDate()+"/"+(x.getMonth()+1);return (d===todayStr()?t("todayDot")+" · ":"")+wd+", "+dm}
+function paxShort(b){const p=[`${+b.adults||0} ${t("nl")}`];if(+b.kids)p.push(`${b.kids} ${t("te")}`);if(+b.small)p.push(`${b.small} ${t("be")}`);return p.join(" · ")}
+function agRow(b){
+ const done=["left","noshow","cancelled"].includes(b.status);const today=b.date===todayStr();
+ let acts="";if(state.canWrite&&today){if(b.status==="booked")acts=`<button class="btn teal sm" data-act="seat" data-id="${b.id}">${t("arrived")}</button><button class="btn ghost sm" data-act="noshow" data-id="${b.id}">${t("noshow")}</button>`;if(b.status==="seated")acts=`<button class="btn pri sm" data-act="leave" data-id="${b.id}">${t(b.type==="beach"&&!(b.tables||[]).length?"leftBeach":"left")}</button>`}
+ const tb=b.type==="beach"&&!(b.tables||[]).length?t("beachSec"):(tablesLabel(b.tables)||t("noTables"));
+ return `<div class="agrow st-${b.status}${done?" done":""}" data-act="edit" data-id="${b.id}" role="button" tabindex="0"><div class="agt">${esc(b.time)}</div><div class="agm"><div class="l1">${b.bracelet?`<span class="br">#${esc(b.bracelet)}</span> `:""}<b>${esc(b.name)}</b> ${typeChip(b)}${b.status!=="booked"?` <span class="chip s-${b.status}">${t("s_"+b.status)}</span>`:""}</div><div class="l2">${PERSON}${esc(paxShort(b))} · ${esc(tb)} ${depBadge(b)}</div>${b.note?`<div class="l3">${esc(b.note)}</div>`:""}${acts?`<div class="acts">${acts}</div>`:""}</div></div>`}
+function remRow(r){return `<div class="agrow rem${r.done?" done":""}" data-act="remEdit" data-id="${r.id}" role="button" tabindex="0"><div class="agt">${esc(r.time||"")}</div><div class="agm"><div class="l1">⏰ <b>${esc(r.text)}</b></div>${r.by?`<div class="l2">${esc(r.by)}</div>`:""}</div>${state.canWrite?`<button type="button" class="remck" data-act="remToggle" data-id="${r.id}" aria-pressed="${!!r.done}" aria-label="${t("remDone")}">✓</button>`:""}</div>`}
+function renderAgenda(){
+ const el=document.getElementById("agBody");if(!el)return;const T=todayStr();const q=fold(state.agQ||"").trim();
+ let bs=(state.agenda||[]).slice(),rs=(state.rems||[]).slice();
+ if(q){const ok=x=>q.split(/\s+/).every(w=>fold(x).includes(w));bs=bs.filter(b=>ok([b.name,b.phone,b.bracelet,"#"+(b.bracelet||""),b.note,tablesLabel(b.tables)].join(" ")));rs=rs.filter(r=>ok(r.text))}
+ const days=new Set([...bs.map(b=>b.date),...rs.map(r=>r.date)]);if(!q){if(T>=state.agFrom&&T<=state.agTo)days.add(T);if(state.agFocus)days.add(state.agFocus)}
+ let out=`<p style="text-align:center;margin:6px 0 10px"><button type="button" class="btn ghost sm" data-act="agMore" data-d="-14">${t("agEarlier")}</button></p>`;
+ for(const d of [...days].sort()){
+  const db=bs.filter(b=>b.date===d),dr=rs.filter(r=>r.date===d);const act=db.filter(b=>!["cancelled","noshow"].includes(b.status));
+  const items=[...db.map(b=>({tm:b.time,h:agRow(b)})),...dr.map(r=>({tm:r.time||"",h:remRow(r)}))].sort((a,b)=>a.tm<b.tm?-1:a.tm>b.tm?1:0);
+  out+=`<div class="agday${d===T?" today":""}${d<T?" past":""}" id="ag-${d}"><span class="agd">${esc(dayLabel(d))}</span>${act.length?`<span class="agsum">${act.length} ${t("groupsU")} · ${act.reduce((a,b)=>a+pax(b),0)} ${t("guestsU")}</span>`:""}${state.canWrite?`<button type="button" class="agadd" data-act="agNew" data-d="${d}" aria-label="+">+</button>`:""}</div>`;
+  out+=items.length?items.map(i=>i.h).join(""):`<p class="hint" style="padding:8px 4px 14px">${t("agEmpty")}</p>`;
+ }
+ out+=`<p style="text-align:center;margin:16px 0"><button type="button" class="btn ghost sm" data-act="agMore" data-d="14">${t("agLater")}</button></p>`;
+ const keep=state.agKeep;el.innerHTML=out;
+ if(keep){window.scrollTo(0,keep.y+(document.documentElement.scrollHeight-keep.h));state.agKeep=null}
+ else if(!state.agScrolled&&(state.agenda||state.rems)){state.agScrolled=true;agScrollTo(state.agFocus||T)}
+}
+function agScrollTo(d){const h=document.getElementById("ag-"+d);if(!h)return;const top=h.getBoundingClientRect().top+window.scrollY-(document.querySelector("header.app").offsetHeight+8);window.scrollTo({top,behavior:"auto"})}
+function remSheet(r){state.rem={...r};const isNew=!r.id;
+ openSheet(`<h2>⏰ ${isNew?t("remT"):t("remEditT")}</h2><div class="field"><label for="r_text">${t("remText")}</label><textarea id="r_text" rows="3" placeholder="${esc(t("remPh"))}">${esc(r.text||"")}</textarea></div>
+ <div class="row2"><div class="field"><label for="r_date">${t("date")}</label><input id="r_date" type="date" value="${r.date}"></div><div class="field"><label for="r_time">${t("time")}</label><input id="r_time" type="time" value="${r.time||""}"></div></div>
+ ${isNew?"":`<div class="field"><label class="ckbig"><input type="checkbox" id="r_done" ${r.done?"checked":""}> ${t("remDone")}</label></div>`}
+ <p class="err" id="r_err"></p><div class="acts"><button class="btn pri" data-act="remSave">${t("save")}</button><button class="btn ghost" data-act="close">${t("close")}</button></div>
+ ${isNew?"":`<p style="text-align:center;margin:16px 0 0"><button type="button" class="linkdel" data-act="remDelete">${t("remDel")}</button></p>`}`)}
 function resubHist(force){if(!store)return;if(state.tab==="hist"){if(force&&unsubHist){unsubHist();unsubHist=null}if(!unsubHist)unsubHist=(state.histView==="log"&&store.watchLog)?store.watchLog(histFrom(),list=>{state.log=list;if(state.tab==="hist")renderHist()}):store.watchHistory(histFrom(),list=>{state.hist=list;if(state.tab==="hist")renderHist()})}else if(unsubHist){unsubHist();unsubHist=null}}
 let unsubMsgs=null,msgKey=null,msgSeeded=false;const seenMsg=new Set();const sentByMe=new Set();
 function resubMsgs(){if(!store||!store.watchMsgs)return;const k=todayStr();if(k===msgKey&&unsubMsgs)return;if(unsubMsgs)unsubMsgs();msgKey=k;msgSeeded=false;
@@ -652,8 +745,9 @@ function tableStatus(tb){
  if(up.length&&toMin(up[0].time)-now<=60)return{kind:"soon",b:up[0],up};
  return{kind:"free",b:up[0]||null,up};
 }
+function bookingsOn(date){if(date===todayKey)return state.today;if(date===state.date)return state.day;return (state.agenda||[]).filter(b=>b.date===date)}
 function conflictSet(date,time,type,exceptId){
- const s=toMin(time),e=s+(DUR[type]||120);const list=date===todayKey?state.today:state.day;const set=new Map();
+ const s=toMin(time),e=s+(DUR[type]||120);const list=bookingsOn(date);const set=new Map();
  const now=toMin(nowHM());
  for(const b of list){if(b.id===exceptId||!isActive(b))continue;
   const bs=toMin(b.time);let be=bs+(DUR[b.type]||120);if(b.status==="seated"&&date===todayKey)be=Math.max(be,now+30);
@@ -662,6 +756,8 @@ function conflictSet(date,time,type,exceptId){
 }
 function estNum(b){if(b.type!=="combo"&&b.type!=="lobster")return 0;return (+b.adults||0)*(b.type==="lobster"?900:750)+(+b.kids||0)*375}
 const fmtK=n=>(+n||0).toLocaleString("vi-VN")+"k";
+function depBadge(b){if(b.deposit)return `<span class="dep yes">💰 ${esc(t("depShort",{a:fmtK(+b.depAmt||0)}))}</span>`;if(["combo","lobster","normal"].includes(b.type)&&b.status==="booked")return `<span class="dep no">${t("noDep")}</span>`;return ""}
+function depTag(b){if(!b)return "";if(b.deposit)return `<span class="dpc yes">💰${esc(fmtK(+b.depAmt||0))}</span>`;if(["combo","lobster","normal"].includes(b.type)&&b.status==="booked")return `<span class="dpc no">${t("noDep")}</span>`;return ""}
 function depLine(b){if(!b.deposit)return "";return t("depShort",{a:fmtK(+b.depAmt||0)})}
 function estimate(b){
  if(b.type!=="combo"&&b.type!=="lobster")return "";
@@ -689,7 +785,7 @@ const ackMem=new Set();let seenMem=0;
 function acked(){let a=[];try{a=JSON.parse(ls.get("acked")||"[]")}catch(_){}return [...new Set([...a,...ackMem])]}
 function renderAlerts(){const el=document.getElementById("alertBox");if(!el)return;if(state.mode==="login"){el.innerHTML="";return}const ak=new Set(acked());const now=Date.now();
  const list=(state.msgs||[]).filter(m=>!ak.has(m.id)&&now-m.at<15*60000&&(state.mode==="preview"||!sentByMe.has(m.id))).slice(0,2);
- el.innerHTML=list.map(m=>`<div class="alert" role="alert"><div><b>⚠ ${esc(m.text)}</b><small>${esc(m.time||"")}${m.by?" · "+esc(m.by):""}</small></div><button type="button" class="btn sm" data-act="ack" data-id="${m.id}">${t("ok")}</button></div>`).join("")}
+ setTimeout(setHdrH);el.innerHTML=list.map(m=>`<div class="alert" role="alert"><div><b>⚠ ${esc(m.text)}</b><small>${esc(m.time||"")}${m.by?" · "+esc(m.by):""}</small></div><button type="button" class="btn sm" data-act="ack" data-id="${m.id}">${t("ok")}</button></div>`).join("")}
 function notifyMsg(m){if(state.mode!=="preview"&&sentByMe.has(m.id))return;try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(_){}
  if(document.hidden&&"Notification" in window&&Notification.permission==="granted"&&navigator.serviceWorker){navigator.serviceWorker.ready.then(r=>r.showNotification("Nhà Trên Biển",{body:m.text+(m.by?" — "+m.by:""),icon:"icons/icon-192.png",tag:m.id,vibrate:[200,100,200]})).catch(()=>{})}}
 function msgSheet(){seenMem=Date.now();ls.set("msgSeen",String(seenMem));renderBell();
@@ -700,7 +796,9 @@ function msgSheet(){seenMem=Date.now();ls.set("msgSeen",String(seenMem));renderB
  <div id="msgList" style="margin-top:10px"></div>`);drawMsgs()}
 function drawMsgs(){const el=document.getElementById("msgList");if(!el)return;const l=state.msgs||[];el.innerHTML=l.length?l.map(m=>`<div class="mrow"><span class="tm">${esc(m.time||"")}</span><span><b>${esc(m.text)}</b>${m.by?`<small> — ${esc(m.by)}</small>`:""}</span></div>`).join(""):`<p class="hint">${t("msgNone")}</p>`}
 function loginHTML(){return `<form class="card" id="loginForm" style="max-width:420px;margin:30px auto" autocomplete="on"><h2>${t("login")}</h2><p class="hint">${t("loginHint")}</p><div class="field"><label for="lg_email">${t("email")}</label><input id="lg_email" type="email" autocomplete="username" required></div><div class="field"><label for="lg_pw">${t("password")}</label><input id="lg_pw" type="password" autocomplete="current-password" required></div><p class="err" id="lg_err"></p><div style="margin-top:14px"><button class="btn pri" type="submit" style="width:100%">${t("login")}</button></div></form>`}
-function renderBanner(){
+function setHdrH(){const h=document.querySelector("header.app");if(h)document.documentElement.style.setProperty("--hdrH",h.offsetHeight+"px")}
+window.addEventListener("resize",setHdrH);
+function renderBanner(){setHdrH();
  const m={connecting:t("connecting"),preview:t("preview"),offline:t("offline")}[state.mode]||"";
  document.getElementById("banner").textContent=m||(!state.canWrite?t("readOnly"):"");
  document.getElementById("who").textContent=state.staff?`${t("sub")}: ${state.staff}`:t("sub");
@@ -712,14 +810,16 @@ function render(){
  const navEl=document.querySelector("nav.tabs");navEl.hidden=state.mode==="login";
  if(state.mode==="login"){document.getElementById("fab").hidden=true;const m=document.getElementById("main");if(!m.querySelector("#loginForm"))m.innerHTML=loginHTML();return}
  const fab=document.getElementById("fab");
- fab.hidden=!(state.tab==="book"&&state.canWrite&&state.config&&state.mode!=="connecting");fab.textContent="+ "+t("newB");
+ fab.hidden=!(state.tab==="book"&&state.canWrite&&state.config&&state.mode!=="connecting");fab.textContent="+";fab.setAttribute("aria-label",t("newB")+" / "+t("remNew"));
+ document.getElementById("fab2").hidden=true;
  const main=document.getElementById("main");
  if(state.tab==="hb"){if(!main.querySelector("#hbSearch")){main.innerHTML=hbShell();hbLang=null}if(hbLang!==lang){hbLang=lang;renderHB()}return}
  if(state.tab==="set"){if(!main.querySelector("#setRoot"))main.innerHTML='<div id="setRoot"></div>';const a=document.activeElement;if(!(a&&a.closest&&a.closest("#setRoot")&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)))renderSettings();return}
  if(state.tab==="hist"){if(!main.querySelector("#histSearch"))main.innerHTML=histShell();renderHist();return}
  if(state.config===undefined){main.innerHTML=`<p class="empty">${t("connecting")}</p>`;return}
  if(!state.config||!tables().length){main.innerHTML=`<div class="card"><p>${t("setupNeeded")}</p><div class="acts" style="margin-top:10px"><button class="btn pri" data-tab="set">${t("goSet")}</button></div></div>`;return}
- main.innerHTML=state.tab==="floor"?floorHTML():bookingsHTML();
+ if(state.tab==="book"){if(!main.querySelector("#agSearch"))main.innerHTML=agendaShell();resubAgenda();renderAgenda();return}
+ main.innerHTML=floorHTML();
 }
 function buildCells(st){
  const parent={};const f=x=>parent[x]===x?x:(parent[x]=f(parent[x]));st.forEach(x=>{parent[x.tb.id]=x.tb.id});
@@ -763,7 +863,7 @@ function planHTML(cells,vis,secs){
    const s=c.s;const j=mem.length>1;
    let xl=`${c.seats} ${t("seatsU")}`;if(s.kind==="busy")xl=`${PERSON}${pax(s.b)}`;else if(s.kind==="soon")xl=isToday()?s.b.time:s.up.map(b=>b.time).join(", ");
    const src=state.moveFrom&&c.ids.some(i=>state.moveFrom.from.includes(i));
-   out+=`<button type="button" class="tile ptab ${s.kind}${w<9?" slim":""}${j?" joined":""}${src?" dragsrc":""}${vis(c)?"":" dim"}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" data-table="${c.ids[0]}" data-group="${c.ids.join(",")}" aria-label="${esc(c.name)}: ${t(s.kind)}">${(s.kind==="busy"||s.kind==="soon")&&s.b&&s.b.bracelet?`<span class="brc">#${esc(s.b.bracelet)}</span>`:""}<span class="n">${esc(c.name)}${j?LINK:""}</span><span class="x">${xl}</span></button>`;
+   out+=`<button type="button" class="tile ptab ${s.kind}${w<9?" slim":""}${j?" joined":""}${src?" dragsrc":""}${vis(c)?"":" dim"}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" data-table="${c.ids[0]}" data-group="${c.ids.join(",")}" aria-label="${esc(c.name)}: ${t(s.kind)}">${(s.kind==="busy"||s.kind==="soon")&&s.b?depTag(s.b):""}${(s.kind==="busy"||s.kind==="soon")&&s.b&&s.b.bracelet?`<span class="brc">#${esc(s.b.bracelet)}</span>`:""}<span class="n">${esc(c.name)}${j?LINK:""}</span><span class="x">${xl}</span></button>`;
   }
   out+=`</div></div></section>`;
  }
@@ -798,7 +898,7 @@ function floorHTML(){
    const s=c.s;const j=c.ids.length>1;
    let x="";if(s.kind==="busy")x=`${s.b.type==="walkin"?"":esc(s.b.name)+" "}${PERSON}${pax(s.b)}`;else if(s.kind==="soon")x=isToday()?`${s.b.time} ${esc(s.b.name)}`:s.up.map(b=>b.time).join(", ");else if(s.b)x=t("bookedAt",{t:s.b.time});
    const src=state.moveFrom&&c.ids.some(i=>state.moveFrom.from.includes(i));
-   return `<button type="button" class="tile ${s.kind}${j?" joined":""}${src?" dragsrc":""}" ${j?`style="grid-column:span ${Math.min(c.ids.length,3)}"`:""} data-table="${c.ids[0]}" data-group="${c.ids.join(",")}" aria-label="${esc(c.name)}: ${t(s.kind)}">${(s.kind==="busy"||s.kind==="soon")&&s.b&&s.b.bracelet?`<span class="brc">#${esc(s.b.bracelet)}</span>`:""}<span class="n">${esc(c.name)}${j?LINK:""}</span><span class="s">${c.seats} ${t("seatsU")}</span><span class="x">${x}</span></button>`}).join("")}</div></div></section>`;
+   return `<button type="button" class="tile ${s.kind}${j?" joined":""}${src?" dragsrc":""}" ${j?`style="grid-column:span ${Math.min(c.ids.length,3)}"`:""} data-table="${c.ids[0]}" data-group="${c.ids.join(",")}" aria-label="${esc(c.name)}: ${t(s.kind)}">${(s.kind==="busy"||s.kind==="soon")&&s.b?depTag(s.b):""}${(s.kind==="busy"||s.kind==="soon")&&s.b&&s.b.bracelet?`<span class="brc">#${esc(s.b.bracelet)}</span>`:""}<span class="n">${esc(c.name)}${j?LINK:""}</span><span class="s">${c.seats} ${t("seatsU")}</span><span class="x">${x}</span></button>`}).join("")}</div></div></section>`;
  }
  return out;
 }
@@ -814,7 +914,7 @@ function bookingCard(b){
   acts+=`<button class="btn ghost sm" data-act="edit" data-id="${b.id}">${t("edit")}</button>`;
  }
  return `<article class="bk st-${b.status}"><div class="top"><div><div class="nm">${b.bracelet?`<span class="br">#${esc(b.bracelet)}</span> `:""}${esc(b.name)}</div><div class="meta">${meta.join(", ")}${est?`, ${est}`:""}${b.phone?`, ${esc(b.phone)}`:""}</div></div><div style="text-align:right">${typeChip(b)}<br><span class="chip s-${b.status}" style="margin-top:4px">${t("s_"+b.status)}</span></div></div>
- ${dl?`<div class="meta"><b>${esc(dl)}</b></div>`:""}<div class="meta">${t("tables")}: <b>${esc(tb)}</b>${b.source?`, ${esc(U[lang].src[b.source]||b.source)}`:""}${b.by?`, ${t("by",{n:esc(b.by)})}`:""}</div>
+ ${depBadge(b)?`<div class="meta" style="margin-top:6px">${depBadge(b)}</div>`:""}<div class="meta">${t("tables")}: <b>${esc(tb)}</b>${b.source?`, ${esc(U[lang].src[b.source]||b.source)}`:""}${b.by?`, ${t("by",{n:esc(b.by)})}`:""}</div>
  ${b.note?`<div class="note">${esc(b.note)}</div>`:""}${acts?`<div class="acts">${acts}</div>`:""}</article>`;
 }
 function dateBar(){return `<div class="datebar"><button class="btn ghost sm" data-act="day" data-d="-1" aria-label="-1">‹</button><input type="date" id="dateIn" value="${state.date}"><button class="btn ghost sm" data-act="day" data-d="1" aria-label="+1">›</button>${state.date!==todayKey?`<button class="btn sm" data-act="today">${t("today")}</button>`:""}</div>`}
@@ -1049,7 +1149,7 @@ function toast(msg,undo){
  if(undo)document.getElementById("undoBtn").onclick=()=>{undo();if(ctx)L("undo",ctx.b,{u:ctx.act});r.innerHTML=""};
  clearTimeout(toast.tm);toast.tm=setTimeout(()=>r.innerHTML="",undo?6000:2500);
 }
-const findB=id=>state.today.find(b=>b.id===id)||state.day.find(b=>b.id===id);
+const findB=id=>state.today.find(b=>b.id===id)||state.day.find(b=>b.id===id)||(state.agenda||[]).find(b=>b.id===id);
 const stamp=()=>({updatedAt:Date.now(),by:state.staff||""});
 function blank(over){return{name:"",phone:"",date:state.tab==="book"?state.date:todayKey,time:"08:30",type:"combo",adults:2,kids:0,small:0,note:"",source:"",tables:[],status:"booked",...over}}
 
@@ -1058,7 +1158,7 @@ document.addEventListener("click",async e=>{
  const el=e.target.closest("[data-act],[data-tab],[data-lang],[data-table],[data-type],[data-slot],[data-step],[data-pick]");if(!el)return;
  if(el.dataset.act==="scrim"&&(e.target!==el||Date.now()-sheetAt<500))return;
  if(el.dataset.lang){lang=el.dataset.lang;ls.set("lang",lang);const m=document.getElementById("main");m.innerHTML="";hbLang=null;if(sheetData){readForm();drawForm()}else closeSheet();render();return}
- if(el.dataset.tab&&!el.dataset.act){state.tab=el.dataset.tab;ls.set("tab",state.tab);document.getElementById("main").innerHTML="";closeSheet();if(store)resubHist();render();try{window.scrollTo(0,0)}catch(_){}return}
+ if(el.dataset.tab&&!el.dataset.act){state.tab=el.dataset.tab;ls.set("tab",state.tab);document.getElementById("main").innerHTML="";closeSheet();if(store)resubHist();state.agScrolled=false;if(state.tab!=="book"&&unsubAg){unsubAg();unsubAg=null;if(unsubRem){unsubRem();unsubRem=null}}render();try{window.scrollTo(0,0)}catch(_){}return}
  if(el.dataset.type){readForm();sheetData.b.type=el.dataset.type;drawForm();return}
  if(el.dataset.slot){readForm();sheetData.b.time=el.dataset.slot;drawForm();return}
  if(el.dataset.pick){readForm();const ts=sheetData.b.tables,id=el.dataset.pick,i=ts.indexOf(id);i<0?ts.push(id):ts.splice(i,1);drawForm();return}
@@ -1077,6 +1177,16 @@ document.addEventListener("click",async e=>{
   case "today":state.date=todayKey;resubDay();render();break;
   case "walkin":walkinSheet(el.dataset.table);break;
   case "beachNew":beachSheet();break;
+  case "agToday":state.agFocus=null;agScrollTo(todayStr());break;
+  case "agMore":{const n=+el.dataset.d;if(n<0){state.agKeep={h:document.documentElement.scrollHeight,y:window.scrollY};state.agFrom=addDays(state.agFrom,n)}else state.agTo=addDays(state.agTo,n);resubAgenda(true);break}
+  case "agNew":{const d=el.dataset.d;const ch=await choose(t("newWhat",{d:dayLabel(d)}),[["b","+ "+t("newB")],["r","⏰ "+t("remNew")]]);if(ch==="b")formSheet(blank({date:d}));else if(ch==="r")remSheet({date:d,time:"",text:"",done:false});break}
+  case "remEdit":{const r=(state.rems||[]).find(x=>x.id===el.dataset.id);if(r)remSheet(r);break}
+  case "remToggle":{const r=(state.rems||[]).find(x=>x.id===el.dataset.id);if(r)await write(()=>store.patchRem(r.id,{done:!r.done}));break}
+  case "remSave":{const g=id=>document.getElementById(id);const tx=(g("r_text").value||"").trim();if(!tx){g("r_err").textContent=t("remText");break}
+   const r={...state.rem,text:tx,date:g("r_date").value||todayStr(),time:g("r_time").value||"",done:g("r_done")?g("r_done").checked:!!state.rem.done,by:state.rem.by||state.staff||state.user||"",at:state.rem.at||Date.now()};
+   const id=r.id||(store.newRemId?store.newRemId():"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,5));closeSheet();
+   if(await write(()=>store.putRem(id,r))&&L("rem",null,{d:tx})){toast(t("saved"));ensureRange(r.date)}break}
+  case "remDelete":{const r=state.rem;if(!r||!r.id)break;if(!(await ask(t("remDelQ"),t("del"))))break;closeSheet();if(await write(()=>store.delRem(r.id))&&L("remDel",null,{d:r.text}))toast(t("deleted"),()=>write(()=>store.putRem(r.id,r)));break}
   case "sz":{const L=activeLayout();const x=L&&L.tables.find(t=>t.id===el.dataset.id);if(!x)break;const ow=TW(+x.seats||4),oh=ow/TAR(+x.seats||4);const step=(el.dataset.k==="w"?ow:oh)*0.1*(+el.dataset.d);
    const size={w:tw(x),hw:thw(x)};size[el.dataset.k]=Math.round(Math.max(el.dataset.k==="w"?5:4,Math.min(70,size[el.dataset.k]+step))*10)/10;await setSize(x.id,size);break}
   case "szReset":await setSize(el.dataset.id,null);break;
@@ -1141,7 +1251,7 @@ document.addEventListener("click",async e=>{
    if(rec.status==="seated"&&!rec.seatedAt)rec.seatedAt=nowHM();
    if(isActive(rec)){const cm=conflictSet(rec.date,rec.time,rec.type,rec.id);const hit=(rec.tables||[]).find(x=>cm.has(x));if(hit){const ob=cm.get(hit);err.textContent=t("clash",{t:tName(hit),h:ob.time,n:ob.name});break}}
    if(!(await capOk(rec,rec.tables||[])))break;
-   closeSheet();if(await write(()=>store.putBooking(id,rec))){L(b.id?"edit":"create",{...rec,id},{d:tablesLabel(rec.tables)});toast(t("saved"));if(rec.date!==state.date&&state.tab==="book"){state.date=rec.date;resubDay();render()}}
+   closeSheet();if(await write(()=>store.putBooking(id,rec))){L(b.id?"edit":"create",{...rec,id},{d:tablesLabel(rec.tables)});toast(t("saved"));if(state.tab==="book")ensureRange(rec.date)}
    break}
   case "quick":{
    const seats=Math.max(1,+document.getElementById("qs_seats").value||6);const list=[];
@@ -1164,6 +1274,7 @@ document.addEventListener("input",e=>{
  if(el.id==="hbSearch"){state.q=el.value;renderHB();return}
  if(el.id==="staffIn"){state.staff=el.value.trim();ls.set("staff",state.staff);renderBanner();return}
  if(el.classList&&el.classList.contains("numin")){const v=Math.max(0,parseInt(el.value,10)||0);syncNum(el.dataset.p,el.dataset.k,v);return}
+ if(el.id==="agSearch"){state.agQ=el.value;renderAgenda();return}
  if(el.id==="histSearch"){state.histQ=el.value;renderHist();return}
  if(el.id==="lnameIn"&&state.draft){state.draft.name=el.value;return}
  if(el.dataset.tl){const x=state.draft&&state.draft.tables[+el.dataset.i];if(x)x[el.dataset.tl]=el.value;return}
@@ -1173,14 +1284,16 @@ document.addEventListener("change",e=>{
  if(el.id==="dateIn"&&el.value){state.date=el.value;resubDay();render();return}
  if(el.id==="lossIn"&&state.config){const c=JSON.parse(JSON.stringify(state.config));c.joinLoss=Math.max(0,Math.min(10,parseInt(el.value,10)||0));c.updatedAt=Date.now();write(()=>store.saveConfig(c)).then(ok=>ok&&toast(t("saved")));return}
  if(el.id==="f_dep"){const r=document.getElementById("f_amtRow"),a=document.getElementById("f_depAmt");if(r)r.hidden=!el.checked;if(a&&el.checked)a.focus();return}
+ if(el.id==="agJump"&&el.value){state.agFocus=el.value;ensureRange(el.value);renderAgenda();agScrollTo(el.value);return}
  if(el.id==="typeFlt"){state.typeFilter=el.value||null;render();return}
  if(el.id==="showDone"){state.showDone=el.checked;render();return}
  if(el.dataset.tl==="half"){const x=state.draft&&state.draft.tables[+el.dataset.i];if(x)x.half=el.value}
  if(sheetData&&(el.id==="f_time"||el.id==="f_date")){readForm();drawForm()}
 });
 document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("numin"))setTimeout(()=>{try{e.target.select()}catch(_){}},0)});
-document.getElementById("fab").addEventListener("click",()=>formSheet(blank()));
-document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(document.querySelector(".scrim.ask"))return;if(state.moveFrom){state.moveFrom=null;render();return}if(document.querySelector(".scrim"))closeSheet()});
+document.getElementById("fab").addEventListener("click",async()=>{const ch=await choose(t("newWhat",{d:dayLabel(todayStr())}),[["b","+ "+t("newB")],["r","⏰ "+t("remNew")]]);if(ch==="b")formSheet(blank({date:todayKey}));else if(ch==="r")remSheet({date:todayKey,time:nowHM(),text:"",done:false})});
+document.getElementById("fab2").addEventListener("click",()=>remSheet({date:todayKey,time:nowHM(),text:"",done:false}));
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("agrow")){e.preventDefault();e.target.click();return}if(e.key!=="Escape")return;if(document.querySelector(".scrim.ask"))return;if(state.moveFrom){state.moveFrom=null;render();return}if(document.querySelector(".scrim"))closeSheet()});
 setInterval(()=>{renderAlerts();if(store&&todayStr()!==msgKey)resubMsgs();if(state.tab==="floor"&&!drag&&!document.querySelector(".scrim"))render()},60000);
 /* arrange mode: move tables around the floor plan */
 let adrag=null;
@@ -1305,7 +1418,20 @@ async function seedDemo(){
   ["d6",B({name:"Mr. Jensen",bracelet:"8",date:Y,time:"09:30",type:"combo",adults:2,tables:["A3-d"],status:"left",seatedAt:"09:32",leftAt:"13:10",source:"viator"})],
   ["d7",B({name:"Khách lẻ",bracelet:"5",date:Y,time:"12:10",type:"walkin",adults:5,tables:["C1-d"],status:"left",seatedAt:"12:10",leftAt:"13:40",source:"walk"})]
  ];
+ const D=n=>{const x=new Date();x.setDate(x.getDate()+n);return dstr(x)};
+ rows.push(
+  ["e1",B({name:"Đức",date:D(1),time:"08:30",type:"combo",adults:4,kids:2,tables:["A3-d","A4-d"],status:"booked",deposit:true,depAmt:200,source:"zalo"})],
+  ["e2",B({name:"Kaye McMillan",date:D(1),time:"09:30",type:"combo",adults:2,tables:[],status:"booked",source:"web",note:"Xe đón 9h. Mr money"})],
+  ["e3",B({name:"Bảo An",date:D(2),time:"10:30",type:"combo",adults:2,tables:["B3-d"],status:"booked",deposit:true,depAmt:100,source:"fb"})],
+  ["e4",B({name:"Tiên",date:D(2),time:"13:30",type:"normal",adults:4,kids:1,tables:["C3-d"],status:"booked",deposit:true,depAmt:200,note:"Khách thích ngồi bàn bệt"})],
+  ["e5",B({name:"Thị Diễm",date:D(3),time:"08:30",type:"lobster",adults:4,tables:[],status:"booked",source:"zalo",note:"Chưa chốt combo nào"})],
+  ["e6",B({name:"Andrew Yakovlev",date:D(4),time:"09:30",type:"combo",adults:2,tables:["A5-d"],status:"booked",deposit:true,depAmt:1500,source:"gyg"})],
+  ["e7",B({name:"Nhi Trần",date:D(4),time:"14:30",type:"combo",adults:2,kids:1,small:1,tables:[],status:"booked",deposit:true,depAmt:100,source:"zalo"})],
+  ["e8",B({name:"Anh Hùng",date:D(-2),time:"10:30",type:"combo",adults:6,tables:["B1-d","B2-d"],status:"left",seatedAt:"10:40",leftAt:"14:20",deposit:true,depAmt:500,source:"zalo"})],
+  ["e9",B({name:"Chị Thảo",date:D(-2),time:"13:30",type:"normal",adults:3,tables:["C4-d"],status:"noshow",source:"fb"})]
+ );
  for(const [id,b] of rows)await store.putBooking(id,b);
+ if(store.putRem){await store.putRem("r1",{text:"Gọi lại chị Mai xác nhận cọc",date:T,time:"15:00",done:false,by:"An",at:Date.now()});await store.putRem("r2",{text:"Đặt thêm đá lạnh cho đoàn 9 khách",date:D(1),time:"07:30",done:false,by:"John",at:Date.now()})}
  await store.setDoc("notice/main",{text:"Hôm nay giới thiệu combo 750k trước. Còn 6 suất tôm hùm.",kind:"info",by:"John",at:Date.now()});
  const lg=(m,by,act,b,o)=>store.addLog({at:Date.now()-m*60000,date:T,time:ago(m),by,act,bid:"",name:b?b.name:"",br:b?b.bracelet:"",type:b?b.type:"",d:"",dt:"",u:"",...o});
  await lg(200,"An","create",rows[2][1],{d:"B1-2"});await lg(180,"Đạt","seat",rows[0][1]);await lg(40,"Đạt","walkin",rows[1][1],{d:"C2"});await lg(25,"An","beach",rows[4][1]);await lg(10,"John","move",rows[1][1],{d:"C1 → C2"});
