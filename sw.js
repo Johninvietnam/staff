@@ -1,6 +1,6 @@
 // Service worker: makes the app installable and lets it open without signal.
 // Bump VERSION whenever you upload a new index.html so phones pick up the update.
-const VERSION = "ntb-v2";
+const VERSION = "ntb-v3";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./firebase-config.js",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 
@@ -22,7 +22,9 @@ self.addEventListener("fetch", e => {
   const save = res => { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); return res; };
   // App files: try the network first (so updates arrive), fall back to the saved copy.
   if (url.origin === location.origin) {
-    e.respondWith(fetch(req).then(save).catch(() => caches.match(req).then(m => m || caches.match("./index.html"))));
+    // "no-cache" asks GitHub for the newest copy every time (cheap: unchanged files aren't re-downloaded).
+    e.respondWith(fetch(req.url, { cache: "no-cache", credentials: "same-origin" }).then(save)
+      .catch(() => caches.match(req).then(m => m || caches.match("./index.html"))));
     return;
   }
   // Firebase SDK and fonts: use the saved copy, download once.
