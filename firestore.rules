@@ -12,7 +12,9 @@ service cloud.firestore {
     function myEmail() { return request.auth.token.email; }
 
     // Normal app data: every signed-in staff member.
-    match /bookings/{id}  { allow read, write: if signedIn(); }
+    // Bookings: everyone can create and change them; only managers can delete one permanently
+    // (staff cancel instead, so it stays in the history).
+    match /bookings/{id}  { allow read, create, update: if signedIn(); allow delete: if isManager(); }
     match /config/{id}    { allow read, write: if signedIn(); }
     match /joins/{id}     { allow read, write: if signedIn(); }
     match /notice/{id}    { allow read, write: if signedIn(); }
