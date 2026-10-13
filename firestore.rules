@@ -20,6 +20,9 @@ service cloud.firestore {
     match /log/{id}       { allow read, write: if signedIn(); }
     match /reminders/{id} { allow read, write: if signedIn(); }
 
+    // Salary settings (public holidays): everyone signed in can read, only managers change.
+    match /payConfig/{id} { allow read: if signedIn(); allow write: if isManager(); }
+
     // Salary: staff can only read their own, managers read and change all.
     match /staffPay/{email} {
       allow read: if isManager() || (signedIn() && myEmail() == email);
