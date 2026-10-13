@@ -1,9 +1,47 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Only signed-in staff can read or change anything.
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+
+    // Managers who can see and change everyone's salary.
+    // Replace these with the exact login emails of John and Ngọc (lowercase).
+    function isManager() {
+      return request.auth != null &&
+        request.auth.token.email in ['john@nhatrenbien.com', 'ngoc@nhatrenbien.com'];
+    }
+    function signedIn() { return request.auth != null; }
+    function myEmail() { return request.auth.token.email; }
+
+    // Normal app data: every signed-in staff member.
+    match /bookings/{id}  { allow read, write: if signedIn(); }
+    match /config/{id}    { allow read, write: if signedIn(); }
+    match /joins/{id}     { allow read, write: if signedIn(); }
+    match /notice/{id}    { allow read, write: if signedIn(); }
+    match /messages/{id}  { allow read, write: if signedIn(); }
+    match /log/{id}       { allow read, write: if signedIn(); }
+    match /reminders/{id} { allow read, write: if signedIn(); }
+
+    // Salary: staff can only read their own, managers read and change all.
+    match /staffPay/{email} {
+      allow read: if isManager() || (signedIn() && myEmail() == email);
+      allow write: if isManager();
+    }
+    match /payMarks/{id} {
+      allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
+      allow write: if isManager();
+    }
+    // Tips: managers enter them; each staff member can read the tips they share in.
+    match /payTips/{id} {
+      allow read: if isManager() || (signedIn() && myEmail() in resource.data.who);
+      allow write: if isManager();
+    }
+    // Overtime: staff can request for themselves (always "pending") and cancel their own pending request.
+    // Only managers can approve, reject or change requests.
+    match /payOT/{id} {
+      allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
+      allow create: if isManager() || (signedIn() && request.resource.data.email == myEmail()
+                       && request.resource.data.status == 'pending' && request.resource.data.rate == 50000);
+      allow update: if isManager();
+      allow delete: if isManager() || (signedIn() && resource.data.email == myEmail() && resource.data.status == 'pending');
     }
   }
 }
