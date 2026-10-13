@@ -36,6 +36,15 @@ service cloud.firestore {
     }
     // Overtime: staff can request for themselves (always "pending") and cancel their own pending request.
     // Only managers can approve, reject or change requests.
+    // Days off: staff request their own (always "pending") and can cancel while pending.
+    // Only managers can approve, reject, record or change days off.
+    match /payOff/{id} {
+      allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
+      allow create: if isManager() || (signedIn() && request.resource.data.email == myEmail()
+                       && request.resource.data.status == 'pending');
+      allow update: if isManager();
+      allow delete: if isManager() || (signedIn() && resource.data.email == myEmail() && resource.data.status == 'pending');
+    }
     match /payOT/{id} {
       allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
       allow create: if isManager() || (signedIn() && request.resource.data.email == myEmail()
