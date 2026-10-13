@@ -28,6 +28,11 @@ service cloud.firestore {
       allow read: if isManager() || (signedIn() && myEmail() == email);
       allow write: if isManager();
     }
+    // Salary advances and other deductions: managers only write; staff read their own.
+    match /payAdv/{id} {
+      allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
+      allow write: if isManager();
+    }
     match /payMarks/{id} {
       allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
       allow write: if isManager();
