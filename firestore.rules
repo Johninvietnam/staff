@@ -20,6 +20,15 @@ service cloud.firestore {
     match /log/{id}       { allow read, write: if signedIn(); }
     match /reminders/{id} { allow read, write: if signedIn(); }
 
+    // Daily checklists: managers manage the task list; everyone reads it.
+    match /checkItems/{id} { allow read: if signedIn(); allow write: if isManager(); }
+    // Ticked tasks: one document per person per day. You can only tick your own; managers see everyone's.
+    match /checkDone/{id} {
+      allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
+      allow write: if isManager() || (signedIn() && request.resource.data.email == myEmail()
+                      && id == request.resource.data.date + '_' + myEmail());
+    }
+
     // Salary settings (public holidays): everyone signed in can read, only managers change.
     match /payConfig/{id} { allow read: if signedIn(); allow write: if isManager(); }
 
