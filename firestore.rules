@@ -40,6 +40,11 @@ service cloud.firestore {
       allow write: if isManager();
     }
     // Salary advances and other deductions: managers only write; staff read their own.
+    // Salary payouts: managers mark each person as paid; staff can see their own.
+    match /payPaid/{id} {
+      allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
+      allow write: if isManager();
+    }
     match /payAdv/{id} {
       allow read: if isManager() || (signedIn() && resource.data.email == myEmail());
       allow write: if isManager();
