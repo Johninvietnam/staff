@@ -1,6 +1,6 @@
 // Service worker: makes the app installable and lets it open without signal.
 // Bump VERSION whenever you upload a new index.html so phones pick up the update.
-const VERSION = "ntb-v24";
+const VERSION = "ntb-v25";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./firebase-config.js",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 
